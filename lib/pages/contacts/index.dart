@@ -42,29 +42,33 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
         return ListView(
           children: [
             ...controller.friendList.map((group) {
-              return ExpansionTile(
-                iconColor: theme.primaryColor,
-                visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-                dense: true,
-                collapsedShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                title: Text(
-                  '${group['name']}（${group['friends'].length}）',
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                children: [
-                  ...group['friends'].map(
-                    (friend) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: _buildFriendItem(friend),
-                    ),
+              return GestureDetector(
+                onLongPress: controller.onLongPressGroup,
+                child: ExpansionTile(
+                  iconColor: theme.primaryColor,
+                  visualDensity:
+                      const VisualDensity(horizontal: 0, vertical: -4),
+                  dense: true,
+                  collapsedShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                ],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  title: Text(
+                    '${group['name']}（${group['friends'].length}）',
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  children: [
+                    ...group['friends'].map(
+                      (friend) => Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: _buildFriendItem(friend),
+                      ),
+                    ),
+                  ],
+                ),
               );
             }),
           ],
@@ -285,6 +289,7 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
       borderRadius: BorderRadius.circular(12),
       color: Colors.white,
       child: InkWell(
+        onLongPress: () {},
         onTap: () => controller.handlerFriendTapped(friend),
         borderRadius: BorderRadius.circular(12),
         child: Container(

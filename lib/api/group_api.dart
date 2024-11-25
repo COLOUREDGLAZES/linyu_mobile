@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:linyu_mobile/api/Http.dart';
 
 class GroupApi {
-  final Dio _dio = Http().dio;
+  final Dio _dio = Http(url: baseUrl).dio;
 
   static final GroupApi _instance = GroupApi._internal();
 
@@ -20,6 +20,11 @@ class GroupApi {
   Future<Map<String, dynamic>> create(String groupName) async {
     final response =
         await _dio.post('/v1/api/group/create', data: {'groupName': groupName});
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> delete(String groupId) async {
+    final response = await _dio.post('/v1/api/group/delete', data: {'groupId': groupId,});
     return response.data;
   }
 }

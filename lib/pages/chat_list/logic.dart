@@ -27,6 +27,7 @@ class ChatListLogic extends GetxController {
   void eventListen() {
     // 监听消息
     _subscription = _wsManager.eventStream.listen((event) {
+      print("收到服务端发来的消息=======================>${event}");
       if (event['type'] == 'on-receive-msg') {
         onGetChatList();
       }

@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:linyu_mobile/api/Http.dart';
 
 class ChatGroupApi {
-  final Dio _dio = Http().dio;
+  final Dio _dio = Http(url: baseUrl).dio;
 
   static final ChatGroupApi _instance = ChatGroupApi._internal();
 

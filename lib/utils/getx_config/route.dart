@@ -20,6 +20,7 @@ import 'package:linyu_mobile/pages/qr_code_scan/qr_friend_affirm/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_login_affirm/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_other_result/index.dart';
 import 'package:linyu_mobile/pages/register/index.dart';
+import 'package:linyu_mobile/pages/setting/index.dart';
 import 'package:linyu_mobile/pages/talk/index.dart';
 
 import 'package:linyu_mobile/pages/mine/edit/index.dart';
@@ -204,6 +205,13 @@ class AppRoutes {
       name: '/user_select',
       page: () => UserSelectPage(
         key: const Key('user_select'),
+      ),
+      binding: ControllerBinding(),
+    ),
+    GetPage(
+      name: '/setting',
+      page: () => SettingPage(
+        key: const Key('setting'),
       ),
       binding: ControllerBinding(),
     ),
