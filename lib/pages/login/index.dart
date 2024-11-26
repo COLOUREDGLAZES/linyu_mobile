@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_gradient_line/index.dart';
 import 'package:linyu_mobile/components/custom_material_button/index.dart';
@@ -37,17 +36,7 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                   MediaQuery.of(context).padding.bottom,
               child: Column(
                 children: [
-                  SizedBox(
-                    height: 40.0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                            onPressed: () => Get.toNamed('/setting'),
-                            icon: const Icon(Icons.settings)),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: 40.0),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(

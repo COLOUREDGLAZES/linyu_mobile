@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
-import 'package:linyu_mobile/api/Http.dart' as http;
 import 'package:linyu_mobile/utils/getx_config/ControllerBinding.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
-import 'package:linyu_mobile/utils/web_socket.dart' as websocket;
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -13,8 +11,6 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('x-token');
   String? sex = prefs.getString('sex');
-  http.baseUrl  = prefs.getString("httpUrl");
-  websocket.websocketIp = prefs.getString("websocketIp");
   runApp(MyApp(initialRoute: token != null ? '/?sex=$sex' : '/login'));
 }
 

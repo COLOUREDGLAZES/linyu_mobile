@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:linyu_mobile/api/Http.dart';
 
 class UserApi {
-  final Dio _dio = Http(url: baseUrl).dio;
+  final Dio _dio = Http().dio;
   static final UserApi _instance = UserApi._internal();
 
   UserApi._internal();

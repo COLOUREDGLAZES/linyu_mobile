@@ -20,7 +20,6 @@ import 'package:linyu_mobile/pages/qr_code_scan/qr_friend_affirm/logic.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_login_affirm/logic.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_other_result/logic.dart';
 import 'package:linyu_mobile/pages/register/logic.dart';
-import 'package:linyu_mobile/pages/setting/logic.dart';
 import 'package:linyu_mobile/pages/talk/logic.dart';
 import 'package:linyu_mobile/pages/talk/talk_create/logic.dart';
 import 'package:linyu_mobile/pages/talk/talk_details/logic.dart';
@@ -59,6 +58,5 @@ class ControllerBinding extends Bindings {
     Get.lazyPut(() => TalkDetailsLogic());
     Get.lazyPut(() => TalkCreateLogic());
     Get.lazyPut(() => UserSelectLogic());
-    Get.lazyPut(() => SettingLogic());
   }
 }

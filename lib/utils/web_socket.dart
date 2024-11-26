@@ -6,8 +6,6 @@ import 'package:linyu_mobile/utils/notification.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-late String? websocketIp;
-
 class WebSocketUtil {
   static WebSocketUtil? _instance;
   WebSocketChannel? _channel;
@@ -19,29 +17,14 @@ class WebSocketUtil {
   final int _reconnectCountMax = 200;
   int _reconnectCount = 0;
 
-  String _websocketIp = "ws://192.168.101.4:9100";
-
-  String get websocketIp => _websocketIp;
-
-  set websocketIp(String value) {
-    _websocketIp = value;
-    setWsIp(value);
-  }
-
-  void setWsIp(String value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("websocketIp", value);
-  }
-
   // 事件总线，用于消息分发
   static final _eventController =
       StreamController<Map<String, dynamic>>.broadcast();
 
   Stream<Map<String, dynamic>> get eventStream => _eventController.stream;
 
-  factory WebSocketUtil({String? websocketUrl}) {
+  factory WebSocketUtil() {
     _instance ??= WebSocketUtil._internal();
-    _instance?._websocketIp = websocketUrl??'ws://192.168.101.4:9100';
     return _instance!;
   }
 
@@ -49,9 +32,6 @@ class WebSocketUtil {
 
   Future<void> connect() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("websocketIp") != null) {
-      _websocketIp = prefs.getString("websocketIp")!;
-    }
     String? token = prefs.getString('x-token');
     if (token == null) return;
     if (_isConnected || _channel != null) return;
@@ -60,11 +40,10 @@ class WebSocketUtil {
     try {
       print('WebSocket connecting...');
       // String wsIp = 'ws://249ansm92588.vicp.fun';
-      // String wsIp = 'ws://192.168.101.4:9100';
+      String wsIp = 'ws://192.168.101.4:9100';
 
       _channel = WebSocketChannel.connect(
-        // Uri.parse('$wsIp/ws?x-token=$token'),
-        Uri.parse('$_websocketIp/ws?x-token=$token'),
+        Uri.parse('$wsIp/ws?x-token=$token'),
       );
 
       _channel!.stream.listen(
