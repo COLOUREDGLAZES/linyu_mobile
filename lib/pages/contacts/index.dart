@@ -283,12 +283,30 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
     );
   }
 
+  void _showDeleteGroupBottomSheet(dynamic friend) => Get.bottomSheet(
+    backgroundColor: Colors.white,
+    Wrap(
+      children: [
+        Center(
+          child: TextButton(
+            onPressed: () => controller.onSetConcernFriend(friend),
+            child: Text(
+              friend['isConcern']?'取消特别关心':'设置特别关心',
+              style: TextStyle(color: theme.primaryColor),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+
+
   Widget _buildFriendItem(dynamic friend) {
     return Material(
       borderRadius: BorderRadius.circular(12),
       color: Colors.white,
       child: InkWell(
-        onLongPress: () {},
+        onLongPress: () =>_showDeleteGroupBottomSheet(friend),
         onTap: () => controller.handlerFriendTapped(friend),
         borderRadius: BorderRadius.circular(12),
         child: Container(
