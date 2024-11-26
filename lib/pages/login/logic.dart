@@ -83,6 +83,7 @@ class LoginPageLogic extends GetxController {
     }
   }
 
+
   void toRegister() => Get.toNamed('/register');
 
   void toRetrievePassword() => Get.toNamed('/retrieve_password');
