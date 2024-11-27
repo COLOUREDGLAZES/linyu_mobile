@@ -1,4 +1,9 @@
 import 'package:get/get.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_notice/add_chat_group_notice/logic.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_notice/logic.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/set_group_nickname/logic.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/set_group_name/logic.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/set_group_remark/logic.dart';
 import 'package:linyu_mobile/pages/image_viewer/image_viewer_update/logic.dart';
 import 'package:linyu_mobile/pages/image_viewer/logic.dart';
 import 'package:linyu_mobile/pages/add_friend/friend_info/logic.dart';
@@ -64,5 +69,38 @@ class ControllerBinding extends Bindings {
     Get.lazyPut(() => ChatGroupInformationLogic(),fenix: true);
     Get.lazyPut(() => ImageViewerLogic(),fenix: true);
     Get.lazyPut(() => ImageViewerUpdateLogic(),fenix: true);
+    Get.lazyPut(() => NavigationLogic());
+    Get.lazyPut(() => LoginPageLogic());
+    Get.lazyPut(() => RegisterPageLogic());
+    Get.lazyPut(() => RetrievePasswordLogic());
+    Get.lazyPut(() => UpdatePasswordLogic());
+    Get.lazyPut(() => ChatListLogic());
+    Get.lazyPut(() => ContactsLogic());
+    Get.lazyPut(() => MineLogic());
+    Get.lazyPut(() => TalkLogic());
+    Get.lazyPut(() => QRCodeScanLogic());
+    Get.lazyPut(() => QRLoginAffirmLogic());
+    Get.lazyPut(() => EditMineLogic());
+    Get.lazyPut(() => MineQRCodeLogic());
+    Get.lazyPut(() => QRFriendAffirmLogic());
+    Get.lazyPut(() => QrOtherResultLogic());
+    Get.lazyPut(() => AboutLogic());
+    Get.lazyPut(() => FriendInformationLogic());
+    Get.lazyPut(() => SetRemarkLogic());
+    Get.lazyPut(() => SetGroupLogic());
+    Get.lazyPut(() => AddFriendLogic());
+    Get.lazyPut(() => SearchInfoLogic());
+    Get.lazyPut(() => FriendRequestLogic());
+    Get.lazyPut(() => TalkDetailsLogic());
+    Get.lazyPut(() => TalkCreateLogic());
+    Get.lazyPut(() => UserSelectLogic());
+    Get.lazyPut(() => ChatGroupInformationLogic());
+    Get.lazyPut(() => ImageViewerLogic());
+    Get.lazyPut(() => ImageViewerUpdateLogic());
+    Get.lazyPut(() => SetGroupNameLogic());
+    Get.lazyPut(() => SetGroupRemarkLogic());
+    Get.lazyPut(() => SetGroupNameNickLogic());
+    Get.lazyPut(() => ChatGroupNoticeLogic());
+    Get.lazyPut(() => AddChatGroupNoticeLogic());
   }
 }
