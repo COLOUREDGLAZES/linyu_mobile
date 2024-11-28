@@ -7,6 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LoginPageLogic extends GetxController {
   final _useApi = UserApi();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
 
   int _accountTextLength = 0;
 
@@ -26,13 +28,13 @@ class LoginPageLogic extends GetxController {
     update([const Key("login")]);
   }
 
-//用户账号输入长度
+  //用户账号输入长度
   void onAccountTextChanged(String value) {
     accountTextLength = value.length;
     if (accountTextLength >= 30) accountTextLength = 30;
   }
 
-//用户密码输入长度
+  //用户密码输入长度
   void onPasswordTextChanged(String value) {
     passwordTextLength = value.length;
     if (passwordTextLength >= 16) passwordTextLength = 16;
@@ -58,7 +60,9 @@ class LoginPageLogic extends GetxController {
     );
   }
 
-  void login(context, username, password) async {
+  void login(context) async {
+    String username = usernameController.text;
+    String password = passwordController.text;
     if (username.isEmpty || password.isEmpty) {
       _dialog("用户名或密码不能为空~", context = context);
       return;
@@ -72,7 +76,7 @@ class LoginPageLogic extends GetxController {
       await prefs.setString('userId', loginResult['data']['userId']);
       await prefs.setString('account', loginResult['data']['account']);
       await prefs.setString('portrait', loginResult['data']['portrait']);
-      await prefs.setString('sex', loginResult['data']['sex'] ?? '男');
+      await prefs.setString('sex', loginResult['data']['sex']??'男');
       Get.offAllNamed('/?sex=${loginResult['data']['sex']}');
     } else {
       _dialog("用户名或密码错误，请重试尝试~", context = context);
@@ -93,5 +97,12 @@ class LoginPageLogic extends GetxController {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  @override
+  void onClose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.onClose();
   }
 }
