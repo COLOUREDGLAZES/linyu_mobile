@@ -126,6 +126,7 @@ class ContactsLogic extends GetxController {
         'groupName':'0',
         'friendId':'0'
       });
+
   }
 
   //设置特别关心

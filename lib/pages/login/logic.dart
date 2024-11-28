@@ -60,9 +60,7 @@ class LoginPageLogic extends GetxController {
     );
   }
 
-  void login(context) async {
-    String username = usernameController.text;
-    String password = passwordController.text;
+  void login(context, username, password) async {
     if (username.isEmpty || password.isEmpty) {
       _dialog("用户名或密码不能为空~", context = context);
       return;
@@ -76,7 +74,7 @@ class LoginPageLogic extends GetxController {
       await prefs.setString('userId', loginResult['data']['userId']);
       await prefs.setString('account', loginResult['data']['account']);
       await prefs.setString('portrait', loginResult['data']['portrait']);
-      await prefs.setString('sex', loginResult['data']['sex']??'男');
+      await prefs.setString('sex', loginResult['data']['sex'] ?? '男');
       Get.offAllNamed('/?sex=${loginResult['data']['sex']}');
     } else {
       _dialog("用户名或密码错误，请重试尝试~", context = context);
@@ -97,12 +95,5 @@ class LoginPageLogic extends GetxController {
     } else {
       throw 'Could not launch $url';
     }
-  }
-
-  @override
-  void onClose() {
-    usernameController.dispose();
-    passwordController.dispose();
-    super.onClose();
   }
 }
