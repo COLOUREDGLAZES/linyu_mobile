@@ -473,7 +473,7 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
                                   fontSize: 16,
                                 ),
                                 child: GestureDetector(
-                                  onLongPress: controller.onLongPressGroup,
+                                  onLongPress: index==1?controller.onLongPressGroup:(){},
                                   child: Text(controller.tabs[index]),
                                 ),
                               ),
