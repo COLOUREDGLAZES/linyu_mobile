@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:linyu_mobile/utils/date.dart';
 import 'package:linyu_mobile/utils/linyu_msg.dart';
 import 'package:linyu_mobile/utils/notification.dart';
@@ -38,12 +39,14 @@ class WebSocketUtil {
     _isConnected = true;
 
     try {
-      print('WebSocket connecting...');
+      if (kDebugMode) {
+        print('WebSocket connecting...');
+      }
       // String wsIp = 'ws://249ansm92588.vicp.fun';
       String wsIp = '192.168.101.4:9100';
 
       _channel = WebSocketChannel.connect(
-        Uri.parse('$wsIp/ws?x-token=$token'),
+        Uri.parse('ws://$wsIp/ws?x-token=$token'),
       );
 
       _channel!.stream.listen(

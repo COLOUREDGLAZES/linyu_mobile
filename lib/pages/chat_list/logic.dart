@@ -21,6 +21,7 @@ class ChatListLogic extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     eventListen();
   }
 
