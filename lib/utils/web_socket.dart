@@ -39,7 +39,8 @@ class WebSocketUtil {
 
     try {
       print('WebSocket connecting...');
-      String wsIp = 'ws://249ansm92588.vicp.fun';
+      // String wsIp = 'ws://249ansm92588.vicp.fun';
+      String wsIp = '192.168.101.4:9100';
 
       _channel = WebSocketChannel.connect(
         Uri.parse('$wsIp/ws?x-token=$token'),
