@@ -7,8 +7,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LoginPageLogic extends GetxController {
   final _useApi = UserApi();
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
 
   int _accountTextLength = 0;
 
@@ -28,13 +26,13 @@ class LoginPageLogic extends GetxController {
     update([const Key("login")]);
   }
 
-  //用户账号输入长度
+//用户账号输入长度
   void onAccountTextChanged(String value) {
     accountTextLength = value.length;
     if (accountTextLength >= 30) accountTextLength = 30;
   }
 
-  //用户密码输入长度
+//用户密码输入长度
   void onPasswordTextChanged(String value) {
     passwordTextLength = value.length;
     if (passwordTextLength >= 16) passwordTextLength = 16;
