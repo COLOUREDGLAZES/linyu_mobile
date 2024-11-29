@@ -17,7 +17,7 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
       borderRadius: BorderRadius.circular(12),
       color: Colors.white,
       child: InkWell(
-        onTap: () =>controller.onSelect(friend),
+        onTap: () => controller.onSelect(friend),
         borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -35,8 +35,17 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
             child: Row(
               children: [
                 Checkbox(
-                  value: controller.users.include(friend as Map),
-                  onChanged: (bool? value) =>controller.onSelect(friend),
+                  fillColor: WidgetStateProperty.resolveWith<Color>(
+                      (Set<WidgetState> states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return controller.users.include(friend)
+                          ? theme.primaryColor
+                          : theme.searchBarColor;
+                    }
+                    return Colors.transparent;
+                  }),
+                  value: controller.users.include(friend),
+                  onChanged: (bool? value) => controller.onSelect(friend),
                   splashRadius: 5,
                 ),
                 CustomPortrait(url: friend['portrait']),
@@ -78,7 +87,7 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
 
   Widget _selectedUserItem(dynamic user) {
     return Container(
-      width: 40,
+      width: 38.6,
       margin: const EdgeInsets.only(right: 5),
       alignment: Alignment.center,
       decoration: BoxDecoration(
@@ -129,15 +138,15 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
                     key: const Key('dialog'),
                     id: 'dialog',
                     builder: (CreateChatGroupLogic controller) =>
-                       CustomTextField(
-                        vertical: 8,
-                        controller: controller.chatGroupController,
-                        inputLimit: 10,
-                        hintText: hintText!,
-                        onChanged: controller.onChatGroupTextChanged,
-                        suffix: Text(
-                            '${controller.chatGroupController.text.length}/10'),
-                      ),
+                        CustomTextField(
+                      vertical: 8,
+                      controller: controller.chatGroupController,
+                      inputLimit: 10,
+                      hintText: hintText!,
+                      onChanged: controller.onChatGroupTextChanged,
+                      suffix: Text(
+                          '${controller.chatGroupController.text.length}/10'),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -193,23 +202,29 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (controller.users.isNotEmpty)
-                  SizedBox(
-                    height: 40,
-                    width: controller.userTapWidth >= 200
-                        ? 210
-                        : controller.userTapWidth + 10,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: controller.users
-                          .map((city) => _selectedUserItem(city))
-                          .toList(),
-                    ),
-                  ),
                 Expanded(
-                  child: CustomSearchBox(
-                    isCentered: false,
-                    onChanged: (value) {},
+                  child: KeyboardListener(
+                    focusNode: FocusNode(),
+                    onKeyEvent: controller.onBackKeyPress,
+                    child: CustomSearchBox(
+                      textEditingController: controller.searchBoxController,
+                      prefix: controller.users.isNotEmpty
+                          ? SizedBox(
+                              height: 40,
+                              width: controller.userTapWidth >= 200
+                                  ? 210
+                                  : controller.userTapWidth,
+                              child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: controller.users
+                                    .map((city) => _selectedUserItem(city))
+                                    .toList(),
+                              ),
+                            )
+                          : null,
+                      isCentered: false,
+                      onChanged: (value) {},
+                    ),
                   ),
                 ),
               ],

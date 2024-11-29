@@ -432,10 +432,12 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
               PopupMenuItem(
                 value: 2,
                 height: 40,
-                onTap: () async {
-                  var result = await Get.toNamed('/create_chat_group');
-                  if (result != null && result) controller.onChatGroupList();
-                },
+                // onTap: () async {
+                //   var result = await Get.toNamed('/create_chat_group');
+                //   print('进入群聊创建页面==================>$result');
+                //   if (result != null && result) controller.onChatGroupList();
+                // },
+                onTap: ()=>Get.toNamed('/create_chat_group'),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
