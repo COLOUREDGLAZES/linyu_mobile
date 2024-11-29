@@ -23,12 +23,17 @@ class CreateChatGroupLogic extends Logic<CreateChatGroupPage> {
   List<dynamic> users = [];
 
   double _userTapWidth = 0;
-
   double get userTapWidth => _userTapWidth;
-
   set userTapWidth(double value) {
     _userTapWidth = value;
     update([const Key("create_chat_group")]);
+  }
+
+  int _chatGroupTextLength = 0;
+  int get chatGroupTextLength => _chatGroupTextLength;
+  set chatGroupTextLength(int value) {
+    _chatGroupTextLength = value;
+    update(['dialog']);
   }
 
   void _getFriendList() async {
@@ -54,8 +59,21 @@ class CreateChatGroupLogic extends Logic<CreateChatGroupPage> {
 
   void subUsers(dynamic user) {
     if (kDebugMode) print(user);
-    users.remove(user);
+    users.delete(user);
     userTapWidth -= 40;
+  }
+
+  void onSelect(dynamic user) {
+    if (!users.include(user)) {
+      addUsers(user);
+      return;
+    }
+    subUsers(user);
+  }
+
+  void onChatGroupTextChanged(String value) {
+    chatGroupTextLength = value.length;
+    if (chatGroupTextLength >= 10) chatGroupTextLength = 10;
   }
 
   void onCreateChatGroup() async {
@@ -66,7 +84,6 @@ class CreateChatGroupLogic extends Logic<CreateChatGroupPage> {
           .toList()
           .toString();
     }
-
     List<Map<String, String>> groupMembers = [];
     for (var user in users) {
       groupMembers.add({
@@ -74,9 +91,8 @@ class CreateChatGroupLogic extends Logic<CreateChatGroupPage> {
         'name': user['remark'] ?? user['name'],
       });
     }
-
     final result =
-    await _chatGroupApi.createWithPerson(chatGroupName, null, groupMembers);
+        await _chatGroupApi.createWithPerson(chatGroupName, null, groupMembers);
     if (result['code'] == 0) {
       CustomFlutterToast.showSuccessToast('创建成功');
       Get.back();

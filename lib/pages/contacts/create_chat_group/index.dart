@@ -6,6 +6,7 @@ import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_search_box/index.dart';
 import 'package:linyu_mobile/components/custom_text_field/index.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/list_extension.dart';
 import 'logic.dart';
 
 class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
@@ -16,8 +17,7 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
       borderRadius: BorderRadius.circular(12),
       color: Colors.white,
       child: InkWell(
-        // onLongPress: () => _showDeleteGroupBottomSheet(friend),
-        onTap: () => controller.addUsers(friend),
+        onTap: () =>controller.onSelect(friend),
         borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -34,6 +34,11 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
+                Checkbox(
+                  value: controller.users.include(friend as Map),
+                  onChanged: (bool? value) =>controller.onSelect(friend),
+                  splashRadius: 5,
+                ),
                 CustomPortrait(url: friend['portrait']),
                 const SizedBox(width: 12),
                 Expanded(
@@ -88,11 +93,11 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
   }
 
   void _showCreateChatGroupDialog(
-      BuildContext context, {
-        String? title = "创建群聊",
-        String? label = '请填写群聊昵称',
-        String? hintText = '',
-      }) =>
+    BuildContext context, {
+    String? title = "创建群聊",
+    String? label = '请填写群聊昵称',
+    String? hintText = '',
+  }) =>
       showDialog(
         context: context,
         barrierDismissible: false, // 设置为 false 禁止点击外部关闭弹窗
@@ -120,13 +125,19 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),
-                  CustomTextField(
-                    vertical: 8,
-                    controller: controller.chatGroupController,
-                    inputLimit: 10,
-                    hintText: hintText!,
-                    suffix: Text(
-                        '${controller.chatGroupController.text.length}/10'),
+                  GetBuilder<CreateChatGroupLogic>(
+                    key: const Key('dialog'),
+                    id: 'dialog',
+                    builder: (CreateChatGroupLogic controller) =>
+                       CustomTextField(
+                        vertical: 8,
+                        controller: controller.chatGroupController,
+                        inputLimit: 10,
+                        hintText: hintText!,
+                        onChanged: controller.onChatGroupTextChanged,
+                        suffix: Text(
+                            '${controller.chatGroupController.text.length}/10'),
+                      ),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -172,7 +183,7 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
-        title: const AppBarTitle('创建群组'),
+        title: const AppBarTitle('创建群聊'),
         backgroundColor: const Color(0xFFF9FBFF),
       ),
       body: Padding(
@@ -213,7 +224,7 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
                       return ExpansionTile(
                         iconColor: theme.primaryColor,
                         visualDensity:
-                        const VisualDensity(horizontal: 0, vertical: -4),
+                            const VisualDensity(horizontal: 0, vertical: -4),
                         dense: true,
                         collapsedShape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -228,9 +239,9 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
                         ),
                         children: [
                           ...group['friends'].map(
-                                (friend) => Container(
+                            (friend) => Container(
                               padding:
-                              const EdgeInsets.symmetric(horizontal: 10.0),
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
                               child: _buildFriendItem(friend),
                             ),
                           ),
@@ -246,11 +257,13 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
       ),
       bottomNavigationBar: CustomButton(
         text: '立即创建(${controller.users.length})',
-        onTap: () => controller.users.isNotEmpty?_showCreateChatGroupDialog(context,
-            title: '创建群聊',
-            label: '请填写群聊昵称',
-            hintText:
-            '${controller.users.map((e) => e['remark'] ?? e['name']).toList()}'):(){},
+        onTap: () => controller.users.isNotEmpty
+            ? _showCreateChatGroupDialog(context,
+                title: '创建群聊',
+                label: '请填写群聊昵称',
+                hintText:
+                    '${controller.users.map((e) => e['remark'] ?? e['name']).toList()}')
+            : () {},
         width: MediaQuery.of(context).size.width,
         type: 'gradient',
       ),
