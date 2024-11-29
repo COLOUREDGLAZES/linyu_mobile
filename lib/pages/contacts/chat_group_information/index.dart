@@ -24,6 +24,30 @@ class ChatGroupInformationPage extends CustomWidget<ChatGroupInformationLogic> {
     );
   }
 
+  Widget _selectedUserItem(dynamic member) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CustomPortrait(
+          url: member['portrait'],
+          size: 40,
+        ),
+        const SizedBox(height: 4),
+        SizedBox(
+          width: 40,
+          child: Center(
+            child: Text(
+              member['name'],
+              style: const TextStyle(
+                  fontSize: 12, overflow: TextOverflow.ellipsis),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   @override
   Widget buildWidget(BuildContext context) {
     return Scaffold(
@@ -134,28 +158,17 @@ class ChatGroupInformationPage extends CustomWidget<ChatGroupInformationLogic> {
                             spacing: 5,
                             runSpacing: 5,
                             children: [
-                              ...controller.chatGroupMembers.map(
-                                (member) => Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    CustomPortrait(
-                                      url: member['portrait'],
-                                      size: 40,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    SizedBox(
-                                      width: 40,
-                                      child: Center(
-                                        child: Text(
-                                          member['name'],
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              overflow: TextOverflow.ellipsis),
-                                        ),
-                                      ),
-                                    )
-                                  ],
+                              SizedBox(
+                                width: controller.groupMemberWidth,
+                                height: 62,
+                                child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: controller.chatGroupMembers
+                                      .map((member) => Container(
+                                            margin: const EdgeInsets.only(right: 5),
+                                            child: _selectedUserItem(member),
+                                          ))
+                                      .toList(),
                                 ),
                               ),
                               CustomIconButton(

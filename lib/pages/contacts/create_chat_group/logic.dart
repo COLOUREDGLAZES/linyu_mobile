@@ -1,114 +1,68 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/api/chat_group_api.dart';
-import 'package:linyu_mobile/api/friend_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/contacts/logic.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
-import 'index.dart';
-import 'package:linyu_mobile/utils/list_extension.dart';
+import 'package:linyu_mobile/utils/String.dart';
 
-class CreateChatGroupLogic extends Logic<CreateChatGroupPage> {
-  final _friendApi = FriendApi();
+class CreateChatGroupLogic extends GetxController {
 
-  final _chatGroupApi = ChatGroupApi();
+  final TextEditingController nameController = TextEditingController();
 
-  final TextEditingController chatGroupController = new TextEditingController();
-
-  final TextEditingController searchBoxController = new TextEditingController();
+  final TextEditingController noticeController = TextEditingController();
 
   final ContactsLogic _contactsLogic = GetInstance().find<ContactsLogic>();
 
-  //所有的分组以及好友
-  List<dynamic> friendList = [];
+  final _chatGroupApi = ChatGroupApi();
 
-  //建群聊时邀请的用户
-  List<dynamic> users = [];
+  late int _nameLength = 0;
 
-  //选中的用户头像占用的宽度
-  double _userTapWidth = 0;
-  double get userTapWidth => _userTapWidth;
-  set userTapWidth(double value) {
-    _userTapWidth = value;
-    update([const Key("create_chat_group")]);
+  int get nameLength => _nameLength;
+
+  set nameLength(int value) {
+    _nameLength = value;
+    update([const Key('create_chat_group')]);
   }
 
-  int _chatGroupTextLength = 0;
+  late int _noticeLength = 0;
 
-  int get chatGroupTextLength => _chatGroupTextLength;
+  int get noticeLength => _noticeLength;
 
-  set chatGroupTextLength(int value) {
-    _chatGroupTextLength = value;
-    update(['dialog']);
+  set noticeLength(int value) {
+    _noticeLength = value;
+    update([const Key('create_chat_group')]);
   }
 
   //是否创建群聊（返回时判断是否刷新通讯列表页面）
   bool _isCreate = false;
 
-  //初始化方法 当退回该页面的时候 使用controller.init()进行页面刷新
-  void init() {
-    _getFriendList();
-  }
+  //建群聊时邀请的用户
+  List<dynamic> users = [];
 
-  //获取所有分组以及好友
-  void _getFriendList() async {
-    final result = await _friendApi.list();
-    if (result['code'] == 0) {
-      friendList = result['data'];
-      update([const Key("create_chat_group")]);
-    }
-  }
-
-  //添加到选中的用户中
-  void addUsers(dynamic user) {
-    user['isDelete'] = false;
-    if (users.include(user as Map)) return;
-    users.add(user);
-    userTapWidth += 40;
-  }
-
-  //删除选中的用户
-  void subUsers(dynamic user) {
-    if (users.isEmpty) return;
-    if (user != null) {
-      users.delete(user);
-      userTapWidth -= 40;
+  void onCreateChatGroup() async {
+    if (users.isNotEmpty) {
+      _onCreateChatGroupWithUser();
       return;
     }
-    if(users[users.length - 1]['isDelete']){
-      users.removeAt(users.length - 1);
-      userTapWidth -= 40;
-    }else{
-      users[users.length - 1]['isDelete'] = true;
-      update([const Key("create_chat_group")]);
-    }
-  }
-
-  //当被选中时进行的操作
-  void onSelect(dynamic user) {
-    if (!users.include(user)) {
-      addUsers(user);
+    if (StringUtil.isNullOrEmpty(nameController.text)) {
+      CustomFlutterToast.showErrorToast('请输入群名称~');
       return;
     }
-    subUsers(user);
-  }
-
-  //监听键盘 backspace键 事件
-  void onBackKeyPress(KeyEvent event) {
-    if (event is KeyUpEvent && searchBoxController.text.isEmpty) subUsers(null);
-  }
-
-  //创建群聊弹框的输入框文字长度
-  void onChatGroupTextChanged(String value) {
-    chatGroupTextLength = value.length;
-    if (chatGroupTextLength >= 10) chatGroupTextLength = 10;
+    final response = await _chatGroupApi.create(nameController.text);
+    if (response['code'] == 0) {
+      CustomFlutterToast.showSuccessToast('创建群聊成功~');
+      _isCreate = true;
+      Get.back(result: true);
+    } else {
+      CustomFlutterToast.showErrorToast(response['msg']);
+      _isCreate = false;
+    }
   }
 
   //创建群聊
-  void onCreateChatGroup() async {
-    String chatGroupName = chatGroupController.text;
-    if (chatGroupController.text.isEmpty) {
+  void _onCreateChatGroupWithUser() async {
+    String chatGroupName = nameController.text;
+    if (nameController.text.isEmpty) {
       chatGroupName = users
           .map((user) => user['remark'] ?? user['name'])
           .toList()
@@ -121,8 +75,8 @@ class CreateChatGroupLogic extends Logic<CreateChatGroupPage> {
         'name': user['remark'] ?? user['name'],
       });
     }
-    final result =
-        await _chatGroupApi.createWithPerson(chatGroupName, null, groupMembers);
+    final result = await _chatGroupApi.createWithPerson(
+        chatGroupName, noticeController.text, groupMembers);
     if (result['code'] == 0) {
       CustomFlutterToast.showSuccessToast('创建成功');
       _isCreate = true;
@@ -133,17 +87,22 @@ class CreateChatGroupLogic extends Logic<CreateChatGroupPage> {
     }
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    init();
+  void onRemarkChanged(String value) {
+    nameLength = value.length;
+  }
+
+  void onNoticeTextChanged(String value) {
+    if (noticeLength >= 100) {
+      noticeLength = 100;
+      return;
+    }
+    noticeLength = value.length;
   }
 
   @override
   void onClose() {
+    nameController.dispose();
+    if (_isCreate) _contactsLogic.init();
     super.onClose();
-    if(_isCreate) _contactsLogic.init();
-    chatGroupController.dispose();
-    searchBoxController.dispose();
   }
 }

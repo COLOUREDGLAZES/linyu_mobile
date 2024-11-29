@@ -36,6 +36,13 @@ class ChatGroupInformationLogic extends GetxController {
   };
   late List<dynamic> chatGroupMembers = [];
   final String chatGroupId = Get.arguments['chatGroupId'];
+  double _groupMemberWidth = 0;
+  double get groupMemberWidth => _groupMemberWidth;
+  set groupMemberWidth(double value){
+    _groupMemberWidth = value;
+    update([const Key('chat_group_info')]);
+  }
+
 
   @override
   void onInit() {
@@ -64,7 +71,11 @@ class ChatGroupInformationLogic extends GetxController {
     _chatGroupMemberApi.listPage(chatGroupId).then((res) {
       if (res['code'] == 0) {
         chatGroupMembers = res['data'];
-        update([const Key('chat_group_info')]);
+        groupMemberWidth = chatGroupMembers.length * 40 +10;
+        if(groupMemberWidth>=190){
+          groupMemberWidth = 190;
+        }
+        // update([const Key('chat_group_info')]);
       }
     });
   }
