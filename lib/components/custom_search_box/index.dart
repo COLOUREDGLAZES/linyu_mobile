@@ -39,10 +39,8 @@ class CustomSearchBox extends StatelessThemeWidget {
             isCentered ? MainAxisAlignment.center : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          prefix == null
-              ? Icon(const IconData(0xe669, fontFamily: 'IconFont'),
-                  size: 20, color: iconColor)
-              : prefix!,
+          prefix??Icon(const IconData(0xe669, fontFamily: 'IconFont'),
+              size: 20, color: iconColor),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(

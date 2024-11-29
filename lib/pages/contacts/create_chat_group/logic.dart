@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/api/chat_group_api.dart';
@@ -63,10 +62,8 @@ class CreateChatGroupLogic extends Logic<CreateChatGroupPage> {
 
   //添加到选中的用户中
   void addUsers(dynamic user) {
-    if (kDebugMode) print(user);
-
+    user['isDelete'] = false;
     if (users.include(user as Map)) return;
-
     users.add(user);
     userTapWidth += 40;
   }
@@ -74,14 +71,18 @@ class CreateChatGroupLogic extends Logic<CreateChatGroupPage> {
   //删除选中的用户
   void subUsers(dynamic user) {
     if (users.isEmpty) return;
-    // if (kDebugMode) print(user);
     if (user != null) {
       users.delete(user);
       userTapWidth -= 40;
       return;
     }
-    users.removeAt(users.length - 1);
-    userTapWidth -= 40;
+    if(users[users.length - 1]['isDelete']){
+      users.removeAt(users.length - 1);
+      userTapWidth -= 40;
+    }else{
+      users[users.length - 1]['isDelete'] = true;
+      update([const Key("create_chat_group")]);
+    }
   }
 
   //当被选中时进行的操作
@@ -98,11 +99,13 @@ class CreateChatGroupLogic extends Logic<CreateChatGroupPage> {
     if (event is KeyUpEvent && searchBoxController.text.isEmpty) subUsers(null);
   }
 
+  //创建群聊弹框的输入框文字长度
   void onChatGroupTextChanged(String value) {
     chatGroupTextLength = value.length;
     if (chatGroupTextLength >= 10) chatGroupTextLength = 10;
   }
 
+  //创建群聊
   void onCreateChatGroup() async {
     String chatGroupName = chatGroupController.text;
     if (chatGroupController.text.isEmpty) {

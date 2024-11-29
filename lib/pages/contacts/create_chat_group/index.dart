@@ -91,12 +91,15 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
       margin: const EdgeInsets.only(right: 5),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.teal,
-        borderRadius: BorderRadius.circular(35),
+        borderRadius: BorderRadius.circular(19.3),
       ),
       child: GestureDetector(
         onTap: () => controller.subUsers(user),
-        child: CustomPortrait(url: user['portrait'], size: 70, radius: 35),
+        child: CustomPortrait(
+            isGreyColor: user['isDelete'],
+            url: user['portrait'],
+            size: 70,
+            radius: 35),
       ),
     );
   }
@@ -210,14 +213,14 @@ class CreateChatGroupPage extends CustomWidgetNew<CreateChatGroupLogic> {
                       textEditingController: controller.searchBoxController,
                       prefix: controller.users.isNotEmpty
                           ? SizedBox(
-                              height: 40,
+                              height: 36.8,
                               width: controller.userTapWidth >= 200
                                   ? 210
                                   : controller.userTapWidth,
                               child: ListView(
                                 scrollDirection: Axis.horizontal,
                                 children: controller.users
-                                    .map((city) => _selectedUserItem(city))
+                                    .map((user) => _selectedUserItem(user))
                                     .toList(),
                               ),
                             )

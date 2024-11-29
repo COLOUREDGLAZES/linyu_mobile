@@ -46,9 +46,6 @@ class ChatGroupInformationLogic extends GetxController {
 
   Future<void> onGetGroupChatDetails() async {
     await _chatGroupApi.details(chatGroupId).then((res) async {
-
-      print(res);
-
       if (res['code'] == 0) {
         chatGroupDetails = res['data'];
         final prefs = await SharedPreferences.getInstance();
