@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:linyu_mobile/pages/chat_frame/logic.dart';
 import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_member/logic.dart';
 import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_notice/add_chat_group_notice/logic.dart';
 import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_notice/logic.dart';
@@ -82,5 +83,6 @@ class ControllerBinding extends Bindings {
     Get.lazyPut(() => CreateChatGroupLogic(), fenix: true);
     Get.lazyPut(() => SystemNotifyLogic(), fenix: true);
     Get.lazyPut(() => ChatGroupSelectUserLogic(), fenix: true);
+    Get.lazyPut(() => ChatFrameLogic(), fenix: true);
   }
 }

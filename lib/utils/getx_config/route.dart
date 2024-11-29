@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:linyu_mobile/pages/chat_frame/index.dart';
 import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_member/index.dart';
 import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_notice/add_chat_group_notice/index.dart';
 import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_notice/index.dart';
@@ -301,6 +302,13 @@ class AppRoutes {
       name: '/chat_group_select_user',
       page: () => ChatGroupSelectUserPage(
         key: const Key('chat_group_select_user'),
+      ),
+      binding: ControllerBinding(),
+    ),
+    GetPage(
+      name: '/chat_frame',
+      page: () => ChatFramePage(
+        key: const Key('chat_frame'),
       ),
       binding: ControllerBinding(),
     ),
