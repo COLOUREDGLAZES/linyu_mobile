@@ -1,15 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart' show Get, GetNavigation, GetxController;
+import 'package:get/get.dart' show Get, GetInstance, GetNavigation, GetxController;
 import 'package:linyu_mobile/api/chat_group_api.dart';
 import 'package:linyu_mobile/api/chat_group_member.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
+import 'package:linyu_mobile/pages/contacts/logic.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
 
 class ChatGroupInformationLogic extends GetxController {
+  final ContactsLogic _contactsLogic = GetInstance().find<ContactsLogic>();
   final _chatGroupApi = ChatGroupApi();
   final _chatGroupMemberApi = ChatGroupMemberApi();
   late String? _currentUserId = '';
@@ -20,7 +22,14 @@ class ChatGroupInformationLogic extends GetxController {
     'ownerUserId': '',
     'portrait': '',
     'name': '',
-    'notice': {},
+    'notice': {
+      "id": "",
+      "chatGroupId": "",
+      "userId": "",
+      "noticeContent": "",
+      "createTime": "",
+      "updateTime": ""
+    },
     'memberNum': '',
     'groupName': '',
     'groupRemark': '',
@@ -37,6 +46,9 @@ class ChatGroupInformationLogic extends GetxController {
 
   Future<void> onGetGroupChatDetails() async {
     await _chatGroupApi.details(chatGroupId).then((res) async {
+
+      print(res);
+
       if (res['code'] == 0) {
         chatGroupDetails = res['data'];
         final prefs = await SharedPreferences.getInstance();
@@ -162,4 +174,11 @@ class ChatGroupInformationLogic extends GetxController {
       });
     }, onCancel: () {});
   }
+
+  @override
+  void onClose() {
+    super.onClose();
+    _contactsLogic.init();
+  }
+
 }

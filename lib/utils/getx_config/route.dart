@@ -287,6 +287,7 @@ class AppRoutes {
         key: const Key('create_chat_group'),
       ),
       binding: ControllerBinding(),
+      transition: Transition.downToUp,
     ),
     GetPage(
       name: '/system_notify',

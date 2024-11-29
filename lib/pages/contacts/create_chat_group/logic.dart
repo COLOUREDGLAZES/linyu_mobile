@@ -1,36 +1,99 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/api/chat_group_api.dart';
+import 'package:linyu_mobile/api/friend_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/String.dart';
+import 'package:linyu_mobile/pages/contacts/logic.dart';
+import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'index.dart';
+import 'package:linyu_mobile/utils/list_extension.dart';
 
-class CreateChatGroupLogic extends GetxController {
+class CreateChatGroupLogic extends Logic<CreateChatGroupPage> {
+  final _friendApi = FriendApi();
+
   final _chatGroupApi = ChatGroupApi();
-  late int nameLength = 0;
-  final TextEditingController nameController = TextEditingController();
 
-  void onCreateChatGroup() async {
-    if (StringUtil.isNullOrEmpty(nameController.text)) {
-      CustomFlutterToast.showErrorToast('请输入群名称~');
-      return;
-    }
-    final response = await _chatGroupApi.create(nameController.text);
-    if (response['code'] == 0) {
-      CustomFlutterToast.showSuccessToast('创建群聊成功~');
-      Get.back(result: true);
-    } else {
-      CustomFlutterToast.showErrorToast(response['msg']);
+  final TextEditingController chatGroupController = new TextEditingController();
+
+  final ContactsLogic _contactsLogic = GetInstance().find<ContactsLogic>();
+
+  List<dynamic> friendList = [];
+
+  List<dynamic> users = [];
+
+  double _userTapWidth = 0;
+
+  double get userTapWidth => _userTapWidth;
+
+  set userTapWidth(double value) {
+    _userTapWidth = value;
+    update([const Key("create_chat_group")]);
+  }
+
+  void _getFriendList() async {
+    final result = await _friendApi.list();
+    if (result['code'] == 0) {
+      friendList = result['data'];
+      update([const Key("create_chat_group")]);
     }
   }
 
-  void onRemarkChanged(String value) {
-    nameLength = value.length;
-    update([const Key('set_remark')]);
+  void init() {
+    _getFriendList();
+  }
+
+  void addUsers(dynamic user) {
+    if (kDebugMode) print(user);
+
+    if (users.include(user as Map)) return;
+
+    users.add(user);
+    userTapWidth += 40;
+  }
+
+  void subUsers(dynamic user) {
+    if (kDebugMode) print(user);
+    users.remove(user);
+    userTapWidth -= 40;
+  }
+
+  void onCreateChatGroup() async {
+    String chatGroupName = chatGroupController.text;
+    if (chatGroupController.text.isEmpty) {
+      chatGroupName = users
+          .map((user) => user['remark'] ?? user['name'])
+          .toList()
+          .toString();
+    }
+
+    List<Map<String, String>> groupMembers = [];
+    for (var user in users) {
+      groupMembers.add({
+        'userId': user['friendId'],
+        'name': user['remark'] ?? user['name'],
+      });
+    }
+
+    final result =
+    await _chatGroupApi.createWithPerson(chatGroupName, null, groupMembers);
+    if (result['code'] == 0) {
+      CustomFlutterToast.showSuccessToast('创建成功');
+      Get.back();
+    } else {
+      CustomFlutterToast.showErrorToast(result['msg']);
+    }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    init();
   }
 
   @override
   void onClose() {
-    nameController.dispose();
     super.onClose();
+    _contactsLogic.init();
   }
 }
