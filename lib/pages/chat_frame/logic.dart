@@ -140,6 +140,7 @@ class ChatFrameLogic extends GetxController {
     _msgApi.send(msg).then((res) {
       if (res['code'] == 0) {
         msgContentController.text = '';
+        isSend.value = false;
         msgListAddMsg(res['data']);
         onRead();
       }

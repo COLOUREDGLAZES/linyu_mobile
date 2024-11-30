@@ -115,8 +115,12 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Icon(IconData(0xe602, fontFamily: 'IconFont'),
-                          size: 26.0),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                            IconData(0xe602, fontFamily: 'IconFont'),
+                            size: 26.0),
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: CustomTextField(
@@ -134,8 +138,11 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                         ),
                       ),
                       const SizedBox(width: 10),
-                      const Icon(IconData(0xe632, fontFamily: 'IconFont'),
-                          size: 26.0),
+                      IconButton(
+                        onPressed: (){},
+                        icon: const Icon(IconData(0xe632, fontFamily: 'IconFont'),
+                            size: 26.0),
+                      ),
                       const SizedBox(width: 10),
                       Obx(() {
                         if (controller.isSend.value) {
@@ -178,9 +185,11 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(Get.context!).size.width * 0.8,
             ),
-            child: Text(
-              msg['msgContent']['content'],
-              style: TextStyle(color: isRight ? Colors.white : Colors.black),
+            child: SelectionArea(
+              child: Text(
+                msg['msgContent']['content'],
+                style: TextStyle(color: isRight ? Colors.white : Colors.black),
+              ),
             ),
           ),
         ),
