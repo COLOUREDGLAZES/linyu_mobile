@@ -10,6 +10,7 @@ import 'package:linyu_mobile/pages/contacts/chat_group_information/set_group_rem
 import 'package:linyu_mobile/pages/contacts/create_chat_group/index.dart';
 import 'package:linyu_mobile/pages/contacts/create_chat_group/select_user/index.dart';
 import 'package:linyu_mobile/pages/contacts/user_select/index.dart';
+import 'package:linyu_mobile/pages/file_details/index.dart';
 import 'package:linyu_mobile/pages/image_viewer/image_viewer_update/index.dart';
 import 'package:linyu_mobile/pages/image_viewer/index.dart';
 import 'package:linyu_mobile/pages/add_friend/friend_info/index.dart';
@@ -39,6 +40,7 @@ import 'package:linyu_mobile/pages/talk/index.dart';
 import 'package:linyu_mobile/pages/mine/edit/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_create/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_details/index.dart';
+import '../../pages/contacts/user_select/index.dart';
 import 'ControllerBinding.dart';
 
 class AppRoutes {
@@ -311,6 +313,13 @@ class AppRoutes {
       name: '/chat_frame',
       page: () => ChatFramePage(
         key: const Key('chat_frame'),
+      ),
+      binding: ControllerBinding(),
+    ),
+    GetPage(
+      name: '/file_details',
+      page: () => FileDetailsPage(
+        key: const Key('file_details'),
       ),
       binding: ControllerBinding(),
     ),
