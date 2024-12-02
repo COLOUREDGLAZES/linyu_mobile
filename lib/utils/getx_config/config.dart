@@ -99,13 +99,10 @@ abstract class Logic<W extends Widget> extends GetxController {
 
 abstract class CustomWidgetNew<T extends Logic> extends StatelessWidget {
   /// 构造函数
+  /// 当传入key的时候，若更新widget需使用controller.update([key],)
   CustomWidgetNew({
     super.key,
   });
-
-  /// 当传入key的时候，若更新widget需使用controller.update([key],)
-  // @override
-  // final Key? key;
 
   /// 传入的参数
   final dynamic arguments = Get.arguments;
@@ -161,9 +158,7 @@ abstract class CustomWidgetNew<T extends Logic> extends StatelessWidget {
         didChangeDependencies: (GetBuilderState<T> state) =>
             this.didChangeDependencies(context),
         didUpdateWidget: this.didUpdateWidget,
-        builder: (controller) {
-          return this.buildWidget(context);
-        },
+        builder: (controller) => this.buildWidget(context),
         dispose: (GetBuilderState<T> state) => this.close(context),
       );
 }
