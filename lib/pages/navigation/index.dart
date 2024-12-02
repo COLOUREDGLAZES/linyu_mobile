@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_tip/index.dart';
 import 'package:linyu_mobile/pages/navigation/logic.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
+
 
 class NavigationPage extends CustomWidget<NavigationLogic> {
   NavigationPage({required super.key});
@@ -10,6 +11,7 @@ class NavigationPage extends CustomWidget<NavigationLogic> {
   @override
   Widget buildWidget(BuildContext context) {
     return Scaffold(
+      drawer:controller.pages[3].page(),
       body: controller.pages[controller.currentIndex].page(),
       bottomNavigationBar: Obx(
         () => BottomNavigationBar(
