@@ -105,7 +105,7 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                     children: [
                       if (controller.searchList.isNotEmpty) ...[
                         Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Text(
                             "搜索结果",
                             style: TextStyle(

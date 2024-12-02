@@ -61,7 +61,7 @@ class ChatListLogic extends GetxController {
   }
 
   void onSearchFriend(String friendInfo) {
-    if (friendInfo == null || friendInfo.trim() == '') {
+    if (friendInfo.trim() == '') {
       searchList = [];
       searchList = [];
       update([const Key("chat_list")]);

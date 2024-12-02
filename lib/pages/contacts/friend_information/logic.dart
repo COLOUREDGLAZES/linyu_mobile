@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:linyu_mobile/api/chat_list_api.dart';
 import 'package:linyu_mobile/api/friend_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/contacts/logic.dart';
@@ -15,6 +17,8 @@ class FriendInformationLogic extends Logic {
 
   //好友api
   final _friendApi = FriendApi();
+
+  final _chatApi = new ChatListApi();
 
   //初始化获取从联系人页面传递过来的好友信息参数
   Map<String, dynamic> get friendData => arguments['friend'];
@@ -137,7 +141,7 @@ class FriendInformationLogic extends Logic {
 
   //获取好友信息
   Future<Map<String, dynamic>> getFriendInfo() async {
-    if(friendId != '0'){
+    if (friendId != '0') {
       final response = await _friendApi.details(friendId);
       if (response['code'] == 0) {
         final data = response['data'];
@@ -197,16 +201,14 @@ class FriendInformationLogic extends Logic {
     }
   }
 
-  void toChat() async {
-    print(friendPortrait);
-    Get.toNamed('/chat_frame', arguments: {
-      "chatInfo": {
-        "fromId": friendId,
-        "remark": friendRemark,
-        "name": friendName,
-        "portrait":friendPortrait,
-      },
-    });
+  void toSendMsg() async {
+    final result = await _chatApi.create(friendId);
+    if (result['code'] == 0) {
+      final data = result['data'];
+      Get.offAndToNamed('/chat_frame', arguments: {
+        'chatInfo': data,
+      });
+    }
   }
 
   @override

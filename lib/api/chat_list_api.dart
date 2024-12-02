@@ -38,4 +38,16 @@ class ChatListApi {
     final response = await _dio.get('/v1/api/chat-list/read/$targetId');
     return response.data;
   }
+
+  Future<Map<String, dynamic>> create(String userId, {String? type = 'user'}) async {
+    final response = await _dio.post(
+      '/v1/api/chat-list/create',
+      data: {
+        'userId': userId,
+        'type': type,
+      },
+    );
+    return response.data;
+  }
+
 }
