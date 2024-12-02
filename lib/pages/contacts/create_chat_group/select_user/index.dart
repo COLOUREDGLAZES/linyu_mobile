@@ -54,15 +54,13 @@ class ChatGroupSelectUserPage
                     fillColor: WidgetStateProperty.resolveWith<Color>(
                         (Set<WidgetState> states) {
                       if (states.contains(WidgetState.selected)) {
-                        return controller.users
-                                .include(friend)
+                        return controller.users.include(friend)
                             ? theme.primaryColor
                             : theme.searchBarColor;
                       }
                       return Colors.transparent;
                     }),
-                    value:
-                        controller.users.include(friend),
+                    value: controller.users.include(friend),
                     onChanged: (bool? value) => controller.onSelect(friend),
                     splashRadius: 5,
                   ),
@@ -138,15 +136,14 @@ class ChatGroupSelectUserPage
                                     : controller.userTapWidth,
                                 child: ListView(
                                   scrollDirection: Axis.horizontal,
-                                  children: controller
-                                      .users
+                                  children: controller.users
                                       .map((user) => _selectedUserItem(user))
                                       .toList(),
                                 ),
                               )
                             : null,
                         isCentered: false,
-                        onChanged: (value) {},
+                        onChanged: (value) => controller.onSearchFriend(value),
                       ),
                     ),
                   ),
@@ -158,6 +155,21 @@ class ChatGroupSelectUserPage
                   duration: const Duration(milliseconds: 300),
                   child: ListView(
                     children: [
+                      if (controller.searchList.isNotEmpty) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            "搜索结果",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: theme.primaryColor,
+                            ),
+                          ),
+                        ),
+                        ...controller.searchList
+                            .map((friend) => _buildFriendItem(friend)),
+                      ],
                       ...controller.friendList.map((group) {
                         return ExpansionTile(
                           iconColor: theme.primaryColor,

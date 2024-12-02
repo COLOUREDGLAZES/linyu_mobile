@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/getx_config/GlobalData.dart';
 import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
+import 'package:linyu_mobile/utils/getx_config/route.dart';
 import 'package:linyu_mobile/utils/notification.dart';
 import 'package:linyu_mobile/utils/permission_handler.dart';
 import 'package:linyu_mobile/utils/web_socket.dart';
@@ -9,6 +10,7 @@ import 'package:linyu_mobile/utils/web_socket.dart';
 class NavigationLogic extends GetxController {
   late int currentIndex = 0;
   final _wsManager = WebSocketUtil();
+  final List<GetPage> pages = AppRoutes.pageRoute[0].children;
 
   GlobalData get globalData => GetInstance().find<GlobalData>();
 

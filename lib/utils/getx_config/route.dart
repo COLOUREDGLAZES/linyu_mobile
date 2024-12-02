@@ -9,6 +9,7 @@ import 'package:linyu_mobile/pages/contacts/chat_group_information/set_group_nam
 import 'package:linyu_mobile/pages/contacts/chat_group_information/set_group_remark/index.dart';
 import 'package:linyu_mobile/pages/contacts/create_chat_group/index.dart';
 import 'package:linyu_mobile/pages/contacts/create_chat_group/select_user/index.dart';
+import 'package:linyu_mobile/pages/contacts/user_select/index.dart';
 import 'package:linyu_mobile/pages/image_viewer/image_viewer_update/index.dart';
 import 'package:linyu_mobile/pages/image_viewer/index.dart';
 import 'package:linyu_mobile/pages/add_friend/friend_info/index.dart';
@@ -38,7 +39,6 @@ import 'package:linyu_mobile/pages/talk/index.dart';
 import 'package:linyu_mobile/pages/mine/edit/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_create/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_details/index.dart';
-import '../../pages/contacts/user_select/index.dart';
 import 'ControllerBinding.dart';
 import 'middleware.dart';
 
@@ -53,6 +53,48 @@ class AppRoutes {
       transition: Transition.fade,
       middlewares: [
         Middleware(),
+      ],
+      children: [
+        GetPage(
+          name: '/chat_list',
+          page: () => ChatListPage(
+            key: const Key('chat_list'),
+          ),
+          binding: ControllerBinding(),
+          middlewares: [
+            Middleware(),
+          ],
+        ),
+        GetPage(
+          name: '/contacts',
+          page: () => ContactsPage(
+            key: const Key('contacts'),
+          ),
+          binding: ControllerBinding(),
+          middlewares: [
+            Middleware(),
+          ],
+        ),
+        GetPage(
+          name: '/talk',
+          page: () => TalkPage(
+            key: const Key('talk'),
+          ),
+          binding: ControllerBinding(),
+          middlewares: [
+            Middleware(),
+          ],
+        ),
+        GetPage(
+          name: '/mine',
+          page: () => MinePage(
+            key: const Key('mine'),
+          ),
+          binding: ControllerBinding(),
+          middlewares: [
+            Middleware(),
+          ],
+        ),
       ],
     ),
     GetPage(
@@ -96,46 +138,46 @@ class AppRoutes {
         Middleware(),
       ],
     ),
-    GetPage(
-      name: '/chat_list',
-      page: () => ChatListPage(
-        key: const Key('chat_list'),
-      ),
-      binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
-    ),
-    GetPage(
-      name: '/contacts',
-      page: () => ContactsPage(
-        key: const Key('contacts'),
-      ),
-      binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
-    ),
-    GetPage(
-      name: '/mine',
-      page: () => MinePage(
-        key: const Key('mine'),
-      ),
-      binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
-    ),
-    GetPage(
-      name: '/talk',
-      page: () => TalkPage(
-        key: const Key('talk'),
-      ),
-      binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
-    ),
+    // GetPage(
+    //   name: '/chat_list',
+    //   page: () => ChatListPage(
+    //     key: const Key('chat_list'),
+    //   ),
+    //   binding: ControllerBinding(),
+    //   middlewares: [
+    //     Middleware(),
+    //   ],
+    // ),
+    // GetPage(
+    //   name: '/contacts',
+    //   page: () => ContactsPage(
+    //     key: const Key('contacts'),
+    //   ),
+    //   binding: ControllerBinding(),
+    //   middlewares: [
+    //     Middleware(),
+    //   ],
+    // ),
+    // GetPage(
+    //   name: '/mine',
+    //   page: () => MinePage(
+    //     key: const Key('mine'),
+    //   ),
+    //   binding: ControllerBinding(),
+    //   middlewares: [
+    //     Middleware(),
+    //   ],
+    // ),
+    // GetPage(
+    //   name: '/talk',
+    //   page: () => TalkPage(
+    //     key: const Key('talk'),
+    //   ),
+    //   binding: ControllerBinding(),
+    //   middlewares: [
+    //     Middleware(),
+    //   ],
+    // ),
     GetPage(
       name: '/qr_code_scan',
       page: () => QRCodeScanPage(

@@ -18,6 +18,8 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
   //所有的分组以及好友
   List<dynamic> friendList = [];
 
+  List<dynamic> searchList = [];
+
   //建群聊时邀请的用户
   late List<dynamic> users = [];
 
@@ -72,14 +74,11 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
       userTapWidth -= 40;
       return;
     }
-    if (users[users.length - 1]
-        ['isDelete']) {
-      users
-          .removeAt(users.length - 1);
+    if (users[users.length - 1]['isDelete']) {
+      users.removeAt(users.length - 1);
       userTapWidth -= 40;
     } else {
-      users[users.length - 1]
-          ['isDelete'] = true;
+      users[users.length - 1]['isDelete'] = true;
       update([const Key("chat_group_select_user")]);
     }
   }
@@ -98,11 +97,26 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
     if (event is KeyUpEvent && searchBoxController.text.isEmpty) subUsers(null);
   }
 
-  void onSubmitPress(){
+  void onSubmitPress() {
     createChatGroupLogic.users = users;
     Get.back();
   }
 
+  void onSearchFriend(String friendInfo) {
+    if (friendInfo.trim() == '') {
+      searchList = [];
+      _getFriendList();
+      return;
+    }
+    if (users.isNotEmpty) users[users.length - 1]['isDelete'] = false;
+    _friendApi.search(friendInfo).then((res) {
+      if (res['code'] == 0) {
+        friendList = [];
+        searchList = res['data'];
+        update([const Key("chat_group_select_user")]);
+      }
+    });
+  }
 
   @override
   void onInit() {
