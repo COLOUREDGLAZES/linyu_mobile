@@ -40,7 +40,6 @@ import 'package:linyu_mobile/pages/talk/index.dart';
 import 'package:linyu_mobile/pages/mine/edit/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_create/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_details/index.dart';
-import '../../pages/contacts/user_select/index.dart';
 import 'ControllerBinding.dart';
 
 class AppRoutes {
