@@ -40,7 +40,6 @@ import 'package:linyu_mobile/pages/mine/edit/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_create/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_details/index.dart';
 import 'ControllerBinding.dart';
-import 'middleware.dart';
 
 class AppRoutes {
   static List<GetPage> pageRoute = [
@@ -51,9 +50,6 @@ class AppRoutes {
       ),
       binding: ControllerBinding(),
       transition: Transition.fade,
-      middlewares: [
-        Middleware(),
-      ],
       children: [
         GetPage(
           name: '/chat_list',
@@ -61,9 +57,6 @@ class AppRoutes {
             key: const Key('chat_list'),
           ),
           binding: ControllerBinding(),
-          middlewares: [
-            Middleware(),
-          ],
         ),
         GetPage(
           name: '/contacts',
@@ -71,9 +64,6 @@ class AppRoutes {
             key: const Key('contacts'),
           ),
           binding: ControllerBinding(),
-          middlewares: [
-            Middleware(),
-          ],
         ),
         GetPage(
           name: '/talk',
@@ -81,9 +71,6 @@ class AppRoutes {
             key: const Key('talk'),
           ),
           binding: ControllerBinding(),
-          middlewares: [
-            Middleware(),
-          ],
         ),
         GetPage(
           name: '/mine',
@@ -91,9 +78,6 @@ class AppRoutes {
             key: const Key('mine'),
           ),
           binding: ControllerBinding(),
-          middlewares: [
-            Middleware(),
-          ],
         ),
       ],
     ),
@@ -104,9 +88,6 @@ class AppRoutes {
       ),
       binding: ControllerBinding(),
       transition: Transition.downToUp,
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/register',
@@ -114,9 +95,6 @@ class AppRoutes {
         key: const Key('register'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/retrieve_password',
@@ -124,9 +102,6 @@ class AppRoutes {
         key: const Key('retrieve_password'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/update_password',
@@ -134,59 +109,13 @@ class AppRoutes {
         key: const Key('update_password'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
-    // GetPage(
-    //   name: '/chat_list',
-    //   page: () => ChatListPage(
-    //     key: const Key('chat_list'),
-    //   ),
-    //   binding: ControllerBinding(),
-    //   middlewares: [
-    //     Middleware(),
-    //   ],
-    // ),
-    // GetPage(
-    //   name: '/contacts',
-    //   page: () => ContactsPage(
-    //     key: const Key('contacts'),
-    //   ),
-    //   binding: ControllerBinding(),
-    //   middlewares: [
-    //     Middleware(),
-    //   ],
-    // ),
-    // GetPage(
-    //   name: '/mine',
-    //   page: () => MinePage(
-    //     key: const Key('mine'),
-    //   ),
-    //   binding: ControllerBinding(),
-    //   middlewares: [
-    //     Middleware(),
-    //   ],
-    // ),
-    // GetPage(
-    //   name: '/talk',
-    //   page: () => TalkPage(
-    //     key: const Key('talk'),
-    //   ),
-    //   binding: ControllerBinding(),
-    //   middlewares: [
-    //     Middleware(),
-    //   ],
-    // ),
     GetPage(
       name: '/qr_code_scan',
       page: () => QRCodeScanPage(
         key: const Key('qr_code_scan'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/qr_login_affirm',
@@ -194,9 +123,6 @@ class AppRoutes {
         key: const Key('qr_login_affirm'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/edit_mine',
@@ -204,9 +130,6 @@ class AppRoutes {
         key: const Key('edit_mine'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/mine_qr_code',
@@ -214,9 +137,6 @@ class AppRoutes {
         key: const Key('mine_qr_code'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/qr_friend_affirm',
@@ -224,9 +144,6 @@ class AppRoutes {
         key: const Key('qr_friend_affirm'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/qr_other_result',
@@ -234,9 +151,6 @@ class AppRoutes {
         key: const Key('qr_other_result'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/about',
@@ -244,9 +158,6 @@ class AppRoutes {
         key: const Key('about'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/friend_info',
@@ -254,9 +165,6 @@ class AppRoutes {
         key: const Key('friend_info'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/set_remark',
@@ -264,9 +172,6 @@ class AppRoutes {
         key: const Key('set_remark'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/add_friend',
@@ -274,9 +179,6 @@ class AppRoutes {
         key: const Key('add_friend'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/search_info',
@@ -284,9 +186,6 @@ class AppRoutes {
         key: const Key('search_info'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/friend_request',
@@ -294,9 +193,6 @@ class AppRoutes {
         key: const Key('friend_request'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/set_group',
@@ -304,9 +200,6 @@ class AppRoutes {
         key: const Key('set_group'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/talk_details',
@@ -314,9 +207,6 @@ class AppRoutes {
         key: const Key('talk_details'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/talk_create',
@@ -324,9 +214,6 @@ class AppRoutes {
         key: const Key('talk_create'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/user_select',
@@ -334,9 +221,6 @@ class AppRoutes {
         key: const Key('user_select'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/chat_group_info',
@@ -344,9 +228,6 @@ class AppRoutes {
         key: const Key('chat_group_info'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/image_viewer',
@@ -354,9 +235,6 @@ class AppRoutes {
         key: const Key('image_viewer'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/image_viewer_update',
@@ -364,9 +242,6 @@ class AppRoutes {
         key: const Key('image_viewer_update'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/set_group_name',
@@ -374,9 +249,6 @@ class AppRoutes {
         key: const Key('set_group_name'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/set_group_remark',
@@ -384,9 +256,6 @@ class AppRoutes {
         key: const Key('set_group_remark'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/set_group_nickname',
@@ -394,9 +263,6 @@ class AppRoutes {
         key: const Key('set_group_nickname'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/chat_group_notice',
@@ -404,9 +270,6 @@ class AppRoutes {
         key: const Key('chat_group_notice'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/add_chat_group_notice',
@@ -414,9 +277,6 @@ class AppRoutes {
         key: const Key('add_chat_group_notice'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/chat_group_member',
@@ -424,9 +284,6 @@ class AppRoutes {
         key: const Key('chat_group_member'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/create_chat_group',
@@ -435,9 +292,6 @@ class AppRoutes {
       ),
       binding: ControllerBinding(),
       transition: Transition.downToUp,
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/system_notify',
@@ -445,9 +299,6 @@ class AppRoutes {
         key: const Key('system_notify'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/chat_group_select_user',
@@ -455,9 +306,6 @@ class AppRoutes {
         key: const Key('chat_group_select_user'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
     GetPage(
       name: '/chat_frame',
@@ -465,9 +313,6 @@ class AppRoutes {
         key: const Key('chat_frame'),
       ),
       binding: ControllerBinding(),
-      middlewares: [
-        Middleware(),
-      ],
     ),
   ];
 }
