@@ -120,7 +120,7 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                       ],
                       if (controller.topList.isNotEmpty) ...[
                         Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Text(
                             "置顶",
                             style: TextStyle(
@@ -211,6 +211,7 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
         color: Colors.white,
         child: InkWell(
           onTap: () async {
+            print(chat);
             await Get.toNamed('/chat_frame', arguments: {
               'chatInfo': chat,
             });

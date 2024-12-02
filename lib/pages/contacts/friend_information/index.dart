@@ -341,7 +341,7 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                 Expanded(
                   child: CustomButton(
                     text: '发消息',
-                    onTap: () {},
+                    onTap: controller.toChat,
                   ),
                 ),
                 const SizedBox(width: 20),

@@ -40,277 +40,354 @@ import 'package:linyu_mobile/pages/talk/talk_create/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_details/index.dart';
 import '../../pages/contacts/user_select/index.dart';
 import 'ControllerBinding.dart';
+import 'middle_ware.dart';
 
 class AppRoutes {
   static List<GetPage> pageRoute = [
     GetPage(
-      name: '/',
-      page: () => NavigationPage(
-        key: const Key('main'),
-      ),
-      binding: ControllerBinding(),
-      transition: Transition.fade,
-    ),
+        name: '/',
+        page: () => NavigationPage(
+              key: const Key('main'),
+            ),
+        binding: ControllerBinding(),
+        transition: Transition.fade,
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/login',
-      page: () => LoginPage(
-        key: const Key('login'),
-      ),
-      binding: ControllerBinding(),
-      transition: Transition.downToUp,
-    ),
+        name: '/login',
+        page: () => LoginPage(
+              key: const Key('login'),
+            ),
+        binding: ControllerBinding(),
+        transition: Transition.downToUp,
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/register',
-      page: () => RegisterPage(
-        key: const Key('register'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/register',
+        page: () => RegisterPage(
+              key: const Key('register'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/retrieve_password',
-      page: () => RetrievePassword(
-        key: const Key('retrieve_password'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/retrieve_password',
+        page: () => RetrievePassword(
+              key: const Key('retrieve_password'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/update_password',
-      page: () => UpdatePasswordPage(
-        key: const Key('update_password'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/update_password',
+        page: () => UpdatePasswordPage(
+              key: const Key('update_password'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/chat_list',
-      page: () => ChatListPage(
-        key: const Key('chat_list'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/chat_list',
+        page: () => ChatListPage(
+              key: const Key('chat_list'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/contacts',
-      page: () => ContactsPage(
-        key: const Key('contacts'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/contacts',
+        page: () => ContactsPage(
+              key: const Key('contacts'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/mine',
-      page: () => MinePage(
-        key: const Key('mine'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/mine',
+        page: () => MinePage(
+              key: const Key('mine'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/talk',
-      page: () => TalkPage(
-        key: const Key('talk'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/talk',
+        page: () => TalkPage(
+              key: const Key('talk'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/qr_code_scan',
-      page: () => QRCodeScanPage(
-        key: const Key('qr_code_scan'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/qr_code_scan',
+        page: () => QRCodeScanPage(
+              key: const Key('qr_code_scan'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/qr_login_affirm',
-      page: () => QrLoginAffirmPage(
-        key: const Key('qr_login_affirm'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/qr_login_affirm',
+        page: () => QrLoginAffirmPage(
+              key: const Key('qr_login_affirm'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/edit_mine',
-      page: () => EditMinePage(
-        key: const Key('edit_mine'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/edit_mine',
+        page: () => EditMinePage(
+              key: const Key('edit_mine'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/mine_qr_code',
-      page: () => MineQRCodePage(
-        key: const Key('mine_qr_code'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/mine_qr_code',
+        page: () => MineQRCodePage(
+              key: const Key('mine_qr_code'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/qr_friend_affirm',
-      page: () => QRFriendAffirmPage(
-        key: const Key('qr_friend_affirm'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/qr_friend_affirm',
+        page: () => QRFriendAffirmPage(
+              key: const Key('qr_friend_affirm'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/qr_other_result',
-      page: () => QrOtherResultPage(
-        key: const Key('qr_other_result'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/qr_other_result',
+        page: () => QrOtherResultPage(
+              key: const Key('qr_other_result'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/about',
-      page: () => AboutPage(
-        key: const Key('about'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/about',
+        page: () => AboutPage(
+              key: const Key('about'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/friend_info',
-      page: () => FriendInformationPage(
-        key: const Key('friend_info'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/friend_info',
+        page: () => FriendInformationPage(
+              key: const Key('friend_info'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/set_remark',
-      page: () => SetRemarkPage(
-        key: const Key('set_remark'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/set_remark',
+        page: () => SetRemarkPage(
+              key: const Key('set_remark'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/add_friend',
-      page: () => AddFriendPage(
-        key: const Key('add_friend'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/add_friend',
+        page: () => AddFriendPage(
+              key: const Key('add_friend'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/search_info',
-      page: () => SearchInfoPage(
-        key: const Key('search_info'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/search_info',
+        page: () => SearchInfoPage(
+              key: const Key('search_info'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/friend_request',
-      page: () => FriendRequestPage(
-        key: const Key('friend_request'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/friend_request',
+        page: () => FriendRequestPage(
+              key: const Key('friend_request'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/set_group',
-      page: () => SetGroupPage(
-        key: const Key('set_group'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/set_group',
+        page: () => SetGroupPage(
+              key: const Key('set_group'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/talk_details',
-      page: () => TalkDetailsPage(
-        key: const Key('talk_details'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/talk_details',
+        page: () => TalkDetailsPage(
+              key: const Key('talk_details'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/talk_create',
-      page: () => TalkCreatePage(
-        key: const Key('talk_create'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/talk_create',
+        page: () => TalkCreatePage(
+              key: const Key('talk_create'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/user_select',
-      page: () => UserSelectPage(
-        key: const Key('user_select'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/user_select',
+        page: () => UserSelectPage(
+              key: const Key('user_select'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/chat_group_info',
-      page: () => ChatGroupInformationPage(
-        key: const Key('chat_group_info'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/chat_group_info',
+        page: () => ChatGroupInformationPage(
+              key: const Key('chat_group_info'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/image_viewer',
-      page: () => ImageViewerPage(
-        key: const Key('image_viewer'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/image_viewer',
+        page: () => ImageViewerPage(
+              key: const Key('image_viewer'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/image_viewer_update',
-      page: () => ImageViewerUpdatePage(
-        key: const Key('image_viewer_update'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/image_viewer_update',
+        page: () => ImageViewerUpdatePage(
+              key: const Key('image_viewer_update'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/set_group_name',
-      page: () => SetGroupNamePage(
-        key: const Key('set_group_name'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/set_group_name',
+        page: () => SetGroupNamePage(
+              key: const Key('set_group_name'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/set_group_remark',
-      page: () => SetGroupRemarkPage(
-        key: const Key('set_group_remark'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/set_group_remark',
+        page: () => SetGroupRemarkPage(
+              key: const Key('set_group_remark'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/set_group_nickname',
-      page: () => SetGroupNickNamePage(
-        key: const Key('set_group_nickname'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/set_group_nickname',
+        page: () => SetGroupNickNamePage(
+              key: const Key('set_group_nickname'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/chat_group_notice',
-      page: () => ChatGroupNoticePage(
-        key: const Key('chat_group_notice'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/chat_group_notice',
+        page: () => ChatGroupNoticePage(
+              key: const Key('chat_group_notice'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/add_chat_group_notice',
-      page: () => AddChatGroupNoticePage(
-        key: const Key('add_chat_group_notice'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/add_chat_group_notice',
+        page: () => AddChatGroupNoticePage(
+              key: const Key('add_chat_group_notice'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/chat_group_member',
-      page: () => ChatGroupMemberPage(
-        key: const Key('chat_group_member'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/chat_group_member',
+        page: () => ChatGroupMemberPage(
+              key: const Key('chat_group_member'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/create_chat_group',
-      page: () => CreateChatGroupPage(
-        key: const Key('create_chat_group'),
-      ),
-      binding: ControllerBinding(),
-      transition: Transition.downToUp,
-    ),
+        name: '/create_chat_group',
+        page: () => CreateChatGroupPage(
+              key: const Key('create_chat_group'),
+            ),
+        binding: ControllerBinding(),
+        transition: Transition.downToUp,
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/system_notify',
-      page: () => SystemNotifyPage(
-        key: const Key('system_notify'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/system_notify',
+        page: () => SystemNotifyPage(
+              key: const Key('system_notify'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/chat_group_select_user',
-      page: () => ChatGroupSelectUserPage(
-        key: const Key('chat_group_select_user'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/chat_group_select_user',
+        page: () => ChatGroupSelectUserPage(
+              key: const Key('chat_group_select_user'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
     GetPage(
-      name: '/chat_frame',
-      page: () => ChatFramePage(
-        key: const Key('chat_frame'),
-      ),
-      binding: ControllerBinding(),
-    ),
+        name: '/chat_frame',
+        page: () => ChatFramePage(
+              key: const Key('chat_frame'),
+            ),
+        binding: ControllerBinding(),
+        middlewares: [
+          MiddleWare(),
+        ]),
   ];
 }

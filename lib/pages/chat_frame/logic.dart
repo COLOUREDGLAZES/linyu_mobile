@@ -127,8 +127,10 @@ class ChatFrameLogic extends GetxController {
   void toDetailsPage() {
     if (chatInfo['type'] == 'group') {
       Get.toNamed('/chat_group_info', arguments: {'chatGroupId': targetId});
+      // Get.offAndToNamed('/chat_group_info', arguments: {'chatGroupId': targetId});
     } else {
       Get.toNamed('/friend_info', arguments: {'friendId': targetId});
+      // Get.offAndToNamed('/friend_info', arguments: {'friendId': targetId});
     }
   }
 

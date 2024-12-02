@@ -154,11 +154,9 @@ class FriendInformationLogic extends Logic {
       }
       update([const Key('friend_info')]);
       return response['data'];
-    }else {
+    } else {
       return {};
     }
-
-
   }
 
   @override
@@ -166,7 +164,6 @@ class FriendInformationLogic extends Logic {
     super.onInit();
     getFriendInfo();
   }
-
 
   //设置特别关心
   void setConcern() async {
@@ -198,6 +195,18 @@ class FriendInformationLogic extends Logic {
     } else {
       CustomFlutterToast.showErrorToast(response['msg']);
     }
+  }
+
+  void toChat() async {
+    print(friendPortrait);
+    Get.toNamed('/chat_frame', arguments: {
+      "chatInfo": {
+        "fromId": friendId,
+        "remark": friendRemark,
+        "name": friendName,
+        "portrait":friendPortrait,
+      },
+    });
   }
 
   @override
