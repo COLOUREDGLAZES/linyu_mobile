@@ -20,6 +20,7 @@ class ImageViewerPage extends CustomWidget<ImageViewerLogic> {
           children: [
             GestureDetector(
               onLongPress: () => _showSaveDialog(context),
+              onTap: ()=>Get.back(),
               child: PhotoViewGallery.builder(
                 scrollPhysics: const BouncingScrollPhysics(),
                 builder: (BuildContext context, int index) {
