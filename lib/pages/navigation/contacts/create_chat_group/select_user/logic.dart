@@ -51,7 +51,9 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
 
   //获取所有分组以及好友
   void _getFriendList() async {
-    users = createChatGroupLogic.users.copyWithList();
+    if (createChatGroupLogic.users.isNotEmpty) {
+      users = createChatGroupLogic.users.copyWithList();
+    }
     userTapWidth = users.length * 40;
     final result = await _friendApi.list();
     if (result['code'] == 0) {
