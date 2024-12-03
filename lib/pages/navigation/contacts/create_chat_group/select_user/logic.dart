@@ -47,19 +47,23 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
   //初始化方法 当退回该页面的时候 使用controller.init()进行页面刷新
   void init() {
     _getFriendList();
+    _getSelectUser();
   }
 
   //获取所有分组以及好友
   void _getFriendList() async {
-    if (createChatGroupLogic.users.isNotEmpty) {
-      users = createChatGroupLogic.users.copyWithList();
-    }
-    userTapWidth = users.length * 40;
     final result = await _friendApi.list();
     if (result['code'] == 0) {
       friendList = result['data'];
       update([const Key("chat_group_select_user")]);
     }
+  }
+
+  void _getSelectUser() {
+    if (createChatGroupLogic.users.isNotEmpty) {
+      users = createChatGroupLogic.users.copyWithList();
+    }
+    userTapWidth = users.length * 40;
   }
 
   //添加到选中的用户中
