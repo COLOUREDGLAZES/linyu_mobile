@@ -236,7 +236,7 @@ class AppRoutes {
         key: const Key('image_viewer'),
       ),
       binding: ControllerBinding(),
-      transition: Transition.zoom,
+      transition: Transition.size,
       transitionDuration: const Duration(milliseconds: 350),
     ),
     GetPage(
