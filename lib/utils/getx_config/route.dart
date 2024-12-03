@@ -179,6 +179,7 @@ class AppRoutes {
         key: const Key('add_friend'),
       ),
       binding: ControllerBinding(),
+      transition: Transition.downToUp,
     ),
     GetPage(
       name: '/search_info',

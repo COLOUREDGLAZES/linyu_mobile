@@ -34,6 +34,11 @@ class CreateChatGroupPage extends CustomWidget<CreateChatGroupLogic> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FBFF),
       appBar: AppBar(
+        leading:  CustomTextButton('取消',
+            onTap: ()=>Get.back(),
+            padding:
+            const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+            fontSize: 14),
           backgroundColor: Colors.transparent,
           title: const AppBarTitle('创建群聊'),
           centerTitle: true,

@@ -83,6 +83,7 @@ class AddFriendPage extends CustomWidgetNew<AddFriendLogic> {
   Widget buildWidget(BuildContext context) => Scaffold(
         backgroundColor: const Color(0xFFF9FBFF),
         appBar: AppBar(
+          automaticallyImplyLeading: false,
             title: const AppBarTitle('好友搜索'),
             centerTitle: true,
             actions: [
