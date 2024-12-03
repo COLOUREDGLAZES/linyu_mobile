@@ -1,16 +1,14 @@
+// ignore_for_file: unnecessary_new
+
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/api/chat_list_api.dart';
 import 'package:linyu_mobile/api/friend_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/navigation/contacts/logic.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
 
 class FriendInformationLogic extends Logic {
-  //主题配置
-  final GlobalThemeConfig _theme = GetInstance().find<GlobalThemeConfig>();
 
   //联系人逻辑
   final ContactsLogic _contactsLogic = GetInstance().find<ContactsLogic>();
@@ -163,12 +161,6 @@ class FriendInformationLogic extends Logic {
     }
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    getFriendInfo();
-  }
-
   //设置特别关心
   void setConcern() async {
     if (isConcern) {
@@ -209,6 +201,21 @@ class FriendInformationLogic extends Logic {
         'chatInfo': data,
       });
     }
+  }
+
+  void navigateToPage(String routeName, Map<String, dynamic> arguments) {
+    try {
+      Get.toNamed(routeName, arguments: arguments);
+    } catch (e) {
+      // 简单的错误处理，可以根据需要进一步处理
+      if (kDebugMode) print('导航出错: $e');
+    }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    getFriendInfo();
   }
 
   @override

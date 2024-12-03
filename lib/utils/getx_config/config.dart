@@ -89,8 +89,9 @@ abstract class Logic<W extends Widget> extends GetxController {
   late final W? widget;
 
   //主题配置
-  // GlobalThemeConfig get theme => GetInstance().find<GlobalThemeConfig>();
-  late final GlobalThemeConfig theme;
+  GlobalThemeConfig get theme => GetInstance().find<GlobalThemeConfig>();
+
+  // late final GlobalThemeConfig theme;
 
   //路由参数
   dynamic get arguments => Get.arguments;
@@ -120,31 +121,33 @@ abstract class CustomWidgetNew<T extends Logic> extends StatelessWidget {
 
   /// 初始化
   void init(BuildContext context) {
-    if (kDebugMode) {
-      print("init>$runtimeType");
-    }
-    if (controller.initialized) {
-      controller.widget = this;
-      controller.theme = theme;
-    }
+    if (kDebugMode) print("init>$runtimeType");
+    if (controller.initialized) controller.widget = this;
   }
 
   /// 依赖发生变化
-  void didChangeDependencies(BuildContext context) =>
-      print("change>$runtimeType");
+  void didChangeDependencies(BuildContext context) {
+    if (kDebugMode) print("change>$runtimeType");
+
+  }
 
   /// 更新Widget
   void didUpdateWidget(
     GetBuilder oldWidget,
     GetBuilderState<T> state,
-  ) =>
-      print("update>$runtimeType");
+  ) {
+    if (kDebugMode) print("update>$runtimeType");
+
+  }
 
   /// 构建widget
   Widget buildWidget(BuildContext context);
 
   /// 关闭
-  void close(BuildContext context) => print("close>$runtimeType");
+  void close(BuildContext context)  {
+  if (kDebugMode) print("close>$runtimeType");
+
+}
 
   /// 创建上下文
   @override
