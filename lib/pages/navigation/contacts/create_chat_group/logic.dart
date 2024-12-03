@@ -15,19 +15,17 @@ class CreateChatGroupLogic extends GetxController {
 
   final _chatGroupApi = ChatGroupApi();
 
+  //群名称长度
   late int _nameLength = 0;
-
   int get nameLength => _nameLength;
-
   set nameLength(int value) {
     _nameLength = value;
     update([const Key('create_chat_group')]);
   }
 
+  //群公告长度
   late int _noticeLength = 0;
-
   int get noticeLength => _noticeLength;
-
   set noticeLength(int value) {
     _noticeLength = value;
     update([const Key('create_chat_group')]);
@@ -39,15 +37,19 @@ class CreateChatGroupLogic extends GetxController {
   //建群聊时邀请的用户
   List<dynamic> users = [];
 
+  //创建群聊
   void onCreateChatGroup() async {
-    if (users.isNotEmpty) {
-      _onCreateChatGroupWithUser();
-      return;
-    }
+    //群名称不能为空
     if (StringUtil.isNullOrEmpty(nameController.text)) {
       CustomFlutterToast.showErrorToast('请输入群名称~');
       return;
     }
+    //当有用户被邀请时，创建群聊逻辑
+    if (users.isNotEmpty && !StringUtil.isNullOrEmpty(nameController.text)) {
+      _onCreateChatGroupWithUser();
+      return;
+    }
+    //当没有用户被邀请时，创建群聊逻辑
     final response = await _chatGroupApi.create(nameController.text);
     if (response['code'] == 0) {
       CustomFlutterToast.showSuccessToast('创建群聊成功~');
@@ -59,8 +61,9 @@ class CreateChatGroupLogic extends GetxController {
     }
   }
 
-  //创建群聊
+  //创建群聊逻辑
   void _onCreateChatGroupWithUser() async {
+    // 群名称
     String chatGroupName = nameController.text;
     if (nameController.text.isEmpty) {
       chatGroupName = users
@@ -68,6 +71,7 @@ class CreateChatGroupLogic extends GetxController {
           .toList()
           .toString();
     }
+    // 群成员
     List<Map<String, String>> groupMembers = [];
     for (var user in users) {
       groupMembers.add({
@@ -75,6 +79,7 @@ class CreateChatGroupLogic extends GetxController {
         'name': user['remark'] ?? user['name'],
       });
     }
+    // 创建群聊
     final result = await _chatGroupApi.createWithPerson(
         chatGroupName, noticeController.text, groupMembers);
     if (result['code'] == 0) {
@@ -87,10 +92,12 @@ class CreateChatGroupLogic extends GetxController {
     }
   }
 
+  //群名称输入框内容变化
   void onRemarkChanged(String value) {
     nameLength = value.length;
   }
 
+  //群公告输入框内容变化
   void onNoticeTextChanged(String value) {
     if (noticeLength >= 100) {
       noticeLength = 100;

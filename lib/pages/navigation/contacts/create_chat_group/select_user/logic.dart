@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -49,7 +51,7 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
 
   //获取所有分组以及好友
   void _getFriendList() async {
-    users.addAll(createChatGroupLogic.users);
+    users = createChatGroupLogic.users.copyWithList();
     userTapWidth = users.length * 40;
     final result = await _friendApi.list();
     if (result['code'] == 0) {
@@ -62,7 +64,7 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
   void addUsers(dynamic user) {
     user['isDelete'] = false;
     if (users.include(user as Map)) return;
-    users.add(user);
+    users.add(user as Map<String, dynamic>);
     userTapWidth += 40;
   }
 

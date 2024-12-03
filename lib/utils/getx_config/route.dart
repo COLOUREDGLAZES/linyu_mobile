@@ -237,7 +237,7 @@ class AppRoutes {
       ),
       binding: ControllerBinding(),
       transition: Transition.zoom,
-      transitionDuration: const Duration(milliseconds: 500),
+      transitionDuration: const Duration(milliseconds: 350),
     ),
     GetPage(
       name: '/image_viewer_update',
