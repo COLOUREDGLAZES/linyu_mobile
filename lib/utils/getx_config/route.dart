@@ -325,4 +325,18 @@ class AppRoutes {
       binding: ControllerBinding(),
     ),
   ];
+
+  static GetPage createGetPage(String name, Widget page,
+      {List<GetPage>? children,
+      Transition? transition,
+      Duration? transitionDuration}) {
+    return GetPage(
+      name: name,
+      page: () => page,
+      binding: ControllerBinding(),
+      transition: transition,
+      transitionDuration: transitionDuration,
+      children: children ?? [],
+    );
+  }
 }

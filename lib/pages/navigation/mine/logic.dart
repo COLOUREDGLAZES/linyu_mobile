@@ -17,7 +17,9 @@ class MineLogic extends GetxController {
 
   void handlerLogout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    final bool isLogout = await prefs.clear();
+    if (isLogout) {
     Get.offAllNamed('/login');
+    }
   }
 }

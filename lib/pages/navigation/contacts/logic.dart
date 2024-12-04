@@ -43,7 +43,7 @@ class ContactsLogic extends GetxController {
     });
   }
 
-  void init() async{
+  void init() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     currentUserInfo['name'] = prefs.getString('username');
     currentUserInfo['portrait'] = prefs.getString('portrait');
@@ -124,20 +124,16 @@ class ContactsLogic extends GetxController {
   }
 
   //长按分组进入分组设置页面
-  void onLongPressGroup(){
-      Get.toNamed("/set_group",arguments: {
-        'groupName':'0',
-        'friendId':'0'
-      });
-
+  void onLongPressGroup() {
+    Get.toNamed("/set_group", arguments: {'groupName': '0', 'friendId': '0'});
   }
 
   //设置特别关心
-  void onSetConcernFriend(dynamic friend) async{
-    if(friend['isConcern']){
+  void onSetConcernFriend(dynamic friend) async {
+    if (friend['isConcern']) {
       final response = await _friendApi.unCareFor(friend['friendId']);
       setResult(response);
-    }else {
+    } else {
       final response = await _friendApi.careFor(friend['friendId']);
       setResult(response);
     }
@@ -153,7 +149,6 @@ class ContactsLogic extends GetxController {
       CustomFlutterToast.showErrorToast(response['msg']);
     }
   }
-
 
   @override
   void onClose() {
