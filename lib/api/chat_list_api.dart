@@ -39,6 +39,12 @@ class ChatListApi {
     return response.data;
   }
 
+  Future<Map<String, dynamic>> detail(String targetId, String type) async {
+    final response = await _dio.post('/v1/api/chat-list/detail',
+        data: {'targetId': targetId, 'type': type});
+    return response.data;
+  }
+
   Future<Map<String, dynamic>> create(String userId, {String? type = 'user'}) async {
     final response = await _dio.post(
       '/v1/api/chat-list/create',

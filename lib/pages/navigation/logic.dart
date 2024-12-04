@@ -11,6 +11,7 @@ class NavigationLogic extends GetxController {
   late int currentIndex = 0;
   final _wsManager = WebSocketUtil();
   final List<GetPage> pages = pageRoute[0].children;
+  StreamSubscription? _subscription;
 
   GlobalData get globalData => GetInstance().find<GlobalData>();
 
@@ -36,8 +37,18 @@ class NavigationLogic extends GetxController {
 
   void eventListen() {
     // 监听消息
-    _wsManager.eventStream.listen((event) {
+    _subscription = _wsManager.eventStream.listen((event) {
       globalData.onGetUserUnreadInfo();
+      if (event['type'] == 'on-receive-video') {
+        var data = event['content'];
+        if (data['type'] == "invite") {
+          Get.toNamed('/video_chat', arguments: {
+            'userId': data['fromId'],
+            'isSender': false,
+            'isOnlyAudio': data['isOnlyAudio'],
+          });
+        }
+      }
     });
   }
 
@@ -72,5 +83,6 @@ class NavigationLogic extends GetxController {
   void onClose() {
     super.onClose();
     _wsManager.dispose();
+    _subscription?.cancel();
   }
 }

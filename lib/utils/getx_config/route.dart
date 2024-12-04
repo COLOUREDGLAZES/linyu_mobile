@@ -38,6 +38,13 @@ import 'package:linyu_mobile/pages/qr_code_scan/qr_friend_affirm/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_login_affirm/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_other_result/index.dart';
 import 'package:linyu_mobile/pages/register/index.dart';
+import 'package:linyu_mobile/pages/talk/index.dart';
+
+import 'package:linyu_mobile/pages/mine/edit/index.dart';
+import 'package:linyu_mobile/pages/talk/talk_create/index.dart';
+import 'package:linyu_mobile/pages/talk/talk_details/index.dart';
+import 'package:linyu_mobile/pages/video_chat/index.dart';
+import '../../pages/contacts/user_select/index.dart';
 import '../../pages/navigation/contacts/create_chat_group/select_user/index.dart';
 import 'ControllerBinding.dart';
 
@@ -321,6 +328,13 @@ class AppRoutes {
       name: '/file_details',
       page: () => FileDetailsPage(
         key: const Key('file_details'),
+      ),
+      binding: ControllerBinding(),
+    ),
+    GetPage(
+      name: '/video_chat',
+      page: () => VideoChatPage(
+        key: const Key('video_chat'),
       ),
       binding: ControllerBinding(),
     ),
