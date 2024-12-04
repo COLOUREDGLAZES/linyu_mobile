@@ -61,7 +61,7 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
 
   void _getSelectUser() {
     if (createChatGroupLogic.users.isNotEmpty) {
-      users = createChatGroupLogic.users.copyWithList();
+      users = createChatGroupLogic.users.copy();
     }
     userTapWidth = users.length * 40;
   }

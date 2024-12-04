@@ -17,7 +17,7 @@ extension UsersListExtension<E extends Map<String, dynamic>> on List {
     return false;
   }
 
-  List copyWithList({List? list}) {
+  List copy({List? list}) {
     List sourceList = list ?? this; // 若 list 为空，将其设为当前对象
     if (sourceList.isEmpty) return []; // 若源列表为空，返回空列表
     List copyList = []; // 创建一个新的列表用于存放复制的元素
@@ -27,7 +27,7 @@ extension UsersListExtension<E extends Map<String, dynamic>> on List {
           Map<String, dynamic> mapItem = Map.from(item);
           copyList.add(mapItem);
         } else if (item is List) {
-          copyList.add(item.copyWithList());
+          copyList.add(item.copy());
         } else {
           copyList.add(item);
         }
