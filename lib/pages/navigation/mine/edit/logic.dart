@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_pickers/pickers.dart';
@@ -15,11 +17,15 @@ import 'package:linyu_mobile/pages/navigation/contacts/logic.dart';
 import 'package:linyu_mobile/pages/navigation/mine/logic.dart';
 import 'package:linyu_mobile/pages/navigation/talk/logic.dart';
 import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
+import 'package:linyu_mobile/utils/getx_config/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
 
+import 'index.dart';
+
 //个人资料编辑页面逻辑
-class EditMineLogic extends getx.GetxController {
+// class EditMineLogic extends getx.GetxController {
+class EditMineLogic extends Logic<EditMinePage> {
   //上个页面控制器
   final MineLogic _mineLogic = getx.Get.find<MineLogic>();
 
@@ -154,6 +160,7 @@ class EditMineLogic extends getx.GetxController {
       currentUserInfo['portrait'] = result['data'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('portrait', currentUserInfo['portrait']);
+      widget?.globalData.currentAvatarUrl = currentUserInfo['portrait'];
       update([const Key("edit_mine")]);
     } else {
       CustomFlutterToast.showErrorToast(result['msg']);

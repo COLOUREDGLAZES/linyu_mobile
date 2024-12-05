@@ -53,7 +53,7 @@ class MinePage extends CustomWidget<MineLogic> {
                         borderRadius: BorderRadius.circular(35),
                       ),
                       child: CustomPortrait(
-                          url: controller.currentUserInfo['portrait'] ?? '',
+                          url: globalData.currentAvatarUrl??'',
                           size: 70,
                           radius: 35),
                     ),

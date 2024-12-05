@@ -71,7 +71,7 @@ class ChatMessage extends StatelessThemeWidget {
                 const SizedBox(width: 5),
                 if (isRight)
                   CustomPortrait(
-                    url: msg['msgContent']?['formUserPortrait'],
+                    url: globalData.currentAvatarUrl?? '',
                     size: 40,
                   ),
               ],
@@ -89,7 +89,7 @@ class ChatMessage extends StatelessThemeWidget {
                   if (!isRight)
                     CustomPortrait(
                       url: chatPortrait ?? '',
-                      size: 40,
+                      size: 31.2,
                     ),
                   const SizedBox(width: 5),
                   getComponentByType(msg['msgContent']['type'], isRight),
@@ -97,7 +97,7 @@ class ChatMessage extends StatelessThemeWidget {
                   if (isRight)
                     CustomPortrait(
                       url: globalData.currentAvatarUrl?? '',
-                      size: 40,
+                      size: 31.2,
                     ),
                 ],
               )),

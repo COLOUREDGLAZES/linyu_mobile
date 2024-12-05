@@ -72,7 +72,7 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                   controller.isShowMore.value = false;
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.6),
                   child: GetBuilder<ChatFrameLogic>(
                     id: const Key('chat_frame'),
                     builder: (controller) {

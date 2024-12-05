@@ -21,7 +21,8 @@ class TalkPage extends CustomWidget<TalkLogic> {
         leading: Container(
           margin: const EdgeInsets.only(left: 13.2,top: 10.8),
           child: CustomPortrait(
-            url: controller.currentUserInfo['portrait']??'',
+            // url: controller.currentUserInfo['portrait']??'',
+            url: globalData.currentAvatarUrl??'',
             size: 40,
             radius: 20,
             onTap: () => Scaffold.of(context).openDrawer(),
