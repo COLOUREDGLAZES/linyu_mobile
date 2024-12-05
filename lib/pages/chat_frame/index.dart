@@ -17,6 +17,217 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
     with WidgetsBindingObserver {
   ChatFramePage({super.key});
 
+  @override
+  void init(BuildContext context) {
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (MediaQuery.of(Get.context!).viewInsets.bottom > 0) {
+        controller.scrollBottom();
+      }
+    });
+    final keyboardHeight = MediaQuery.of(Get.context!).viewInsets.bottom;
+    if (keyboardHeight == 0) {
+      controller.isShowMore.value = false;
+    }
+  }
+
+  @override
+  Widget buildWidget(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: const Color(0xFFF9FBFF),
+        appBar: AppBar(
+          centerTitle: true,
+          title: AppBarTitle(
+              StringUtil.isNotNullOrEmpty(controller.chatInfo['remark'])
+                  ? controller.chatInfo['remark']
+                  : controller.chatInfo['name']),
+          backgroundColor: const Color(0xFFF9FBFF),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 15),
+              child: GestureDetector(
+                onTap: controller.toDetailsPage,
+                child: CustomPortrait(
+                    url: controller.chatInfo['portrait'], size: 32),
+              ),
+            )
+          ],
+        ),
+        body: Column(
+          children: [
+            // 消息列表部分
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  controller.isShowMore.value = false;
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.6),
+                  child: GetBuilder<ChatFrameLogic>(
+                    id: const Key('chat_frame'),
+                    builder: (controller) {
+                      return Stack(
+                        children: [
+                          ListView(
+                            cacheExtent: 99999,
+                            controller: controller.scrollController,
+                            children: [
+                              if (!controller.hasMore)
+                                const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Center(
+                                    child: Text(
+                                      '没有更多消息了',
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ...controller.msgList.map((msg) => ChatMessage(
+                                chatPortrait:
+                                controller.chatInfo['portrait'],
+                                msg: msg,
+                                chatInfo: controller.chatInfo,
+                                member: controller.members[msg['fromId']],
+                              )),
+                            ],
+                          ),
+                          if (controller.isLoading)
+                            const Positioned(
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              child: Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: CupertinoActivityIndicator(),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Obx(
+                  () => Container(
+                color: const Color(0xFFEDF2F9),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (controller.isRecording.value)
+                          _buildIconButton1(
+                            const IconData(0xe661, fontFamily: 'IconFont'),
+                                () {
+                              controller.isShowMore.value = false;
+                              controller.isRecording.value = false;
+                              controller.focusNode.requestFocus();
+                            },
+                          )
+                        else
+                          _buildIconButton1(
+                            const IconData(0xe7e2, fontFamily: 'IconFont'),
+                                () {
+                              controller.isShowMore.value = false;
+                              controller.isRecording.value = true;
+                            },
+                          ),
+                        const SizedBox(width: 5),
+                        if (controller.isRecording.value)
+                          Expanded(
+                            child: CustomVoiceRecordButton(
+                                onFinish: controller.onSendVoiceMsg),
+                          )
+                        else
+                          Expanded(
+                            child: CustomTextField(
+                              controller: controller.msgContentController,
+                              maxLines: 3,
+                              minLines: 1,
+                              hintTextColor: theme.primaryColor,
+                              hintText: '请输入消息',
+                              vertical: 8,
+                              focusNode: controller.focusNode,
+                              fillColor: Colors.white.withOpacity(0.9),
+                              onTap: () {
+                                controller.isShowMore.value = false;
+                                controller.scrollBottom();
+                              },
+                              onChanged: (value) {
+                                controller.isSend.value =
+                                    value.trim().isNotEmpty;
+                              },
+                            ),
+                          ),
+                        const SizedBox(width: 5),
+                        if (!controller.isRecording.value)
+                          _buildIconButton1(
+                            const IconData(0xe632, fontFamily: 'IconFont'),
+                                () {},
+                          ),
+                        if (controller.isSend.value)
+                          CustomButton(
+                            text: '发送',
+                            onTap: controller.sendTextMsg,
+                            width: 60,
+                            textSize: 14,
+                            height: 34,
+                          )
+                        else
+                          _buildIconButton1(
+                            const IconData(0xe636, fontFamily: 'IconFont'),
+                                () {
+                              FocusScope.of(context).unfocus();
+                              controller.isRecording.value = false;
+                              controller.isShowMore.value =
+                              !controller.isShowMore.value;
+                              if (controller.isShowMore.value) {
+                                Future.delayed(
+                                    const Duration(milliseconds: 500), () {
+                                  controller.scrollBottom();
+                                });
+                              }
+                            },
+                          ),
+                      ],
+                    ),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                      height: controller.isShowMore.value ? 240 : 0,
+                      child: controller.isShowMore.value
+                          ? _buildMoreOperation()
+                          : Container(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildMoreOperation() {
     return Container(
       width: MediaQuery.of(Get.context!).size.width,
@@ -94,220 +305,8 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
   }
 
   @override
-  void init(BuildContext context) {
-    WidgetsBinding.instance.addObserver(this);
-    globalData.onGetUserUnreadInfo();
-  }
-
-  @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (MediaQuery.of(Get.context!).viewInsets.bottom > 0) {
-        controller.scrollBottom();
-      }
-    });
-    final keyboardHeight = MediaQuery.of(Get.context!).viewInsets.bottom;
-    if (keyboardHeight == 0) controller.isShowMore.value = false;
-
-  }
-
-  @override
-  Widget buildWidget(BuildContext context) {
-    return GestureDetector(
-      onTap: () =>
-        FocusScope.of(context).unfocus()
-      ,
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        backgroundColor: const Color(0xFFF9FBFF),
-        appBar: AppBar(
-          centerTitle: true,
-          title: AppBarTitle(
-              StringUtil.isNotNullOrEmpty(controller.chatInfo['remark'])
-                  ? controller.chatInfo['remark']
-                  : controller.chatInfo['name']),
-          backgroundColor: const Color(0xFFF9FBFF),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 15),
-              child: GestureDetector(
-                onTap: controller.toDetailsPage,
-                child: CustomPortrait(
-                    url: controller.chatInfo['portrait'], size: 32),
-              ),
-            )
-          ],
-        ),
-        body: Column(
-          children: [
-            // 消息列表部分
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  controller.isShowMore.value = false;
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.6),
-                  child: GetBuilder<ChatFrameLogic>(
-                    id: const Key('chat_frame'),
-                    builder: (controller) {
-                      return Stack(
-                        children: [
-                          ListView(
-                            cacheExtent: 99999,
-                            controller: controller.scrollController,
-                            children: [
-                              if (!controller.hasMore)
-                                const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Center(
-                                    child: Text(
-                                      '没有更多消息了',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ...controller.msgList.map((msg) => ChatMessage(
-                                    chatPortrait:
-                                        controller.chatInfo['portrait'],
-                                    msg: msg,
-                                    chatInfo: controller.chatInfo,
-                                    member: controller.members[msg['fromId']],
-                                  )),
-                            ],
-                          ),
-                          if (controller.isLoading)
-                            const Positioned(
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: CupertinoActivityIndicator(),
-                                ),
-                              ),
-                            ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-            Obx(
-              () => Container(
-                color: const Color(0xFFEDF2F9),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if (controller.isRecording.value)
-                          _buildIconButton1(
-                            const IconData(0xe661, fontFamily: 'IconFont'),
-                            () {
-                              controller.isShowMore.value = false;
-                              controller.isRecording.value = false;
-                              controller.focusNode.requestFocus();
-                            },
-                          )
-                        else
-                          _buildIconButton1(
-                            const IconData(0xe7e2, fontFamily: 'IconFont'),
-                            () {
-                              controller.isShowMore.value = false;
-                              controller.isRecording.value = true;
-                            },
-                          ),
-                        const SizedBox(width: 5),
-                        if (controller.isRecording.value)
-                          Expanded(
-                            child: CustomVoiceRecordButton(
-                                onFinish: controller.onSendVoiceMsg),
-                          )
-                        else
-                          Expanded(
-                            child: CustomTextField(
-                              controller: controller.msgContentController,
-                              maxLines: 3,
-                              minLines: 1,
-                              hintTextColor: theme.primaryColor,
-                              hintText: '请输入消息',
-                              vertical: 8,
-                              focusNode: controller.focusNode,
-                              fillColor: Colors.white.withOpacity(0.9),
-                              onTap: () {
-                                controller.isShowMore.value = false;
-                                controller.scrollBottom();
-                              },
-                              onChanged: (value) {
-                                controller.isSend.value =
-                                    value.trim().isNotEmpty;
-                              },
-                            ),
-                          ),
-                        const SizedBox(width: 5),
-                        if (!controller.isRecording.value)
-                          _buildIconButton1(
-                            const IconData(0xe632, fontFamily: 'IconFont'),
-                            () {},
-                          ),
-                        if (controller.isSend.value)
-                          CustomButton(
-                            text: '发送',
-                            onTap: controller.sendTextMsg,
-                            width: 60,
-                            textSize: 14,
-                            height: 34,
-                          )
-                        else
-                          _buildIconButton1(
-                            const IconData(0xe636, fontFamily: 'IconFont'),
-                            () {
-                              FocusScope.of(context).unfocus();
-                              controller.isRecording.value = false;
-                              controller.isShowMore.value =
-                                  !controller.isShowMore.value;
-                              if (controller.isShowMore.value) {
-                                Future.delayed(
-                                    const Duration(milliseconds: 500), () {
-                                  controller.scrollBottom();
-                                });
-                              }
-                            },
-                          ),
-                      ],
-                    ),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.easeInOut,
-                      height: controller.isShowMore.value ? 240 : 0,
-                      child: controller.isShowMore.value
-                          ? _buildMoreOperation()
-                          : Container(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
   void close(BuildContext context) {
     super.close(context);
-    globalData.onGetUserUnreadInfo();
     WidgetsBinding.instance.removeObserver(this);
   }
 }
