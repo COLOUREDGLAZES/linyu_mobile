@@ -25,7 +25,7 @@ class TextMessage extends StatelessThemeWidget {
       ),
       child: Text(
         value['msgContent']['content'],
-        style: TextStyle(color: isRight ? Colors.white : null),
+        style: TextStyle(color: isRight ? Colors.white : null, fontSize: 14),
       ),
     );
   }
