@@ -227,7 +227,6 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
         ),
       ),
     );
-
-    Overlay.of(context)?.insert(_overlayEntry);
+    Overlay.of(context).insert(_overlayEntry);
   }
 }

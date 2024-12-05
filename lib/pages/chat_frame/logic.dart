@@ -181,6 +181,7 @@ class ChatFrameLogic extends GetxController {
   }
 
   void msgListAddMsg(msg) {
+    print('msgListAddMsg: $msg');
     msgList.add(msg);
     index = msgList.length;
     update([const Key('chat_frame')]);

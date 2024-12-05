@@ -16,9 +16,11 @@ class ChatMessage extends StatelessThemeWidget {
   final Map<String, dynamic> msg;
   final Map<String, dynamic> chatInfo;
   final Map<String, dynamic>? member;
+  final String? chatPortrait;
 
   const ChatMessage({
     super.key,
+    this.chatPortrait,
     required this.msg,
     required this.chatInfo,
     required this.member,
@@ -78,9 +80,27 @@ class ChatMessage extends StatelessThemeWidget {
         // 私聊消息
         if (chatInfo['type'] == 'user')
           Align(
-            alignment: isRight ? Alignment.centerRight : Alignment.centerLeft,
-            child: getComponentByType(msg['msgContent']['type'], isRight),
-          ),
+              alignment: isRight ? Alignment.centerRight : Alignment.centerLeft,
+              child: Row(
+                mainAxisAlignment:
+                    isRight ? MainAxisAlignment.end : MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (!isRight)
+                    CustomPortrait(
+                      url: chatPortrait ?? '',
+                      size: 40,
+                    ),
+                  const SizedBox(width: 5),
+                  getComponentByType(msg['msgContent']['type'], isRight),
+                  const SizedBox(width: 5),
+                  if (isRight)
+                    CustomPortrait(
+                      url: globalData.currentAvatarUrl?? '',
+                      size: 40,
+                    ),
+                ],
+              )),
         const SizedBox(height: 15),
       ],
     );
@@ -88,7 +108,7 @@ class ChatMessage extends StatelessThemeWidget {
 
   String handlerGroupDisplayName() {
     if (member == null) {
-      return msg?['msgContent']?['formUserName'] ?? '';
+      return msg['msgContent']?['formUserName'] ?? '';
     }
     if (member!.containsKey('groupName') && member!['groupName'] != null) {
       return member!['groupName']!;

@@ -95,6 +95,8 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                                   ),
                                 ),
                               ...controller.msgList.map((msg) => ChatMessage(
+                                    chatPortrait:
+                                        controller.chatInfo['portrait'],
                                     msg: msg,
                                     chatInfo: controller.chatInfo,
                                     member: controller.members[msg['fromId']],
