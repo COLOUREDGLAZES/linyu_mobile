@@ -17,9 +17,86 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
     with WidgetsBindingObserver {
   ChatFramePage({super.key});
 
+  Widget _buildMoreOperation() {
+    return Container(
+      width: MediaQuery.of(Get.context!).size.width,
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.only(top: 10),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: Colors.grey.withOpacity(0.1),
+            width: 1.0,
+          ),
+        ),
+      ),
+      child: GridView.count(
+        shrinkWrap: true,
+        crossAxisCount: 4,
+        mainAxisSpacing: 10,
+        children: [
+          _buildIconButton2(
+            '图片',
+            const IconData(0xe9f4, fontFamily: 'IconFont'),
+                () => controller.cropChatBackgroundPicture(null),
+          ),
+          _buildIconButton2(
+            '拍照',
+            const IconData(0xe9f3, fontFamily: 'IconFont'),
+                () => controller.cropChatBackgroundPicture(ImageSource.camera),
+          ),
+          _buildIconButton2(
+            '文件',
+            const IconData(0xeac4, fontFamily: 'IconFont'),
+                () => controller.selectFile(),
+          ),
+          if (controller.chatInfo['type'] == 'user')
+            _buildIconButton2(
+              '语音通话',
+              const IconData(0xe969, fontFamily: 'IconFont'),
+                  () => controller.onInviteVideoChat(true),
+            ),
+          if (controller.chatInfo['type'] == 'user')
+            _buildIconButton2(
+              '视频通话',
+              const IconData(0xe9f5, fontFamily: 'IconFont'),
+                  () => controller.onInviteVideoChat(false),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIconButton1(iconData, onTap) {
+    return CustomIconButton(
+      onTap: onTap,
+      icon: iconData,
+      width: 36,
+      height: 36,
+      iconSize: 26,
+      iconColor: Colors.black,
+      color: Colors.transparent,
+    );
+  }
+
+  Widget _buildIconButton2(text, iconData, onTap) {
+    return CustomIconButton(
+      onTap: onTap,
+      icon: iconData,
+      width: 50,
+      height: 50,
+      radius: 15,
+      iconSize: 26,
+      text: text,
+      color: Colors.white.withOpacity(0.9),
+      iconColor: const Color(0xFF1F1F1F),
+    );
+  }
+
   @override
   void init(BuildContext context) {
     WidgetsBinding.instance.addObserver(this);
+    globalData.onGetUserUnreadInfo();
   }
 
   @override
@@ -31,17 +108,16 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
       }
     });
     final keyboardHeight = MediaQuery.of(Get.context!).viewInsets.bottom;
-    if (keyboardHeight == 0) {
-      controller.isShowMore.value = false;
-    }
+    if (keyboardHeight == 0) controller.isShowMore.value = false;
+
   }
 
   @override
   Widget buildWidget(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
+      onTap: () =>
+        FocusScope.of(context).unfocus()
+      ,
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: const Color(0xFFF9FBFF),
@@ -228,85 +304,10 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
     );
   }
 
-  Widget _buildMoreOperation() {
-    return Container(
-      width: MediaQuery.of(Get.context!).size.width,
-      padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.only(top: 10),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: Colors.grey.withOpacity(0.1),
-            width: 1.0,
-          ),
-        ),
-      ),
-      child: GridView.count(
-        shrinkWrap: true,
-        crossAxisCount: 4,
-        mainAxisSpacing: 10,
-        children: [
-          _buildIconButton2(
-            '图片',
-            const IconData(0xe9f4, fontFamily: 'IconFont'),
-            () => controller.cropChatBackgroundPicture(null),
-          ),
-          _buildIconButton2(
-            '拍照',
-            const IconData(0xe9f3, fontFamily: 'IconFont'),
-            () => controller.cropChatBackgroundPicture(ImageSource.camera),
-          ),
-          _buildIconButton2(
-            '文件',
-            const IconData(0xeac4, fontFamily: 'IconFont'),
-            () => controller.selectFile(),
-          ),
-          if (controller.chatInfo['type'] == 'user')
-            _buildIconButton2(
-              '语音通话',
-              const IconData(0xe969, fontFamily: 'IconFont'),
-              () => controller.onInviteVideoChat(true),
-            ),
-          if (controller.chatInfo['type'] == 'user')
-            _buildIconButton2(
-              '视频通话',
-              const IconData(0xe9f5, fontFamily: 'IconFont'),
-              () => controller.onInviteVideoChat(false),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIconButton1(iconData, onTap) {
-    return CustomIconButton(
-      onTap: onTap,
-      icon: iconData,
-      width: 36,
-      height: 36,
-      iconSize: 26,
-      iconColor: Colors.black,
-      color: Colors.transparent,
-    );
-  }
-
-  Widget _buildIconButton2(text, iconData, onTap) {
-    return CustomIconButton(
-      onTap: onTap,
-      icon: iconData,
-      width: 50,
-      height: 50,
-      radius: 15,
-      iconSize: 26,
-      text: text,
-      color: Colors.white.withOpacity(0.9),
-      iconColor: const Color(0xFF1F1F1F),
-    );
-  }
-
   @override
   void close(BuildContext context) {
     super.close(context);
+    globalData.onGetUserUnreadInfo();
     WidgetsBinding.instance.removeObserver(this);
   }
 }

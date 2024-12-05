@@ -5,7 +5,7 @@ import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_search_box/index.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
-import 'package:linyu_mobile/utils/list_extension.dart';
+import 'package:linyu_mobile/utils/extension.dart';
 import 'logic.dart';
 
 class ChatGroupSelectUserPage

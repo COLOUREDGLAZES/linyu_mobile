@@ -154,6 +154,9 @@ class FriendInformationLogic extends Logic {
         friendGroup = data['groupName'] ?? '未分组';
         isConcern = data['isConcern'];
       }
+
+      print(friendPortrait);
+
       update([const Key('friend_info')]);
       return response['data'];
     } else {

@@ -7,7 +7,7 @@ import 'package:linyu_mobile/api/friend_api.dart';
 import 'package:linyu_mobile/pages/navigation/contacts/create_chat_group/logic.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
 import 'index.dart';
-import 'package:linyu_mobile/utils/list_extension.dart';
+import 'package:linyu_mobile/utils/extension.dart';
 
 class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
   final _friendApi = FriendApi();
