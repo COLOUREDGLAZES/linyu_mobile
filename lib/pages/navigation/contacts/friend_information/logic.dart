@@ -1,22 +1,24 @@
-// ignore_for_file: unnecessary_new
-
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/api/chat_list_api.dart';
 import 'package:linyu_mobile/api/friend_api.dart';
+import 'package:linyu_mobile/api/video_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/logic.dart';
+import 'package:linyu_mobile/pages/contacts/logic.dart';
+import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
 
 class FriendInformationLogic extends Logic {
+  //主题配置
+  final GlobalThemeConfig _theme = GetInstance().find<GlobalThemeConfig>();
 
   //联系人逻辑
   final ContactsLogic _contactsLogic = GetInstance().find<ContactsLogic>();
 
   //好友api
   final _friendApi = FriendApi();
-
-  final _chatApi = new ChatListApi();
+  final _videoApi = VideoApi();
+  final _chatListApi = ChatListApi();
 
   //初始化获取从联系人页面传递过来的好友信息参数
   Map<String, dynamic> get friendData => arguments['friend'];
@@ -154,14 +156,17 @@ class FriendInformationLogic extends Logic {
         friendGroup = data['groupName'] ?? '未分组';
         isConcern = data['isConcern'];
       }
-
-      print(friendPortrait);
-
       update([const Key('friend_info')]);
       return response['data'];
     } else {
       return {};
     }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    getFriendInfo();
   }
 
   //设置特别关心
@@ -196,29 +201,26 @@ class FriendInformationLogic extends Logic {
     }
   }
 
-  void toSendMsg() async {
-    final result = await _chatApi.create(friendId);
-    if (result['code'] == 0) {
-      final data = result['data'];
-      Get.offAndToNamed('/chat_frame', arguments: {
-        'chatInfo': data,
-      });
-    }
+  void onVideoChat() {
+    _videoApi.invite(friendId, false).then((res) {
+      if (res['code'] == 0) {
+        Get.toNamed('video_chat', arguments: {
+          'userId': friendId,
+          'isSender': true,
+          'isOnlyAudio': false,
+        });
+      }
+    });
   }
 
-  void navigateToPage(String routeName, Map<String, dynamic> arguments) {
-    try {
-      Get.toNamed(routeName, arguments: arguments);
-    } catch (e) {
-      // 简单的错误处理，可以根据需要进一步处理
-      if (kDebugMode) print('导航出错: $e');
-    }
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    getFriendInfo();
+  void onToSendMsg() {
+    _chatListApi.create(friendId, 'user').then((res) {
+      if (res['code'] == 0) {
+        Get.toNamed('/chat_frame', arguments: {
+          'chatInfo': res['data'],
+        });
+      }
+    });
   }
 
   @override
