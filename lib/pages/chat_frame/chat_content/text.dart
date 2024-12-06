@@ -18,10 +18,20 @@ class TextMessage extends StatelessThemeWidget {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: isRight ? theme.primaryColor : Colors.white,
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        borderRadius: isRight
+            ? const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+              )
+            : const BorderRadius.only(
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
       ),
       constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(Get.context!).size.width * 0.8,
+        maxWidth: MediaQuery.of(Get.context!).size.width * 0.7,
       ),
       child: Text(
         value['msgContent']['content'],

@@ -28,9 +28,20 @@ class ImageMessage extends StatelessThemeWidget {
     return Container(
       height: MediaQuery.of(Get.context!).size.width * 0.4,
       width: MediaQuery.of(Get.context!).size.width * 0.4,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.black,
-        borderRadius: BorderRadius.all(Radius.circular(5)),
+        // borderRadius: BorderRadius.all(Radius.circular(5)),
+        borderRadius: isRight
+          ? const BorderRadius.only(
+        topLeft: Radius.circular(10),
+        bottomLeft: Radius.circular(10),
+        bottomRight: Radius.circular(10),
+      )
+          : const BorderRadius.only(
+        bottomLeft: Radius.circular(10),
+        bottomRight: Radius.circular(10),
+        topRight: Radius.circular(10),
+      ),
       ),
       child: FutureBuilder<String>(
         future: onGetImg(),

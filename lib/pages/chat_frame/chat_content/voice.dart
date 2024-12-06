@@ -81,6 +81,7 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return CustomAudio(
+                    isRight: widget.isRight,
                     audioUrl: snapshot.data ?? '',
                     time: audioTime,
                     type: widget.isRight ? '' : 'minor',

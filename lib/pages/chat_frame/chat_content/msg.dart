@@ -20,7 +20,7 @@ class ChatMessage extends StatelessThemeWidget {
 
   const ChatMessage({
     super.key,
-    this.chatPortrait,
+    this.chatPortrait = 'http://192.168.101.4:9000/linyu/default-portrait.jpg',
     required this.msg,
     required this.chatInfo,
     required this.member,

@@ -99,6 +99,7 @@ class ContactsLogic extends GetxController {
   }
 
   void handlerFriendTapped(dynamic friend) {
+    print(friend);
     Get.toNamed('/friend_info', arguments: {'friendId': friend['friendId']});
   }
 
@@ -160,7 +161,7 @@ class ContactsLogic extends GetxController {
   }
 
   void onToSendGroupMsg(id) {
-    _chatListApi.create(id, 'group').then((res) {
+    _chatListApi.create(id, type: 'group').then((res) {
       if (res['code'] == 0) {
         Get.toNamed('/chat_frame', arguments: {
           'chatInfo': res['data'],

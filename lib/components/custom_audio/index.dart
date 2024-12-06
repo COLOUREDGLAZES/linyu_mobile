@@ -9,9 +9,11 @@ class CustomAudio extends StatefulWidget {
   final int time;
   final String type;
   final VoidCallback? onLoadedMetadata;
+  final bool isRight;
 
   const CustomAudio({
     super.key,
+    required this.isRight,
     required this.audioUrl,
     required this.time,
     this.type = '',
@@ -84,10 +86,21 @@ class _CustomAudioWidgetState extends State<CustomAudio> {
       child: Container(
         decoration: BoxDecoration(
           color: isMinor ? Colors.white : _globalThemeConfig.primaryColor,
-          borderRadius: BorderRadius.circular(5),
+          // borderRadius: BorderRadius.circular(5),
+          borderRadius: widget.isRight
+              ? const BorderRadius.only(
+            topLeft: Radius.circular(10),
+            bottomLeft: Radius.circular(10),
+            bottomRight: Radius.circular(10),
+          )
+              : const BorderRadius.only(
+            bottomLeft: Radius.circular(10),
+            bottomRight: Radius.circular(10),
+            topRight: Radius.circular(10),
+          ),
         ),
         width: 120,
-        height: 32,
+        height: 40,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           children: [

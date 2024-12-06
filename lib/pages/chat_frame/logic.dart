@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart'
     show
@@ -197,7 +198,9 @@ class ChatFrameLogic extends GetxController {
   }
 
   void msgListAddMsg(msg) {
-    print('msgListAddMsg: $msg');
+    if (kDebugMode) {
+      print('msgListAddMsg: $msg');
+    }
     msgList.add(msg);
     index = msgList.length;
     update([const Key('chat_frame')]);

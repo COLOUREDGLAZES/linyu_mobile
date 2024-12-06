@@ -4,7 +4,7 @@ import 'package:linyu_mobile/api/chat_list_api.dart';
 import 'package:linyu_mobile/api/friend_api.dart';
 import 'package:linyu_mobile/api/video_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/pages/contacts/logic.dart';
+import 'package:linyu_mobile/pages/navigation/contacts/logic.dart';
 import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
 
@@ -24,7 +24,7 @@ class FriendInformationLogic extends Logic {
   Map<String, dynamic> get friendData => arguments['friend'];
 
   //好友id
-  String get friendId => arguments['friendId'].toString();
+  final String  friendId = Get.arguments['friendId'].toString();
 
   //好友头像
   String _friendPortrait = '';
@@ -167,6 +167,7 @@ class FriendInformationLogic extends Logic {
   void onInit() {
     super.onInit();
     getFriendInfo();
+    print(friendId);
   }
 
   //设置特别关心
@@ -201,20 +202,22 @@ class FriendInformationLogic extends Logic {
     }
   }
 
-  void onVideoChat() {
-    _videoApi.invite(friendId, false).then((res) {
+
+  void onVideoChat({bool isOnlyAudio = false}) {
+    print('onVideoChat$friendId');
+    _videoApi.invite(friendId, isOnlyAudio).then((res) {
       if (res['code'] == 0) {
         Get.toNamed('video_chat', arguments: {
           'userId': friendId,
           'isSender': true,
-          'isOnlyAudio': false,
+          'isOnlyAudio': isOnlyAudio,
         });
       }
     });
   }
 
   void onToSendMsg() {
-    _chatListApi.create(friendId, 'user').then((res) {
+    _chatListApi.create(friendId, type: 'user').then((res) {
       if (res['code'] == 0) {
         Get.toNamed('/chat_frame', arguments: {
           'chatInfo': res['data'],
@@ -222,6 +225,7 @@ class FriendInformationLogic extends Logic {
       }
     });
   }
+
 
   @override
   void onClose() {

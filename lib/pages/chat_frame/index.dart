@@ -22,6 +22,7 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
   @override
   void init(BuildContext context) {
     WidgetsBinding.instance.addObserver(this);
+    globalData.onGetUserUnreadInfo();
   }
 
   @override
@@ -43,14 +44,14 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        backgroundColor: const Color(0xFFF9FBFF),
+        backgroundColor: const Color(0xFFEDF2F9),
         appBar: AppBar(
           centerTitle: true,
           title: AppBarTitle(
               StringUtil.isNotNullOrEmpty(controller.chatInfo['remark'])
                   ? controller.chatInfo['remark']
                   : controller.chatInfo['name']),
-          backgroundColor: const Color(0xFFF9FBFF),
+          backgroundColor: const Color(0xFFEDF2F9),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 15),
@@ -103,6 +104,7 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                                   child: ChatMessage(
                                     msg: msg,
                                     chatInfo: controller.chatInfo,
+                                    chatPortrait:  controller.chatInfo['portrait'],
                                     member: controller.members[msg['fromId']],
                                   ),
                                 ),
@@ -377,5 +379,6 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
   void close(BuildContext context) {
     super.close(context);
     WidgetsBinding.instance.removeObserver(this);
+    globalData.onGetUserUnreadInfo();
   }
 }
