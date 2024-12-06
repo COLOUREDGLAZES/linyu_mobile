@@ -28,7 +28,7 @@ class NavigationPage extends CustomWidget<NavigationLogic> {
                 clipBehavior: Clip.none,
                 children: [
                   Image.asset(
-                    controller.currentIndex == index
+                    controller.currentIndex.value == index
                         ? 'assets/images/${controller.selectedIcons[index]}-${theme.themeMode.value}.png'
                         : controller.unselectedIcons[index],
                     width: 26,

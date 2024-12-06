@@ -10,14 +10,14 @@ import 'package:linyu_mobile/utils/permission_handler.dart';
 import 'package:linyu_mobile/utils/web_socket.dart';
 
 class NavigationLogic extends GetxController {
-  late int currentIndex = 0;
+  late RxInt currentIndex = 0.obs;
   final _wsManager = WebSocketUtil();
   final List<GetPage> pages = pageRoute[0].children;
   StreamSubscription? _subscription;
 
   GlobalData get globalData => GetInstance().find<GlobalData>();
 
-  void initData() {
+  Future<void> initThemeData() async {
     late String sex = Get.parameters['sex'] ?? "男";
     GlobalThemeConfig theme = GetInstance().find<GlobalThemeConfig>();
     theme.changeThemeMode(sex == "女" ? 'pink' : 'blue');
@@ -26,7 +26,6 @@ class NavigationLogic extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    initData();
     (() async {
       await globalData.init();
       await NotificationUtil.initialize();
@@ -35,6 +34,9 @@ class NavigationLogic extends GetxController {
       await connectWebSocket();
       eventListen();
     })();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await initThemeData();
+    });
   }
 
   void eventListen() {
@@ -75,11 +77,6 @@ class NavigationLogic extends GetxController {
     '通讯',
     '说说',
   ];
-
-  void onTap(int index) {
-    currentIndex = index;
-    update([const Key("main")]);
-  }
 
   @override
   void onClose() {
