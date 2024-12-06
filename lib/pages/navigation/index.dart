@@ -10,26 +10,29 @@ class NavigationPage extends CustomWidget<NavigationLogic> {
 
   @override
   Widget buildWidget(BuildContext context) {
-    return Scaffold(
-      drawer:controller.pages[3].page(),
-      body: controller.pages[controller.currentIndex].page(),
-      bottomNavigationBar: Obx(
-        () => BottomNavigationBar(
-          currentIndex: controller.currentIndex,
-          onTap: controller.onTap,
+    return Obx(()
+      => Scaffold(
+        drawer: controller.pages[3].page(),
+        body: controller.pages[controller.currentIndex.value].page(),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: controller.currentIndex.value,
+          onTap: (index) => controller.currentIndex.value = index,
           selectedItemColor: theme.primaryColor,
           showUnselectedLabels: true,
           backgroundColor: const Color(0xFFEDF2F9),
           unselectedItemColor: Colors.grey,
           type: BottomNavigationBarType.fixed,
-          items: List.generate(controller.unselectedIcons.length, (index) {
+          items: List.generate(
+              controller.unselectedIcons.length, (index) {
             return BottomNavigationBarItem(
               icon: Stack(
                 clipBehavior: Clip.none,
                 children: [
                   Image.asset(
                     controller.currentIndex.value == index
-                        ? 'assets/images/${controller.selectedIcons[index]}-${theme.themeMode.value}.png'
+                        ? 'assets/images/${controller
+                        .selectedIcons[index]}-${theme.themeMode
+                        .value}.png'
                         : controller.unselectedIcons[index],
                     width: 26,
                     height: 26,
@@ -46,7 +49,7 @@ class NavigationPage extends CustomWidget<NavigationLogic> {
             );
           }),
         ),
-      ),
-    );
+      )
+  );
   }
 }

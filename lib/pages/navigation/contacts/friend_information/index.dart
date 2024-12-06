@@ -6,7 +6,6 @@ import 'package:linyu_mobile/components/custom_image_group/index.dart';
 import 'package:linyu_mobile/components/custom_label_value_button/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_shadow_text/index.dart';
-import 'package:linyu_mobile/pages/contacts/friend_information/logic.dart';
 import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/date.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';

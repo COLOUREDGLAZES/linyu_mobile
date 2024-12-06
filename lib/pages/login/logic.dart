@@ -88,8 +88,8 @@ class LoginPageLogic extends GetxController {
 
   @override
   void onClose() {
+    super.onClose();
     usernameController.dispose();
     passwordController.dispose();
-    super.onClose();
   }
 }
