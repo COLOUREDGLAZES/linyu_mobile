@@ -46,7 +46,6 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
         resizeToAvoidBottomInset: true,
         backgroundColor: const Color(0xFFEDF2F9),
         appBar: AppBar(
-          centerTitle: true,
           title: AppBarTitle(
               StringUtil.isNotNullOrEmpty(controller.chatInfo['remark'])
                   ? controller.chatInfo['remark']
