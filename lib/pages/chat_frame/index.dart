@@ -2,6 +2,7 @@ import 'package:chat_bottom_container/panel_container.dart';
 import 'package:chat_bottom_container/typedef.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
@@ -30,7 +31,6 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
   @override
   void init(BuildContext context) {
     WidgetsBinding.instance.addObserver(this);
-    globalData.onGetUserUnreadInfo();
   }
 
   @override
@@ -57,15 +57,13 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: const Color(0xFFF9FBFF),
-        resizeToAvoidBottomInset: true,
-        backgroundColor: const Color(0xFFEDF2F9),
         appBar: AppBar(
           centerTitle: true,
           title: AppBarTitle(
               StringUtil.isNotNullOrEmpty(controller.chatInfo['remark'])
                   ? controller.chatInfo['remark']
                   : controller.chatInfo['name']),
-          backgroundColor: const Color(0xFFEDF2F9),
+          backgroundColor: const Color(0xFFF9FBFF),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 15),
@@ -116,10 +114,17 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                                     hidePanel();
                                   },
                                   child: ChatMessage(
+                                    onTapCopy: (data) =>
+                                        //复制到剪切板
+                                        Clipboard.setData(ClipboardData(
+                                            text: msg['msgContent']
+                                                ['content'])),
+                                    onTapRetract:(data){
+
+                                    },
                                     msg: msg,
+                                    chatPortrait: controller.chatInfo['portrait'],
                                     chatInfo: controller.chatInfo,
-                                    chatPortrait:
-                                        controller.chatInfo['portrait'],
                                     member: controller.members[msg['fromId']],
                                   ),
                                 ),
@@ -286,122 +291,6 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
   void hidePanel() {
     if (controller.focusNode.hasFocus) {
       controller.focusNode.unfocus();
-            Obx(() => Container(
-                  color: const Color(0xFFEDF2F9),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10.0, vertical: 10),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (controller.isRecording.value)
-                            _buildIconButton1(
-                              const IconData(0xe661, fontFamily: 'IconFont'),
-                              () {
-                                controller.panelType.value = 'none';
-                                controller.isRecording.value = false;
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  controller.focusNode.requestFocus();
-                                });
-                              },
-                            )
-                          else
-                            _buildIconButton1(
-                              const IconData(0xe7e2, fontFamily: 'IconFont'),
-                              () {
-                                controller.panelType.value = 'none';
-                                controller.isRecording.value = true;
-                              },
-                            ),
-                          const SizedBox(width: 5),
-                          if (controller.isRecording.value)
-                            Expanded(
-                              child: CustomVoiceRecordButton(
-                                  onFinish: controller.onSendVoiceMsg),
-                            )
-                          else
-                            Expanded(
-                              child: Obx(
-                                () => CustomTextField(
-                                  controller: controller.msgContentController,
-                                  maxLines: 3,
-                                  minLines: 1,
-                                  readOnly: controller.isReadOnly.value,
-                                  hintTextColor: theme.primaryColor,
-                                  hintText: '请输入消息',
-                                  vertical: 8,
-                                  focusNode: controller.focusNode,
-                                  fillColor: Colors.white.withOpacity(0.9),
-                                  onTap: () {
-                                    controller.isReadOnly.value = false;
-                                    controller.panelType.value = 'keyboard';
-                                  },
-                                  onChanged: (value) {
-                                    controller.isSend.value =
-                                        value.trim().isNotEmpty;
-                                  },
-                                ),
-                              ),
-                            ),
-                          const SizedBox(width: 5),
-                          if (!controller.isRecording.value)
-                            _buildIconButton1(
-                              const IconData(0xe632, fontFamily: 'IconFont'),
-                              () {
-                                controller.isReadOnly.value = true;
-                                controller.panelType.value = 'emoji';
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  controller.focusNode.requestFocus();
-                                });
-                              },
-                            ),
-                          if (controller.isSend.value)
-                            CustomButton(
-                              text: '发送',
-                              onTap: controller.sendTextMsg,
-                              width: 60,
-                              textSize: 14,
-                              height: 34,
-                            )
-                          else
-                            _buildIconButton1(
-                              const IconData(0xe636, fontFamily: 'IconFont'),
-                              () {
-                                controller.focusNode.unfocus();
-                                controller.panelType.value = 'more';
-                              },
-                            ),
-                        ],
-                      ),
-                      Obx(() =>
-                          _buildPanelContainer(controller.panelType.value)),
-                    ],
-                  ),
-                )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPanelContainer(type) {
-    controller.scrollBottom();
-    switch (type) {
-      case 'emoji':
-        return _buildEmoji();
-      case 'more':
-        return _buildMoreOperation();
-      case 'none':
-        FocusScope.of(Get.context!).unfocus();
-        return const SizedBox.shrink();
-      case 'keyboard':
-        return const SizedBox.shrink();
-      default:
-        return const SizedBox.shrink();
     }
     controller.isReadOnly.value = false;
     panelController.updatePanelType(ChatBottomPanelType.none);
@@ -568,6 +457,5 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
   void close(BuildContext context) {
     super.close(context);
     WidgetsBinding.instance.removeObserver(this);
-    globalData.onGetUserUnreadInfo();
   }
 }

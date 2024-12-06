@@ -1,3 +1,4 @@
+import 'package:custom_pop_up_menu_fork/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/call.dart';
@@ -12,15 +13,37 @@ import 'package:linyu_mobile/utils/getx_config/config.dart';
 
 import 'text.dart';
 
+typedef CallBack = dynamic Function(dynamic data);
+
 class ChatMessage extends StatelessThemeWidget {
   final Map<String, dynamic> msg;
   final Map<String, dynamic> chatInfo;
   final Map<String, dynamic>? member;
   final String? chatPortrait;
 
+  // 点击复制回调
+  final CallBack? onTapCopy;
+
+  // 点击转发回调
+  final CallBack? onTapRetransmission;
+
+  // 点击删除回调
+  final CallBack? onTapDelete;
+
+  // 点击撤回回调
+  final CallBack? onTapRetract;
+
+  // 点击引用回调
+  final CallBack? onTapCite;
+
   const ChatMessage({
     super.key,
     this.chatPortrait = 'http://192.168.101.4:9000/linyu/default-portrait.jpg',
+    this.onTapCopy,
+    this.onTapRetransmission,
+    this.onTapDelete,
+    this.onTapRetract,
+    this.onTapCite,
     required this.msg,
     required this.chatInfo,
     required this.member,
@@ -71,7 +94,7 @@ class ChatMessage extends StatelessThemeWidget {
                 const SizedBox(width: 5),
                 if (isRight)
                   CustomPortrait(
-                    url: globalData.currentAvatarUrl?? '',
+                    url: globalData.currentAvatarUrl ?? '',
                     size: 40,
                   ),
               ],
@@ -96,7 +119,7 @@ class ChatMessage extends StatelessThemeWidget {
                   const SizedBox(width: 5),
                   if (isRight)
                     CustomPortrait(
-                      url: globalData.currentAvatarUrl?? '',
+                      url: globalData.currentAvatarUrl ?? '',
                       size: 38.7,
                     ),
                 ],
@@ -119,25 +142,81 @@ class ChatMessage extends StatelessThemeWidget {
     }
   }
 
+  List<PopMenuItemModel> menuItems() => [
+        if(msg['msgContent']['type'] == 'text')PopMenuItemModel(
+          title: '复制',
+          icon: Icons.content_copy,
+          callback:
+              onTapCopy ?? (data) => debugPrint("data: ${data.toString()}"),
+        ),
+        PopMenuItemModel(
+            title: '转发',
+            icon: Icons.send,
+            callback: onTapRetransmission ??
+                (data) => debugPrint("data: ${data.toString()}")),
+        // PopMenuItemModel(
+        //     title: '收藏',
+        //     icon: Icons.collections,
+        //     callback: (data) {
+        //       debugPrint("data: " + data);
+        //     }),
+        PopMenuItemModel(
+            title: '删除',
+            icon: Icons.delete,
+            callback: onTapDelete ??
+                (data) => debugPrint("data: ${data.toString()}")),
+        if(msg['fromId'] == globalData.currentUserId)PopMenuItemModel(
+            title: '撤回',
+            icon: Icons.reply,
+            callback: onTapRetract ??
+                (data) => debugPrint("data: ${data.toString()}")),
+        // PopMenuItemModel(
+        //     title: '多选',
+        //     icon: Icons.playlist_add_check,
+        //     callback:  (data) {
+        //       debugPrint("data: ${data.toString()}");
+        //     }),
+        PopMenuItemModel(
+            title: '引用',
+            icon: Icons.format_quote,
+            callback:
+                onTapCite ?? (data) => debugPrint("data: ${data.toString()}")),
+        // PopMenuItemModel(
+        //     title: '提醒',
+        //     icon: Icons.add_alert,
+        //     callback: (data) {
+        //       debugPrint("data: " + data);
+        //     }),
+        // PopMenuItemModel(
+        //     title: '搜一搜',
+        //     icon: Icons.search,
+        //     callback: (data) {
+        //       debugPrint("data: " + data);
+        //     }),
+      ];
+
   Widget getComponentByType(String? type, bool isRight) {
-    switch (type) {
-      case 'text':
-        return TextMessage(
-          value: msg,
-          isRight: isRight,
-        );
-      case 'file':
-        return FileMessage(value: msg, isRight: isRight);
-      case 'img':
-        return ImageMessage(value: msg, isRight: isRight);
-      case 'retraction':
-        return RetractionMessage(isRight: isRight);
-      case 'voice':
-        return VoiceMessage(value: msg, isRight: isRight);
-      case 'call':
-        return CallMessage(value: msg, isRight: isRight);
-      default:
-        return const Text('暂不支持该消息类型');
+    final messageMap = {
+      'text': () => TextMessage(value: msg, isRight: isRight),
+      'file': () => FileMessage(value: msg, isRight: isRight),
+      'img': () => ImageMessage(value: msg, isRight: isRight),
+      'retraction': () => RetractionMessage(isRight: isRight),
+      'voice': () => VoiceMessage(value: msg, isRight: isRight),
+      'call': () => CallMessage(value: msg, isRight: isRight),
+    };
+
+    if (messageMap.containsKey(type)) {
+      return QuickPopUpMenu(
+        showArrow: true,
+        useGridView: false,
+        pressType: PressType.longPress,
+        menuItems: menuItems(),
+        dataObj: messageMap[type]!(),
+        child: messageMap[type]!(),
+      ); // 调用对应的构建函数
+    } else {
+      // 异常处理
+      return const Text('暂不支持该消息类型');
     }
   }
 }
