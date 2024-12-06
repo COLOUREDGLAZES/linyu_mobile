@@ -117,6 +117,7 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                                 ),
                               ...controller.msgList.map(
                                 (msg) => GestureDetector(
+                                  key: ValueKey(msg['id']),
                                   behavior: HitTestBehavior.translucent,
                                   onTap: () {
                                     hidePanel();
@@ -127,11 +128,11 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                                         Clipboard.setData(ClipboardData(
                                             text: msg['msgContent']
                                                 ['content'])),
-                                    onTapRetract:(data){
-
-                                    },
+                                    onTapRetract: (data) =>
+                                        controller.retractMsg(data, msg),
                                     msg: msg,
-                                    chatPortrait: controller.chatInfo['portrait'],
+                                    chatPortrait:
+                                        controller.chatInfo['portrait'],
                                     chatInfo: controller.chatInfo,
                                     member: controller.members[msg['fromId']],
                                   ),

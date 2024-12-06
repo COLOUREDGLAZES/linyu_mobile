@@ -39,4 +39,25 @@ extension UsersListExtension<E extends Map<String, dynamic>> on List {
     }
     return copyList; // 返回复制后的列表
   }
+
+  List replace(dynamic oldValue, dynamic newValue, {List? list}) {
+    List sourceList = list ?? this.copy();
+    // 如果源列表为空，直接返回空列表
+    if (sourceList.isEmpty) return [];
+    try {
+      // 遍历列表并进行替换
+      for (var i = 0; i < sourceList.length; i++) {
+        if (sourceList[i]['id'] == oldValue['id']) {
+          sourceList[i] = newValue;
+          break; // 找到并替换后退出循环
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('替换值时发生错误: $e'); // 输出错误信息
+      }
+    }
+
+    return sourceList; // 返回处理后的列表
+  }
 }

@@ -23,8 +23,10 @@ import 'package:linyu_mobile/api/chat_list_api.dart';
 import 'package:linyu_mobile/api/msg_api.dart';
 import 'package:linyu_mobile/api/video_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
+import 'package:linyu_mobile/pages/navigation/contacts/create_chat_group/select_user/index.dart';
 import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/cropPicture.dart';
+import 'package:linyu_mobile/utils/extension.dart';
 import 'package:linyu_mobile/utils/getx_config/GlobalData.dart';
 import 'package:linyu_mobile/utils/web_socket.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
@@ -60,23 +62,48 @@ class ChatFrameLogic extends GetxController {
     chatInfo = Get.arguments?['chatInfo'] ?? {};
     targetId = chatInfo['fromId'] ?? '';
     super.onInit();
-    onGetMembers();
-    onGetMsgRecode();
-    eventListen();
-    onRead();
-
+    _onGetMembers();
+    _onGetMsgRecode();
+    _eventListen();
+    _onRead();
     // 添加滚动监听
     scrollController.addListener(() {
       if (scrollController.hasClients) {
         if (scrollController.position.pixels ==
             scrollController.position.minScrollExtent) {
-          loadMore();
+          _loadMore();
         }
       }
     });
   }
 
-  void eventListen() {
+  void retractMsg(dynamic data, dynamic msg) async {
+    try {
+      final result = await _msgApi.retract(msg['id']);
+      if (result['code'] == 0) {
+        // List<dynamic> newMsgList = msgList.copy();
+        // for (int i = 0; i < newMsgList.length; i++) {
+        //   if (newMsgList[i]['id'] == msg['id']) {
+        //     newMsgList[i] = result['data'];
+        //     break;
+        //   }
+        // }
+        // msgList = newMsgList;
+        msgList = msgList.replace(msg, result['data']);
+        CustomFlutterToast.showSuccessToast('撤回成功');
+      } else {
+        CustomFlutterToast.showErrorToast(
+            '撤回失败: ${result['message'] ?? '未知错误'}');
+      }
+    } catch (e) {
+      CustomFlutterToast.showErrorToast('撤回失败: $e');
+    } finally {
+      isLoading = false;
+      update([const Key('chat_frame')]);
+    }
+  }
+
+  void _eventListen() {
     // 监听消息
     _subscription = _wsManager.eventStream.listen((event) {
       if (event['type'] == 'on-receive-msg') {
@@ -86,14 +113,14 @@ class ChatFrameLogic extends GetxController {
             (data['fromId'] == _globalData.currentUserId &&
                 data['source'] == 'user' &&
                 data['toId'] == targetId)) {
-          onRead();
+          _onRead();
           msgListAddMsg(event['content']);
         }
       }
     });
   }
 
-  void onGetMembers() async {
+  void _onGetMembers() async {
     if (chatInfo['type'] == 'group') {
       await _chatGroupMemberApi.list(targetId).then((res) {
         if (res['code'] == 0) {
@@ -104,7 +131,7 @@ class ChatFrameLogic extends GetxController {
     }
   }
 
-  Future<void> onGetMsgRecode() async {
+  Future<void> _onGetMsgRecode() async {
     isLoading = true;
     update([const Key('chat_frame')]);
     try {
@@ -122,7 +149,7 @@ class ChatFrameLogic extends GetxController {
     }
   }
 
-  Future<void> loadMore() async {
+  Future<void> _loadMore() async {
     if (isLoading || !hasMore) return;
 
     isLoading = true;
@@ -177,7 +204,8 @@ class ChatFrameLogic extends GetxController {
   void toDetailsPage() {
     if (chatInfo['type'] == 'group') {
       // Get.toNamed('/chat_group_info', arguments: {'chatGroupId': targetId});
-      Get.offAndToNamed('/chat_group_info', arguments: {'chatGroupId': targetId});
+      Get.offAndToNamed('/chat_group_info',
+          arguments: {'chatGroupId': targetId});
     } else {
       // Get.toNamed('/friend_info', arguments: {'friendId': targetId});
       Get.offAndToNamed('/friend_info', arguments: {'friendId': targetId});
@@ -197,7 +225,7 @@ class ChatFrameLogic extends GetxController {
         msgContentController.text = '';
         isSend.value = false;
         msgListAddMsg(res['data']);
-        onRead();
+        _onRead();
       }
     });
   }
@@ -212,7 +240,7 @@ class ChatFrameLogic extends GetxController {
     scrollBottom();
   }
 
-  void onRead() async {
+  void _onRead() async {
     await _chatListApi.read(targetId);
     _globalData.onGetUserUnreadInfo();
   }
@@ -272,7 +300,7 @@ class ChatFrameLogic extends GetxController {
           FormData formData = FormData.fromMap(map);
           _msgApi.sendMedia(formData).then((v) {
             msgListAddMsg(res['data']);
-            onRead();
+            _onRead();
           });
         }
       }
@@ -310,7 +338,7 @@ class ChatFrameLogic extends GetxController {
           FormData formData = FormData.fromMap(map);
           _msgApi.sendMedia(formData).then((v) {
             msgListAddMsg(res['data']);
-            onRead();
+            _onRead();
           });
         }
       }

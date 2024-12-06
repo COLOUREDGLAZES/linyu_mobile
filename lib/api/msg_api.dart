@@ -35,4 +35,10 @@ class MsgApi {
         await _dio.post('/v1/api/message/send/file/form', data: formData);
     return response.data;
   }
+
+  Future<Map<String, dynamic>> retract(String msgId) async {
+    final response =
+        await _dio.post('/v1/api/message/retraction', data: {'msgId': msgId});
+    return response.data;
+  }
 }
