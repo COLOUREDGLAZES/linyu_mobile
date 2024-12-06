@@ -57,7 +57,7 @@ class ChatMessage extends StatelessThemeWidget {
                       : CrossAxisAlignment.start,
                   children: [
                     Text(
-                      handlerGroupDisplayName() ?? '',
+                      _handlerGroupDisplayName(),
                       style: const TextStyle(
                         color: Color(0xFF969696),
                         fontSize: 12,
@@ -106,7 +106,7 @@ class ChatMessage extends StatelessThemeWidget {
     );
   }
 
-  String handlerGroupDisplayName() {
+  String _handlerGroupDisplayName() {
     if (member == null) {
       return msg['msgContent']?['formUserName'] ?? '';
     }

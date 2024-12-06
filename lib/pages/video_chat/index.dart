@@ -170,6 +170,9 @@ class VideoChatPage extends CustomWidget<VideoChatLogic> {
           children: [
             Obx(
               () => CustomIconButton(
+                // icon: IconData(
+                //     controller.isAudioEnabled.value ? 0xe654 : 0xe653,
+                //     fontFamily: 'IconFont'),
                 icon: controller.isAudioEnabled.value
                     ? const IconData(0xe654, fontFamily: 'IconFont')
                     : const IconData(0xe653, fontFamily: 'IconFont'),

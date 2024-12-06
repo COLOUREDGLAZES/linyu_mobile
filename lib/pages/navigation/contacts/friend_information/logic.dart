@@ -219,7 +219,7 @@ class FriendInformationLogic extends Logic {
   void onToSendMsg() {
     _chatListApi.create(friendId, type: 'user').then((res) {
       if (res['code'] == 0) {
-        Get.toNamed('/chat_frame', arguments: {
+        Get.offAndToNamed('/chat_frame', arguments: {
           'chatInfo': res['data'],
         });
       }

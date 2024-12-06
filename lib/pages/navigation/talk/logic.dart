@@ -37,9 +37,6 @@ class TalkLogic extends GetxController {
     refreshData();
     scrollController.addListener(scrollListener);
     currentUserId = prefs.getString('userId') ?? '';
-    // SharedPreferences.getInstance().then((prefs) {
-    //   currentUserId = prefs.getString('userId') ?? '';
-    // });
   }
 
   @override

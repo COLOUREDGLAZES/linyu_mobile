@@ -33,7 +33,7 @@ class EditMineLogic extends Logic<EditMinePage> {
 
   final ContactsLogic _contactsLogic = getx.Get.find<ContactsLogic>();
 
-  final TalkLogic _talkLogic = getx.Get.find<TalkLogic>();
+  // final TalkLogic _talkLogic = getx.Get.find<TalkLogic>();
 
   final GlobalThemeConfig _theme = GetInstance().find<GlobalThemeConfig>();
 
@@ -293,10 +293,10 @@ class EditMineLogic extends Logic<EditMinePage> {
   void _whenClose() async {
     _theme.changeThemeMode(_prefs.getString('sex') == "女" ? "pink" : "blue");
     //以及返回上一页时更新页面
-    _mineLogic.init();
-    _chatListLogic.onGetChatList();
-    _contactsLogic.init();
-    _talkLogic.init();
+    if(_mineLogic.initialized)_mineLogic.init();
+    if(_chatListLogic.initialized)_chatListLogic.onGetChatList();
+    if(_contactsLogic.initialized)_contactsLogic.init();
+    // if(_talkLogic.initialized)_talkLogic.init();
 
   }
 

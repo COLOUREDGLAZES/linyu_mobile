@@ -104,7 +104,8 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                                   child: ChatMessage(
                                     msg: msg,
                                     chatInfo: controller.chatInfo,
-                                    chatPortrait:  controller.chatInfo['portrait'],
+                                    chatPortrait:
+                                        controller.chatInfo['portrait'],
                                     member: controller.members[msg['fromId']],
                                   ),
                                 ),
@@ -130,101 +131,102 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                 ),
               ),
             ),
-            Obx(() {
-              return Container(
-                color: const Color(0xFFEDF2F9),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if (controller.isRecording.value)
-                          _buildIconButton1(
-                            const IconData(0xe661, fontFamily: 'IconFont'),
-                            () {
-                              controller.panelType.value = 'none';
-                              controller.isRecording.value = false;
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                controller.focusNode.requestFocus();
-                              });
-                            },
-                          )
-                        else
-                          _buildIconButton1(
-                            const IconData(0xe7e2, fontFamily: 'IconFont'),
-                            () {
-                              controller.panelType.value = 'none';
-                              controller.isRecording.value = true;
-                            },
-                          ),
-                        const SizedBox(width: 5),
-                        if (controller.isRecording.value)
-                          Expanded(
-                            child: CustomVoiceRecordButton(
-                                onFinish: controller.onSendVoiceMsg),
-                          )
-                        else
-                          Expanded(
-                            child: Obx(
-                              () => CustomTextField(
-                                controller: controller.msgContentController,
-                                maxLines: 3,
-                                minLines: 1,
-                                readOnly: controller.isReadOnly.value,
-                                hintTextColor: theme.primaryColor,
-                                hintText: '请输入消息',
-                                vertical: 8,
-                                focusNode: controller.focusNode,
-                                fillColor: Colors.white.withOpacity(0.9),
-                                onTap: () {
-                                  controller.isReadOnly.value = false;
-                                  controller.panelType.value = 'keyboard';
-                                },
-                                onChanged: (value) {
-                                  controller.isSend.value =
-                                      value.trim().isNotEmpty;
-                                },
+            Obx(() => Container(
+                  color: const Color(0xFFEDF2F9),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          if (controller.isRecording.value)
+                            _buildIconButton1(
+                              const IconData(0xe661, fontFamily: 'IconFont'),
+                              () {
+                                controller.panelType.value = 'none';
+                                controller.isRecording.value = false;
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  controller.focusNode.requestFocus();
+                                });
+                              },
+                            )
+                          else
+                            _buildIconButton1(
+                              const IconData(0xe7e2, fontFamily: 'IconFont'),
+                              () {
+                                controller.panelType.value = 'none';
+                                controller.isRecording.value = true;
+                              },
+                            ),
+                          const SizedBox(width: 5),
+                          if (controller.isRecording.value)
+                            Expanded(
+                              child: CustomVoiceRecordButton(
+                                  onFinish: controller.onSendVoiceMsg),
+                            )
+                          else
+                            Expanded(
+                              child: Obx(
+                                () => CustomTextField(
+                                  controller: controller.msgContentController,
+                                  maxLines: 3,
+                                  minLines: 1,
+                                  readOnly: controller.isReadOnly.value,
+                                  hintTextColor: theme.primaryColor,
+                                  hintText: '请输入消息',
+                                  vertical: 8,
+                                  focusNode: controller.focusNode,
+                                  fillColor: Colors.white.withOpacity(0.9),
+                                  onTap: () {
+                                    controller.isReadOnly.value = false;
+                                    controller.panelType.value = 'keyboard';
+                                  },
+                                  onChanged: (value) {
+                                    controller.isSend.value =
+                                        value.trim().isNotEmpty;
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                        const SizedBox(width: 5),
-                        if (!controller.isRecording.value)
-                          _buildIconButton1(
-                            const IconData(0xe632, fontFamily: 'IconFont'),
-                            () {
-                              controller.isReadOnly.value = true;
-                              controller.panelType.value = 'emoji';
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                controller.focusNode.requestFocus();
-                              });
-                            },
-                          ),
-                        if (controller.isSend.value)
-                          CustomButton(
-                            text: '发送',
-                            onTap: controller.sendTextMsg,
-                            width: 60,
-                            textSize: 14,
-                            height: 34,
-                          )
-                        else
-                          _buildIconButton1(
-                            const IconData(0xe636, fontFamily: 'IconFont'),
-                            () {
-                              controller.focusNode.unfocus();
-                              controller.panelType.value = 'more';
-                            },
-                          ),
-                      ],
-                    ),
-                    Obx(() => _buildPanelContainer(controller.panelType.value)),
-                  ],
-                ),
-              );
-            }),
+                          const SizedBox(width: 5),
+                          if (!controller.isRecording.value)
+                            _buildIconButton1(
+                              const IconData(0xe632, fontFamily: 'IconFont'),
+                              () {
+                                controller.isReadOnly.value = true;
+                                controller.panelType.value = 'emoji';
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  controller.focusNode.requestFocus();
+                                });
+                              },
+                            ),
+                          if (controller.isSend.value)
+                            CustomButton(
+                              text: '发送',
+                              onTap: controller.sendTextMsg,
+                              width: 60,
+                              textSize: 14,
+                              height: 34,
+                            )
+                          else
+                            _buildIconButton1(
+                              const IconData(0xe636, fontFamily: 'IconFont'),
+                              () {
+                                controller.focusNode.unfocus();
+                                controller.panelType.value = 'more';
+                              },
+                            ),
+                        ],
+                      ),
+                      Obx(() =>
+                          _buildPanelContainer(controller.panelType.value)),
+                    ],
+                  ),
+                )),
           ],
         ),
       ),
