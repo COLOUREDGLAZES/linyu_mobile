@@ -87,7 +87,8 @@ class SearchInfoLogic extends Logic {
 
   //进入好友申请页面
   void goApplyFriend() =>
-      Get.toNamed('/friend_request', arguments: {'friendInfo': _friendInfo});
+      // Get.toNamed('/friend_request', arguments: {'friendInfo': _friendInfo});
+      Get.offAndToNamed('/friend_request', arguments: {'friendInfo': _friendInfo});
 
   @override
   void onInit() {

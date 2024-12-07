@@ -1,6 +1,7 @@
 import 'package:chat_bottom_container/panel_container.dart';
 import 'package:chat_bottom_container/typedef.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -115,14 +116,12 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                                     ),
                                   ),
                                 ),
-                              ...controller.msgList.map(
-                                (msg) => GestureDetector(
-                                  key: ValueKey(msg['id']),
-                                  behavior: HitTestBehavior.translucent,
-                                  onTap: () {
-                                    hidePanel();
-                                  },
-                                  child: ChatMessage(
+                              ...controller.msgList.map((msg) => ChatMessage(
+                                    key: ValueKey(msg['id']),
+                                    onTapMsg: () {
+                                      debugPrint('onTapMsg ${msg['id']}');
+                                      hidePanel();
+                                    },
                                     onTapCopy: (data) =>
                                         //复制到剪切板
                                         Clipboard.setData(ClipboardData(
@@ -135,9 +134,7 @@ class ChatFramePage extends CustomWidget<ChatFrameLogic>
                                         controller.chatInfo['portrait'],
                                     chatInfo: controller.chatInfo,
                                     member: controller.members[msg['fromId']],
-                                  ),
-                                ),
-                              ),
+                                  )),
                             ],
                           ),
                           if (controller.isLoading)

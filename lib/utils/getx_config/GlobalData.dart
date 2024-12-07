@@ -12,12 +12,14 @@ class GlobalData extends GetxController {
   late String? currentAvatarUrl = 'http://192.168.101.4:9000/linyu/default-portrait.jpg';
 
   Future<void> init() async {
-    await onGetUserUnreadInfo();
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('x-token');
+    if (token == null) return;
     currentUserId = prefs.getString('userId') ?? '';
     currentUserAccount = prefs.getString('account') ?? '';
     currentUserName = prefs.getString('username') ?? '';
     currentAvatarUrl = prefs.getString('portrait') ?? 'http://192.168.101.4:9000/linyu/default-portrait.jpg';
+    await onGetUserUnreadInfo();
   }
 
   Future<void> onGetUserUnreadInfo() async {

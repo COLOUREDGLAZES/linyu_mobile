@@ -1,4 +1,5 @@
 import 'package:custom_pop_up_menu_fork/custom_pop_up_menu.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/call.dart';
@@ -20,6 +21,7 @@ class ChatMessage extends StatelessThemeWidget {
   final Map<String, dynamic> chatInfo;
   final Map<String, dynamic>? member;
   final String? chatPortrait;
+  final void Function()? onTapMsg;
 
   // 点击复制回调
   final CallBack? onTapCopy;
@@ -44,6 +46,7 @@ class ChatMessage extends StatelessThemeWidget {
     this.onTapDelete,
     this.onTapRetract,
     this.onTapCite,
+    this.onTapMsg,
     required this.msg,
     required this.chatInfo,
     required this.member,
@@ -64,11 +67,14 @@ class ChatMessage extends StatelessThemeWidget {
           Align(
             alignment: isRight ? Alignment.centerRight : Alignment.centerLeft,
             child: Row(
-              mainAxisAlignment:
-                  isRight ? MainAxisAlignment.end : MainAxisAlignment.start,
+              mainAxisAlignment: msg['msgContent']['type'] == 'retraction'
+                  ? MainAxisAlignment.center
+                  : isRight
+                      ? MainAxisAlignment.end
+                      : MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (!isRight)
+                if (!isRight && msg['msgContent']['type'] != 'retraction')
                   CustomPortrait(
                     url: msg['msgContent']?['formUserPortrait'],
                     size: 40,
@@ -79,20 +85,22 @@ class ChatMessage extends StatelessThemeWidget {
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      _handlerGroupDisplayName(),
-                      style: const TextStyle(
-                        color: Color(0xFF969696),
-                        fontSize: 12,
+                    if (msg['msgContent']['type'] != 'retraction')
+                      Text(
+                        _handlerGroupDisplayName(),
+                        style: const TextStyle(
+                          color: Color(0xFF969696),
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
                     const SizedBox(height: 5),
                     // 动态组件
-                    getComponentByType(msg['msgContent']['type'], isRight),
+                    // getComponentByType(msg['msgContent']['type'], isRight),
+                    getComponentByType(msg, isRight),
                   ],
                 ),
                 const SizedBox(width: 5),
-                if (isRight)
+                if (isRight && msg['msgContent']['type'] != 'retraction')
                   CustomPortrait(
                     url: globalData.currentAvatarUrl ?? '',
                     size: 40,
@@ -105,19 +113,23 @@ class ChatMessage extends StatelessThemeWidget {
           Align(
               alignment: isRight ? Alignment.centerRight : Alignment.centerLeft,
               child: Row(
-                mainAxisAlignment:
-                    isRight ? MainAxisAlignment.end : MainAxisAlignment.start,
+                mainAxisAlignment: msg['msgContent']['type'] == 'retraction'
+                    ? MainAxisAlignment.center
+                    : isRight
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (!isRight)
+                  if (!isRight && msg['msgContent']['type'] != 'retraction')
                     CustomPortrait(
                       url: chatPortrait ?? '',
                       size: 38.7,
                     ),
                   const SizedBox(width: 5),
-                  getComponentByType(msg['msgContent']['type'], isRight),
+                  // getComponentByType(msg['msgContent']['type'], isRight),
+                  getComponentByType(msg, isRight),
                   const SizedBox(width: 5),
-                  if (isRight)
+                  if (isRight && msg['msgContent']['type'] != 'retraction')
                     CustomPortrait(
                       url: globalData.currentAvatarUrl ?? '',
                       size: 38.7,
@@ -142,13 +154,15 @@ class ChatMessage extends StatelessThemeWidget {
     }
   }
 
-  List<PopMenuItemModel> menuItems() => [
-        if(msg['msgContent']['type'] == 'text')PopMenuItemModel(
-          title: '复制',
-          icon: Icons.content_copy,
-          callback:
-              onTapCopy ?? (data) => debugPrint("data: ${data.toString()}"),
-        ),
+  List<PopMenuItemModel> menuItems(String type) => [
+        // if (msg['msgContent']['type'] == 'text')
+        if (type == 'text')
+          PopMenuItemModel(
+            title: '复制',
+            icon: Icons.content_copy,
+            callback:
+                onTapCopy ?? (data) => debugPrint("data: ${data.toString()}"),
+          ),
         PopMenuItemModel(
             title: '转发',
             icon: Icons.send,
@@ -165,11 +179,12 @@ class ChatMessage extends StatelessThemeWidget {
             icon: Icons.delete,
             callback: onTapDelete ??
                 (data) => debugPrint("data: ${data.toString()}")),
-        if(msg['fromId'] == globalData.currentUserId)PopMenuItemModel(
-            title: '撤回',
-            icon: Icons.reply,
-            callback: onTapRetract ??
-                (data) => debugPrint("data: ${data.toString()}")),
+        if (msg['fromId'] == globalData.currentUserId)
+          PopMenuItemModel(
+              title: '撤回',
+              icon: Icons.reply,
+              callback: onTapRetract ??
+                  (data) => debugPrint("data: ${data.toString()}")),
         // PopMenuItemModel(
         //     title: '多选',
         //     icon: Icons.playlist_add_check,
@@ -195,12 +210,19 @@ class ChatMessage extends StatelessThemeWidget {
         //     }),
       ];
 
-  Widget getComponentByType(String? type, bool isRight) {
+  Widget getComponentByType(Map<String, dynamic> msg, bool isRight) {
+    if (kDebugMode) {
+      print(msg);
+    }
+    String? type = msg['msgContent']['type'];
     final messageMap = {
       'text': () => TextMessage(value: msg, isRight: isRight),
       'file': () => FileMessage(value: msg, isRight: isRight),
       'img': () => ImageMessage(value: msg, isRight: isRight),
-      'retraction': () => RetractionMessage(isRight: isRight),
+      'retraction': (String? username) => RetractionMessage(
+            isRight: isRight,
+            userName: username,
+          ),
       'voice': () => VoiceMessage(value: msg, isRight: isRight),
       'call': () => CallMessage(value: msg, isRight: isRight),
     };
@@ -210,9 +232,16 @@ class ChatMessage extends StatelessThemeWidget {
         showArrow: true,
         useGridView: false,
         pressType: PressType.longPress,
-        menuItems: menuItems(),
-        dataObj: messageMap[type]!(),
-        child: messageMap[type]!(),
+        menuItems: menuItems(type!),
+        dataObj: type == 'retraction'
+            ? messageMap[type]!(msg['msgContent']['formUserName'])
+            : messageMap[type]!(),
+        child: GestureDetector(
+          onTap: onTapMsg,
+          child: type == 'retraction'
+              ? messageMap[type]!(msg['msgContent']['formUserName'])
+              : messageMap[type]!(),
+        ),
       ); // 调用对应的构建函数
     } else {
       // 异常处理
