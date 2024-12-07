@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:linyu_mobile/api/Http.dart';
+import 'package:linyu_mobile/api/http.dart';
 
 class UserApi {
   final Dio _dio = Http().dio;
@@ -145,8 +145,20 @@ class UserApi {
   }
 
   Future<Map<String, dynamic>> unread() async {
-    final response = await _dio.get('/v1/api/user/unread');
-    return response.data;
+    try {
+      final response = await _dio.get('/v1/api/user/unread');
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception('加载未读信息失败，状态码: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      print('获取未读信息时发生错误: ${e.message}');
+      rethrow; // 重新抛出异常以便上层处理
+    } catch (e) {
+      print('发生了未知错误: $e');
+      throw Exception('发生了未知错误');
+    }
   }
 
   Future<dynamic> getNetworkImage(imageUrl) async {

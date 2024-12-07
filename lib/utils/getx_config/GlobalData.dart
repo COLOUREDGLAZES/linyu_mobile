@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/api/user_api.dart';
 import 'package:linyu_mobile/utils/app_badger.dart';
@@ -9,24 +10,52 @@ class GlobalData extends GetxController {
   var currentUserId = '';
   var currentUserAccount = '';
   late String? currentUserName;
-  late String? currentAvatarUrl = 'http://192.168.101.4:9000/linyu/default-portrait.jpg';
+  late String? currentAvatarUrl =
+      'http://192.168.101.4:9000/linyu/default-portrait.jpg';
 
   Future<void> init() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('x-token');
-    if (token == null) return;
-    currentUserId = prefs.getString('userId') ?? '';
-    currentUserAccount = prefs.getString('account') ?? '';
-    currentUserName = prefs.getString('username') ?? '';
-    currentAvatarUrl = prefs.getString('portrait') ?? 'http://192.168.101.4:9000/linyu/default-portrait.jpg';
-    await onGetUserUnreadInfo();
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('x-token');
+      if (token == null) return;
+
+      currentUserId = prefs.getString('userId') ?? '';
+      currentUserAccount = prefs.getString('account') ?? '';
+      currentUserName = prefs.getString('username');
+      currentAvatarUrl = prefs.getString('portrait') ??
+          'http://192.168.101.4:9000/linyu/default-portrait.jpg';
+
+      // 仅当用户 ID 不为空时才获取未读信息
+      if (currentUserId.isNotEmpty) {
+        await onGetUserUnreadInfo();
+      }
+    } catch (e) {
+      // 增加错误处理
+      if (kDebugMode) {
+        print('初始化失败: $e');
+      }
+      // 根据需求可以添加其他处理逻辑，比如记录日志等
+    }
   }
 
   Future<void> onGetUserUnreadInfo() async {
-    final result = await _userApi.unread();
-    if (result['code'] == 0) {
-      unread.assignAll(Map<String, int>.from(result['data']));
-      AppBadger.setCount(getUnreadCount('chat'), getUnreadCount('notify'));
+    try {
+      final result = await _userApi.unread();
+      if (result['code'] == 0) {
+        unread.assignAll(Map<String, int>.from(result['data']));
+        // 优化：仅在有未读消息时更新角标
+        int chatCount = getUnreadCount('chat');
+        int notifyCount = getUnreadCount('notify');
+        if (chatCount > 0 || notifyCount > 0) {
+          AppBadger.setCount(chatCount, notifyCount);
+        }
+      }
+    } catch (e) {
+      // 增加错误处理
+      if (kDebugMode) {
+        print('获取未读信息失败: $e');
+      }
+      // 这里可以根据需求添加其他处理逻辑，比如记录日志等
     }
   }
 
@@ -42,5 +71,4 @@ class GlobalData extends GetxController {
     super.onInit();
     init();
   }
-
 }

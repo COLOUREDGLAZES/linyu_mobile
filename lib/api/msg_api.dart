@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:linyu_mobile/api/Http.dart';
+import 'package:linyu_mobile/api/http.dart';
 
 class MsgApi {
   final Dio _dio = Http().dio;
@@ -12,12 +12,24 @@ class MsgApi {
     return _instance;
   }
 
-  Future<Map<String, dynamic>> record(
-      String targetId, int index, int num) async {
-    final response = await _dio.post('/v1/api/message/record',
-        data: {'targetId': targetId, 'index': index, 'num': num});
-    return response.data;
+ Future<Map<String, dynamic>> record(String targetId, int index, int num) async {
+  try {
+    final response = await _dio.post('/v1/api/message/record', data: {
+      'targetId': targetId,
+      'index': index,
+      'num': num,
+    });
+    return response.data ?? {}; // 增加空值处理
+  } on DioException catch (e) {
+    // 适当的错误处理机制
+    print('请求失败: ${e.message}');
+    return {'error': e.message}; // 返回错误信息
+  } catch (e) {
+    print('发生未知错误: $e');
+    return {'error': '发生未知错误'};
   }
+}
+
 
   Future<Map<String, dynamic>> send(dynamic msg) async {
     final response = await _dio.post('/v1/api/message/send', data: msg);

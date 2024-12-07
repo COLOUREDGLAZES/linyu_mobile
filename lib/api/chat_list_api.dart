@@ -1,6 +1,6 @@
 // lib/services/user_service.dart
 import 'package:dio/dio.dart';
-import 'package:linyu_mobile/api/Http.dart';
+import 'package:linyu_mobile/api/http.dart';
 
 class ChatListApi {
   final Dio _dio = Http().dio;
@@ -10,8 +10,18 @@ class ChatListApi {
   ChatListApi._internal();
 
   Future<Map<String, dynamic>> list() async {
-    final response = await _dio.get('/v1/api/chat-list/list');
-    return response.data;
+    try {
+      final response = await _dio.get('/v1/api/chat-list/list');
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        // 处理非200的状态码，抛出异常
+        throw Exception('获取聊天列表失败，状态码: ${response.statusCode}');
+      }
+    } catch (e) {
+      // 捕获并处理网络错误或其他异常
+      throw Exception('网络请求失败: $e');
+    }
   }
 
   factory ChatListApi() {
@@ -51,7 +61,8 @@ class ChatListApi {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> create(String userId, {String? type = 'user'}) async {
+  Future<Map<String, dynamic>> create(String userId,
+      {String? type = 'user'}) async {
     final response = await _dio.post(
       '/v1/api/chat-list/create',
       data: {
@@ -61,5 +72,4 @@ class ChatListApi {
     );
     return response.data;
   }
-
 }

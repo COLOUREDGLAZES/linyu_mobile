@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -84,8 +85,17 @@ class RegisterPageLogic extends GetxController {
 
   //发送验证码
   void onTapSendMail() async {
-    if (countdownTime == 0) {
-      final String mail = mailController.text;
+    if (countdownTime > 0) {
+      return; // 如果倒计时未结束，直接返回
+    }
+
+    final String mail = mailController.text;
+    if (mail.isEmpty) {
+      CustomFlutterToast.showErrorToast("邮箱不能为空");
+      return; // 若邮箱为空，提示用户并返回
+    }
+
+    try {
       final emailVerificationResult = await _useApi.emailVerification(mail);
       if (emailVerificationResult['code'] == 0) {
         CustomFlutterToast.showSuccessToast("发送成功~");
@@ -94,8 +104,14 @@ class RegisterPageLogic extends GetxController {
       } else {
         CustomFlutterToast.showErrorToast(emailVerificationResult['msg']);
       }
+    } catch (e) {
+      CustomFlutterToast.showErrorToast("发送验证码失败，请重试");
+      if (kDebugMode) {
+        print("Error sending email verification: $e");
+      } // 记录错误信息
     }
   }
+
 
   //注册
   void onRegister() async {

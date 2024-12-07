@@ -18,6 +18,7 @@ class ChatListLogic extends GetxController {
   final _wsManager = WebSocketUtil();
   StreamSubscription? _subscription;
   late dynamic currentUserInfo = {};
+
   GlobalData get globalData => GetInstance().find<GlobalData>();
 
   @override
@@ -35,19 +36,29 @@ class ChatListLogic extends GetxController {
     });
   }
 
-  void onGetChatList() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    currentUserInfo['name'] = prefs.getString('username');
-    currentUserInfo['portrait'] = prefs.getString('portrait');
-    currentUserInfo['account'] = prefs.getString('account');
-    currentUserInfo['sex'] = prefs.getString('sex');
-    _chatListApi.list().then((res) {
+  void onGetChatList() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      currentUserInfo = {
+        'name': prefs.getString('username'),
+        'portrait': prefs.getString('portrait'),
+        'account': prefs.getString('account'),
+        'sex': prefs.getString('sex'),
+      };
+
+      final res = await _chatListApi.list();
       if (res['code'] == 0) {
         topList = res['data']['tops'];
         otherList = res['data']['others'];
         update([const Key("chat_list")]);
+      } else {
+        // 处理错误情况，比如提示用户
+        print('获取聊天列表失败: ${res['message']}');
       }
-    });
+    } catch (e) {
+      // 捕获和处理异常
+      print('发生错误: $e');
+    }
   }
 
   void onTopStatus(String id, bool isTop) {

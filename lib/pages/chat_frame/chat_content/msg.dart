@@ -40,6 +40,9 @@ class ChatMessage extends StatelessThemeWidget {
   // 点击引用回调
   final CallBack? onTapCite;
 
+  // 点击转文字回调
+  final CallBack? onTapVoice;
+
   const ChatMessage({
     super.key,
     this.chatPortrait = 'http://192.168.101.4:9000/linyu/default-portrait.jpg',
@@ -50,6 +53,7 @@ class ChatMessage extends StatelessThemeWidget {
     this.onTapCite,
     this.onTapMsg,
     this.reEdit,
+    this.onTapVoice,
     required this.msg,
     required this.chatInfo,
     required this.member,
@@ -102,9 +106,15 @@ class ChatMessage extends StatelessThemeWidget {
                     getComponentByType(msg, isRight),
                   ],
                 ),
-                if (msg['msgContent']['type'] == 'retraction' && isRight)
+                if (msg['msgContent']['type'] == 'retraction' &&
+                    isRight &&
+                    msg['msgContent']['ext'] != null &&
+                    msg['msgContent']['ext'] == 'text')
                   const SizedBox(width: 5),
-                if (msg['msgContent']['type'] == 'retraction' && isRight)
+                if (msg['msgContent']['type'] == 'retraction' &&
+                    isRight &&
+                    msg['msgContent']['ext'] != null &&
+                    msg['msgContent']['ext'] == 'text')
                   Column(
                     children: [
                       const SizedBox(height: 6),
@@ -145,9 +155,15 @@ class ChatMessage extends StatelessThemeWidget {
                   const SizedBox(width: 5),
                   // getComponentByType(msg['msgContent']['type'], isRight),
                   getComponentByType(msg, isRight),
-                  if (msg['msgContent']['type'] == 'retraction' && isRight)
+                  if (msg['msgContent']['type'] == 'retraction' &&
+                      isRight &&
+                      msg['msgContent']['ext'] != null &&
+                      msg['msgContent']['ext'] == 'text')
                     const SizedBox(width: 1),
-                  if (msg['msgContent']['type'] == 'retraction' && isRight)
+                  if (msg['msgContent']['type'] == 'retraction' &&
+                      isRight &&
+                      msg['msgContent']['ext'] != null &&
+                      msg['msgContent']['ext'] == 'text')
                     Column(
                       children: [
                         const SizedBox(height: 1.2),
@@ -193,6 +209,13 @@ class ChatMessage extends StatelessThemeWidget {
             icon: Icons.content_copy,
             callback:
                 onTapCopy ?? (data) => debugPrint("data: ${data.toString()}"),
+          ),
+        if (type == 'voice')
+          PopMenuItemModel(
+            title: '转文字',
+            icon: Icons.text_fields,
+            callback:
+                onTapVoice ?? (data) => debugPrint("data: ${data.toString()}"),
           ),
         PopMenuItemModel(
             title: '转发',
@@ -243,37 +266,37 @@ class ChatMessage extends StatelessThemeWidget {
 
   Widget getComponentByType(Map<String, dynamic> msg, bool isRight) {
     if (kDebugMode) {
-      print(msg);
+      print('msg: ${msg['msgContent']['ext']}');
     }
     String? type = msg['msgContent']['type'];
     final messageMap = {
-      'text': () => TextMessage(value: msg, isRight: isRight),
-      'file': () => FileMessage(value: msg, isRight: isRight),
-      'img': () => ImageMessage(value: msg, isRight: isRight),
+      'text': (String? username) => TextMessage(value: msg, isRight: isRight),
+      'file': (String? username) => FileMessage(value: msg, isRight: isRight),
+      'img': (String? username) => ImageMessage(value: msg, isRight: isRight),
       'retraction': (String? username) => RetractionMessage(
             isRight: isRight,
             userName: username,
           ),
-      'voice': () => VoiceMessage(value: msg, isRight: isRight),
-      'call': () => CallMessage(value: msg, isRight: isRight),
+      'voice': (String? username) => VoiceMessage(value: msg, isRight: isRight),
+      'call': (String? username) => CallMessage(value: msg, isRight: isRight),
     };
 
     if (messageMap.containsKey(type)) {
-      return QuickPopUpMenu(
-        showArrow: true,
-        useGridView: false,
-        pressType: PressType.longPress,
-        menuItems: menuItems(type!),
-        dataObj: type == 'retraction'
-            ? messageMap[type]!(msg['msgContent']['formUserName'])
-            : messageMap[type]!(),
-        child: GestureDetector(
-          onTap: onTapMsg,
-          child: type == 'retraction'
-              ? messageMap[type]!(msg['msgContent']['formUserName'])
-              : messageMap[type]!(),
-        ),
-      ); // 调用对应的构建函数
+      final messageWidget =
+          messageMap[type]!(msg['msgContent']['formUserName']);
+      return type == 'retraction'
+          ? messageWidget
+          : QuickPopUpMenu(
+              showArrow: true,
+              useGridView: false,
+              pressType: PressType.longPress,
+              menuItems: menuItems(type!),
+              dataObj: messageWidget,
+              child: GestureDetector(
+                onTap: onTapMsg,
+                child: messageWidget,
+              ),
+            );
     } else {
       // 异常处理
       return const Text('暂不支持该消息类型');

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/getx_config/GlobalData.dart';
 import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
@@ -24,20 +25,28 @@ class NavigationLogic extends GetxController {
   }
 
   @override
-  void onInit() {
+   void onInit() {
     super.onInit();
-    (() async {
-      await globalData.init();
-      await NotificationUtil.initialize();
-      await NotificationUtil.createNotificationChannel();
-      await PermissionHandler.permissionRequest();
-      await connectWebSocket();
-      eventListen();
-    })();
+    _initializeServices().catchError((error) {
+      // 适当处理错误，例如记录日志或显示提示
+      if (kDebugMode) {
+        print('初始化过程中发生错误: $error');
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await initThemeData();
     });
   }
+
+  Future<void> _initializeServices() async {
+    await globalData.init();
+    await NotificationUtil.initialize();
+    await NotificationUtil.createNotificationChannel();
+    await PermissionHandler.permissionRequest();
+    await connectWebSocket();
+    eventListen();
+  }
+
 
   void eventListen() {
     // 监听消息
