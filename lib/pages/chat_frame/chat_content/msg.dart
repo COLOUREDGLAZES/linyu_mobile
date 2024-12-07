@@ -2,6 +2,7 @@ import 'package:custom_pop_up_menu_fork/custom_pop_up_menu.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
+import 'package:linyu_mobile/components/custom_text_button/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/call.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/file.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/image.dart';
@@ -22,6 +23,7 @@ class ChatMessage extends StatelessThemeWidget {
   final Map<String, dynamic>? member;
   final String? chatPortrait;
   final void Function()? onTapMsg;
+  final void Function()? reEdit;
 
   // 点击复制回调
   final CallBack? onTapCopy;
@@ -47,6 +49,7 @@ class ChatMessage extends StatelessThemeWidget {
     this.onTapRetract,
     this.onTapCite,
     this.onTapMsg,
+    this.reEdit,
     required this.msg,
     required this.chatInfo,
     required this.member,
@@ -99,6 +102,20 @@ class ChatMessage extends StatelessThemeWidget {
                     getComponentByType(msg, isRight),
                   ],
                 ),
+                if (msg['msgContent']['type'] == 'retraction' && isRight)
+                  const SizedBox(width: 5),
+                if (msg['msgContent']['type'] == 'retraction' && isRight)
+                  Column(
+                    children: [
+                      const SizedBox(height: 6),
+                      CustomTextButton('重新编辑',
+                          fontSize: 12,
+                          onTap: reEdit ??
+                              () {
+                                debugPrint("重新编辑");
+                              }),
+                    ],
+                  ),
                 const SizedBox(width: 5),
                 if (isRight && msg['msgContent']['type'] != 'retraction')
                   CustomPortrait(
@@ -128,6 +145,20 @@ class ChatMessage extends StatelessThemeWidget {
                   const SizedBox(width: 5),
                   // getComponentByType(msg['msgContent']['type'], isRight),
                   getComponentByType(msg, isRight),
+                  if (msg['msgContent']['type'] == 'retraction' && isRight)
+                    const SizedBox(width: 1),
+                  if (msg['msgContent']['type'] == 'retraction' && isRight)
+                    Column(
+                      children: [
+                        const SizedBox(height: 1.2),
+                        CustomTextButton('重新编辑',
+                            fontSize: 12,
+                            onTap: reEdit ??
+                                () {
+                                  debugPrint("重新编辑");
+                                }),
+                      ],
+                    ),
                   const SizedBox(width: 5),
                   if (isRight && msg['msgContent']['type'] != 'retraction')
                     CustomPortrait(

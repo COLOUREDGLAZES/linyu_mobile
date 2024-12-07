@@ -40,8 +40,9 @@ extension UsersListExtension<E extends Map<String, dynamic>> on List {
     return copyList; // 返回复制后的列表
   }
 
-  List replace(dynamic oldValue, dynamic newValue, {List? list}) {
+  List replace({dynamic oldValue, dynamic newValue, List? list}) {
     List sourceList = list ?? this.copy();
+    oldValue ??= newValue;
     // 如果源列表为空，直接返回空列表
     if (sourceList.isEmpty) return [];
     try {

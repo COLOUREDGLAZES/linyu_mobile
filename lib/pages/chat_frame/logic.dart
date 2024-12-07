@@ -23,7 +23,6 @@ import 'package:linyu_mobile/api/chat_list_api.dart';
 import 'package:linyu_mobile/api/msg_api.dart';
 import 'package:linyu_mobile/api/video_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/create_chat_group/select_user/index.dart';
 import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/cropPicture.dart';
 import 'package:linyu_mobile/utils/extension.dart';
@@ -79,17 +78,9 @@ class ChatFrameLogic extends GetxController {
 
   void retractMsg(dynamic data, dynamic msg) async {
     try {
-      final result = await _msgApi.retract(msg['id']);
+      final result = await _msgApi.retract(msg['id'],targetId);
       if (result['code'] == 0) {
-        // List<dynamic> newMsgList = msgList.copy();
-        // for (int i = 0; i < newMsgList.length; i++) {
-        //   if (newMsgList[i]['id'] == msg['id']) {
-        //     newMsgList[i] = result['data'];
-        //     break;
-        //   }
-        // }
-        // msgList = newMsgList;
-        msgList = msgList.replace(msg, result['data']);
+        msgList = msgList.replace(oldValue: msg,newValue:  result['data']);
         CustomFlutterToast.showSuccessToast('撤回成功');
       } else {
         CustomFlutterToast.showErrorToast(
@@ -108,17 +99,37 @@ class ChatFrameLogic extends GetxController {
     _subscription = _wsManager.eventStream.listen((event) {
       if (event['type'] == 'on-receive-msg') {
         final data = event['content'];
-        if ((data['fromId'] == targetId && data['source'] == 'user') ||
-            (data['toId'] == targetId && data['source'] == 'group') ||
-            (data['fromId'] == _globalData.currentUserId &&
-                data['source'] == 'user' &&
-                data['toId'] == targetId)) {
-          _onRead();
-          msgListAddMsg(event['content']);
+        try {
+          bool isRelevantMsg = (data['fromId'] == targetId && data['source'] == 'user') ||
+                               (data['toId'] == targetId && data['source'] == 'group') ||
+                               (data['fromId'] == _globalData.currentUserId &&
+                                data['toId'] == targetId);
+          if (isRelevantMsg) {
+
+            if (kDebugMode) {
+              print(data);
+            }
+
+            if(data['msgContent']['type'] == 'retraction'){
+              msgList = msgList.replace(newValue: data);
+              _onRead();
+              update([const Key('chat_frame')]);
+              return;
+            }
+
+
+            _onRead();
+            msgListAddMsg(event['content']);
+          }
+        } catch (e) {
+          CustomFlutterToast.showErrorToast('处理消息时发生错误: $e');
         }
       }
+    }, onError: (error) {
+      CustomFlutterToast.showErrorToast('WebSocket发生错误: $error');
     });
-  }
+}
+
 
   void _onGetMembers() async {
     if (chatInfo['type'] == 'group') {
@@ -343,6 +354,22 @@ class ChatFrameLogic extends GetxController {
         }
       }
     });
+  }
+
+  void reEditMsg(dynamic msg) async{
+    if (kDebugMode) {
+      print(msg);
+    }
+    final result = await _msgApi.reEdit(msg['id'],);
+    if (result['code'] == 0) {
+      // msgList = msgList.replace(msg, result['data']);
+      // CustomFlutterToast.showSuccessToast('修改成功');
+      if (kDebugMode) {
+        print(result['data']);
+      }
+      msgContentController.text = result['data']['msgContent']['content'];
+      update([const Key('chat_frame')]);
+    }
   }
 
   @override

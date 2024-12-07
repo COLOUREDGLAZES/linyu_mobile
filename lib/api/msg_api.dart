@@ -36,9 +36,18 @@ class MsgApi {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> retract(String msgId) async {
+  Future<Map<String, dynamic>> retract(String msgId,String? targetId) async {
     final response =
-        await _dio.post('/v1/api/message/retraction', data: {'msgId': msgId});
+        await _dio.post('/v1/api/message/retraction/new', data: {
+          'msgId': msgId,
+          'targetId':targetId
+        });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> reEdit(String msgId) async {
+    final response =
+        await _dio.post('/v1/api/message/reedit', data: {'msgId': msgId});
     return response.data;
   }
 }
