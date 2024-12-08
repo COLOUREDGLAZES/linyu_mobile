@@ -16,7 +16,7 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
     controller.init();
   }
 
-  Widget getContent(String tab) {
+  Widget _getContent(String tab) {
     switch (tab) {
       case '好友通知':
         return RefreshIndicator(
@@ -398,9 +398,9 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
       backgroundColor: const Color(0xFFF9FBFF),
       appBar: AppBar(
         leading: Container(
-          margin: const EdgeInsets.only(left: 13.2,top: 10.8),
+          margin: const EdgeInsets.only(left: 13.2, top: 10.8),
           child: CustomPortrait(
-            url: globalData.currentAvatarUrl??'',
+            url: globalData.currentAvatarUrl ?? '',
             size: 40,
             radius: 20,
             onTap: () => Scaffold.of(context).openDrawer(),
@@ -449,7 +449,7 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
               PopupMenuItem(
                 value: 2,
                 height: 40,
-                onTap: ()=>Get.toNamed('/create_chat_group'),
+                onTap: () => Get.toNamed('/create_chat_group'),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -466,81 +466,110 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CustomSearchBox(
+              textEditingController: controller.searchBoxController,
               isCentered: false,
-              onChanged: (value) {},
+              onChanged: (value) => controller.onSearchFriend(value),
             ),
+            if (controller.searchList.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  "搜索结果",
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: theme.primaryColor,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  children: [
+                    ...controller.searchList
+                        .map((friend) => _buildFriendItem(friend)),
+                  ],
+                ),
+              )
+            ],
             const SizedBox(height: 5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(controller.tabs.length, (index) {
-                return Expanded(
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      AnimatedAlign(
-                        duration: const Duration(milliseconds: 300),
-                        alignment: Alignment.center,
-                        child: GestureDetector(
-                          onTap: () => controller.handlerTabTapped(index),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            padding: const EdgeInsets.all(5),
-                            margin: EdgeInsets.symmetric(
-                              horizontal:
-                                  index == controller.selectedIndex ? 4.0 : 0.0,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(1),
-                              color: Colors.transparent,
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: index == controller.selectedIndex
-                                      ? theme.primaryColor
-                                      : Colors.transparent,
-                                  width: 2,
+            if (controller.searchList.isEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(controller.tabs.length, (index) {
+                  return Expanded(
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        AnimatedAlign(
+                          duration: const Duration(milliseconds: 300),
+                          alignment: Alignment.center,
+                          child: GestureDetector(
+                            onTap: () => controller.handlerTabTapped(index),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              padding: const EdgeInsets.all(5),
+                              margin: EdgeInsets.symmetric(
+                                horizontal: index == controller.selectedIndex
+                                    ? 4.0
+                                    : 0.0,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(1),
+                                color: Colors.transparent,
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: index == controller.selectedIndex
+                                        ? theme.primaryColor
+                                        : Colors.transparent,
+                                    width: 2,
+                                  ),
                                 ),
                               ),
-                            ),
-                            child: Center(
-                              child: AnimatedDefaultTextStyle(
-                                duration: const Duration(milliseconds: 300),
-                                style: TextStyle(
-                                  color: index == controller.selectedIndex
-                                      ? theme.primaryColor
-                                      : Colors.black,
-                                  fontSize: 16,
-                                ),
-                                child: GestureDetector(
-                                  onLongPress: index==1?controller.onLongPressGroup:(){},
-                                  child: Text(controller.tabs[index]),
+                              child: Center(
+                                child: AnimatedDefaultTextStyle(
+                                  duration: const Duration(milliseconds: 300),
+                                  style: TextStyle(
+                                    color: index == controller.selectedIndex
+                                        ? theme.primaryColor
+                                        : Colors.black,
+                                    fontSize: 16,
+                                  ),
+                                  child: GestureDetector(
+                                    onLongPress: index == 1
+                                        ? controller.onLongPressGroup
+                                        : () {},
+                                    child: Text(controller.tabs[index]),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      if (index == 2)
-                        Obx(() => globalData.getUnreadCount('friendNotify') > 0
-                            ? CustomTip(
-                                globalData.getUnreadCount('friendNotify'),
-                                right: 7,
-                                top: -2)
-                            : const SizedBox.shrink()),
-                    ],
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 5),
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: getContent(controller.tabs[controller.selectedIndex]),
+                        if (index == 2)
+                          Obx(() =>
+                              globalData.getUnreadCount('friendNotify') > 0
+                                  ? CustomTip(
+                                      globalData.getUnreadCount('friendNotify'),
+                                      right: 7,
+                                      top: -2)
+                                  : const SizedBox.shrink()),
+                      ],
+                    ),
+                  );
+                }),
               ),
-            ),
+            if (controller.searchList.isEmpty) const SizedBox(height: 5),
+            if (controller.searchList.isEmpty)
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: _getContent(controller.tabs[controller.selectedIndex]),
+                ),
+              ),
           ],
         ),
       ),

@@ -24,6 +24,8 @@ class ContactsLogic extends GetxController {
   List<dynamic> chatGroupList = [];
   List<dynamic> notifyFriendList = [];
   late dynamic currentUserInfo = {};
+  List<dynamic> searchList = [];
+  final TextEditingController searchBoxController = new TextEditingController();
 
   final _wsManager = WebSocketUtil();
   StreamSubscription? _subscription;
@@ -152,6 +154,21 @@ class ContactsLogic extends GetxController {
     } else {
       CustomFlutterToast.showErrorToast(response['msg']);
     }
+  }
+
+  void onSearchFriend(String friendInfo) {
+    if (friendInfo.trim() == '') {
+      searchList = [];
+      init();
+      return;
+    }
+    _friendApi.search(friendInfo).then((res) {
+      if (res['code'] == 0) {
+        friendList = [];
+        searchList = res['data'];
+        update([const Key("contacts")]);
+      }
+    });
   }
 
   @override

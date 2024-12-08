@@ -16,7 +16,6 @@ class TalkPage extends CustomWidget<TalkLogic> {
   @override
   Widget buildWidget(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FBFF),
       appBar: AppBar(
         leading: Container(
           margin: const EdgeInsets.only(left: 13.2,top: 10.8),
@@ -40,6 +39,7 @@ class TalkPage extends CustomWidget<TalkLogic> {
                 fontSize: 14),
         ],
       ),
+      backgroundColor: const Color(0xFFF9FBFF),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: RefreshIndicator(
