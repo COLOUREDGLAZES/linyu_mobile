@@ -15,17 +15,15 @@ import 'logic.dart';
 class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
   FriendInformationPage({super.key});
 
-  PopupMenuEntry<int> _buildPopupDivider() {
-    return PopupMenuItem<int>(
-      enabled: false,
-      height: 1,
-      child: Container(
+  PopupMenuEntry<int> _buildPopupDivider() => PopupMenuItem<int>(
+        enabled: false,
         height: 1,
-        padding: const EdgeInsets.all(0),
-        color: Colors.grey[200],
-      ),
-    );
-  }
+        child: Container(
+          height: 1,
+          padding: const EdgeInsets.all(0),
+          color: Colors.grey[200],
+        ),
+      );
 
   @override
   Widget buildWidget(BuildContext context) => GestureDetector(
@@ -126,7 +124,7 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                                   borderRadius: BorderRadius.circular(35),
                                 ),
                                 child: CustomPortrait(
-                                    url: controller.friendPortrait ?? '',
+                                    url: controller.friendPortrait,
                                     size: 70,
                                     radius: 35),
                               ),
@@ -143,10 +141,10 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                                           MainAxisAlignment.center,
                                       children: [
                                         CustomShadowText(
-                                            text: controller.friendName ?? ''),
+                                            text: controller.friendName),
                                         const SizedBox(height: 10),
                                         Text(
-                                          controller.friendAccount ?? '',
+                                          controller.friendAccount,
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.grey[700]),
@@ -294,9 +292,7 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                 Expanded(
                   child: CustomButton(
                     text: '发消息',
-                    onTap: () {
-                      controller.onToSendMsg();
-                    },
+                    onTap: () => controller.onToSendMsg(),
                   ),
                 ),
                 const SizedBox(width: 20),

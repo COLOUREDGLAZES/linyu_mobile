@@ -38,14 +38,12 @@ class ContactsLogic extends GetxController {
     eventListen();
   }
 
-  void eventListen() {
-    // 监听消息
-    _subscription = _wsManager.eventStream.listen((event) {
-      if (event['type'] == 'on-receive-notify') {
-        init();
-      }
-    });
-  }
+  // 监听消息
+  void eventListen() => _subscription = _wsManager.eventStream.listen((event) {
+        if (event['type'] == 'on-receive-notify') {
+          init();
+        }
+      });
 
   void init() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -59,14 +57,12 @@ class ContactsLogic extends GetxController {
     onFriendList();
   }
 
-  void onFriendList() {
-    _friendApi.list().then((res) {
-      if (res['code'] == 0) {
-        friendList = res['data'];
-        update([const Key("contacts")]);
-      }
-    });
-  }
+  void onFriendList() => _friendApi.list().then((res) {
+        if (res['code'] == 0) {
+          friendList = res['data'];
+          update([const Key("contacts")]);
+        }
+      });
 
   void onChatGroupList() {
     globalData.onGetUserUnreadInfo();
@@ -78,14 +74,12 @@ class ContactsLogic extends GetxController {
     });
   }
 
-  void onNotifyFriendList() {
-    _notifyApi.friendList().then((res) {
-      if (res['code'] == 0) {
-        notifyFriendList = res['data'];
-        update([const Key("contacts")]);
-      }
-    });
-  }
+  void onNotifyFriendList() => _notifyApi.friendList().then((res) {
+        if (res['code'] == 0) {
+          notifyFriendList = res['data'];
+          update([const Key("contacts")]);
+        }
+      });
 
   void onReadNotify() async {
     await _notifyApi.read('friend');
@@ -100,10 +94,8 @@ class ContactsLogic extends GetxController {
     }
   }
 
-  void handlerFriendTapped(dynamic friend) {
-    print(friend);
-    Get.toNamed('/friend_info', arguments: {'friendId': friend['friendId']});
-  }
+  void handlerFriendTapped(dynamic friend) =>
+      Get.toNamed('/friend_info', arguments: {'friendId': friend['friendId']});
 
   //同意添加好友
   void handlerAgreeFriend(dynamic notify) async {
@@ -130,9 +122,8 @@ class ContactsLogic extends GetxController {
   }
 
   //长按分组进入分组设置页面
-  void onLongPressGroup() {
-    Get.toNamed("/set_group", arguments: {'groupName': '0', 'friendId': '0'});
-  }
+  void onLongPressGroup() =>
+      Get.toNamed("/set_group", arguments: {'groupName': '0', 'friendId': '0'});
 
   //设置特别关心
   void onSetConcernFriend(dynamic friend) async {
@@ -171,10 +162,23 @@ class ContactsLogic extends GetxController {
     });
   }
 
-  @override
-  void onClose() {
-    _subscription?.cancel();
-    super.onClose();
+  String getNotifyContentTip(status, isFromCurrentUser) {
+    if (!isFromCurrentUser) return "请求加你为好友";
+    switch (status) {
+      case "wait":
+        {
+          return "正在验证请求";
+        }
+      case "reject":
+        {
+          return "已拒绝申请请求";
+        }
+      case "agree":
+        {
+          return "已同意申请请求";
+        }
+    }
+    return "";
   }
 
   void onToSendGroupMsg(id) {
@@ -185,5 +189,11 @@ class ContactsLogic extends GetxController {
         });
       }
     });
+  }
+
+  @override
+  void onClose() {
+    _subscription?.cancel();
+    super.onClose();
   }
 }
