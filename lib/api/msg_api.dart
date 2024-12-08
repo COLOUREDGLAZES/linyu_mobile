@@ -91,7 +91,7 @@ class MsgApi {
     if (msgId.isEmpty) return {'error': 'msgId 不能为空'};
 
     try {
-      final response = await _dio.post('/v1/api/message/retraction/new',
+      final response = await _dio.post('/v1/api/message/retraction',
           data: {'msgId': msgId, 'targetId': targetId});
       return response.data ?? {}; // 增加空值处理
     } on DioException catch (e) {

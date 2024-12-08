@@ -4,6 +4,7 @@ import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_search_box/index.dart';
+import 'package:linyu_mobile/components/custom_text_button/index.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
 import 'package:linyu_mobile/utils/extension.dart';
 import 'logic.dart';
@@ -50,6 +51,7 @@ class ChatGroupSelectUserPage
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
                 children: [
+                  const SizedBox(width: 12),
                   Checkbox(
                     fillColor: WidgetStateProperty.resolveWith<Color>(
                         (Set<WidgetState> states) {
@@ -114,6 +116,11 @@ class ChatGroupSelectUserPage
           centerTitle: true,
           title: const AppBarTitle('选择好友'),
           backgroundColor: const Color(0xFFF9FBFF),
+          actions: [ CustomTextButton('完成(${controller.users.length})',
+              onTap: controller.onSubmitPress,
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0, vertical: 5.0),
+              fontSize: 14),],
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16.0),
@@ -171,31 +178,54 @@ class ChatGroupSelectUserPage
                             .map((friend) => _buildFriendItem(friend)),
                       ],
                       ...controller.friendList.map((group) {
-                        return ExpansionTile(
-                          iconColor: theme.primaryColor,
-                          visualDensity:
-                              const VisualDensity(horizontal: 0, vertical: -4),
-                          dense: true,
-                          collapsedShape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          title: Text(
-                            '${group['name']}（${group['friends'].length}）',
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
-                          ),
-                          children: [
-                            ...group['friends'].map(
-                              (friend) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0),
-                                child: _buildFriendItem(friend),
-                              ),
+                        return GestureDetector(
+                          onLongPress: () => controller.onSelectGroup(group),
+                          child: ExpansionTile(
+                            iconColor: theme.primaryColor,
+                            visualDensity: const VisualDensity(
+                                horizontal: 0, vertical: -4),
+                            dense: true,
+                            collapsedShape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                          ],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            title: Row(
+                              children: [
+                                Checkbox(
+                                  fillColor:
+                                      WidgetStateProperty.resolveWith<Color>(
+                                          (Set<WidgetState> states) =>
+                                              controller
+                                                  .checkBoxFillColor(group)),
+                                  // value: controller.users.include(friend),
+                                  value: !group['friends'].isEmpty &&
+                                      group['friends'].every((friend) =>
+                                          controller.users.include(friend)),
+                                  // onChanged: (bool? value) => controller.onSelect(friend),
+                                  onChanged: (bool? value) =>
+                                      controller.onSelectGroup(group),
+                                  splashRadius: 5,
+                                ),
+                                Text(
+                                  '${group['name']}（${group['friends'].length}）',
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            children: [
+                              ...group['friends'].map(
+                                (friend) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0),
+                                  child: _buildFriendItem(friend),
+                                ),
+                              ),
+                            ],
+                          ),
                         );
                       }),
                     ],
@@ -204,12 +234,6 @@ class ChatGroupSelectUserPage
               ),
             ],
           ),
-        ),
-        bottomNavigationBar: CustomButton(
-          text: '完成(${controller.users.length})',
-          onTap: controller.onSubmitPress,
-          width: MediaQuery.of(context).size.width,
-          type: 'gradient',
         ),
       );
 }
