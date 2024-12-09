@@ -40,8 +40,10 @@ class WebSocketUtil {
       if (kDebugMode) {
         print('WebSocket connecting...');
       }
-      String wsIp = '192.168.101.4:9100';
+      // String wsIp = '192.168.101.4:9100';
       // String wsIp = '114.96.70.115:9100';
+      //使用的内网穿透
+      String wsIp = '114.96.70.115:19100';
 
       _channel = WebSocketChannel.connect(
         Uri.parse('ws://$wsIp/ws?x-token=$token'),
