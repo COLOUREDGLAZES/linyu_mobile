@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/api/friend_api.dart';
+import 'package:linyu_mobile/utils/api/friend_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/navigation/contacts/create_chat_group/logic.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
@@ -139,7 +139,7 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
     final List<dynamic>? friends =
         group['friends'] is List ? group['friends'] : null;
     if (friends == null || friends.isEmpty) {
-      CustomFlutterToast.showErrorToast('该群组没有成员');
+      CustomFlutterToast.showErrorToast('该分组没有成员');
       return;
     }
     bool allIncluded = friends.every((friend) => users.include(friend));
@@ -150,12 +150,6 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
     }
     // 否则，将所有未被选中的好友添加到选中列表中
     friends.forEach((friend) => addUsers(friend));
-    // for (var friend in friends) {
-    //   if (!users.include(friend)) {
-    //     addUsers(friend);
-    //   }
-    //   // onSelect(friend);
-    // }
   }
 
   Color checkBoxFillColor(dynamic group) {

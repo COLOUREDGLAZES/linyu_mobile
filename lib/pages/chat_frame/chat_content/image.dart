@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/api/msg_api.dart';
+import 'package:linyu_mobile/utils/api/msg_api.dart';
 import 'package:linyu_mobile/components/custom_image/index.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
 

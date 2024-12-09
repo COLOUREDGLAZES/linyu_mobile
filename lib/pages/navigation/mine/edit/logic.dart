@@ -10,7 +10,7 @@ import 'package:get/get.dart' as getx;
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/get_instance.dart';
 import 'package:intl/intl.dart';
-import 'package:linyu_mobile/api/user_api.dart';
+import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/navigation/chat_list/logic.dart';
 import 'package:linyu_mobile/pages/navigation/contacts/logic.dart';

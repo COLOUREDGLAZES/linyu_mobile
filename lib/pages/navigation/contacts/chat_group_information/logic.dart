@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart'
     show Get, GetInstance, GetNavigation, GetxController;
-import 'package:linyu_mobile/api/chat_group_api.dart';
-import 'package:linyu_mobile/api/chat_group_member.dart';
+import 'package:linyu_mobile/utils/api/chat_group_api.dart';
+import 'package:linyu_mobile/utils/api/chat_group_member.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/navigation/contacts/logic.dart';

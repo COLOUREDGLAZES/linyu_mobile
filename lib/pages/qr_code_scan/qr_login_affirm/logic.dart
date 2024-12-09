@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:linyu_mobile/api/user_api.dart';
+import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 
 class QRLoginAffirmLogic extends GetxController {

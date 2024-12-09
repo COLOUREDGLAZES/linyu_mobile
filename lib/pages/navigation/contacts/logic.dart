@@ -1,21 +1,22 @@
+// ignore_for_file: unnecessary_new
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/api/chat_group_api.dart';
-import 'package:linyu_mobile/api/chat_list_api.dart';
-import 'package:linyu_mobile/api/friend_api.dart';
-import 'package:linyu_mobile/api/notify_api.dart';
+import 'package:linyu_mobile/utils/api/chat_group_api.dart';
+import 'package:linyu_mobile/utils/api/chat_list_api.dart';
+import 'package:linyu_mobile/utils/api/friend_api.dart';
+import 'package:linyu_mobile/utils/api/notify_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/getx_config/GlobalData.dart';
 import 'package:linyu_mobile/utils/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ContactsLogic extends GetxController {
-  final _friendApi = FriendApi();
-  final _chatGroupApi = ChatGroupApi();
-  final _notifyApi = NotifyApi();
-  final _chatListApi = ChatListApi();
+  final _friendApi = new FriendApi();
+  final _chatGroupApi = new ChatGroupApi();
+  final _notifyApi = new NotifyApi();
+  final _chatListApi = new ChatListApi();
   final GlobalData _globalData = GetInstance().find<GlobalData>();
   List<String> tabs = ['我的群聊', '我的好友', '好友通知'];
   int selectedIndex = 1;
@@ -26,8 +27,7 @@ class ContactsLogic extends GetxController {
   late dynamic currentUserInfo = {};
   List<dynamic> searchList = [];
   final TextEditingController searchBoxController = new TextEditingController();
-
-  final _wsManager = WebSocketUtil();
+  final _wsManager = new WebSocketUtil();
   StreamSubscription? _subscription;
 
   GlobalData get globalData => GetInstance().find<GlobalData>();
@@ -44,18 +44,6 @@ class ContactsLogic extends GetxController {
           init();
         }
       });
-
-  void init() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    currentUserInfo['name'] = prefs.getString('username');
-    currentUserInfo['portrait'] = prefs.getString('portrait');
-    currentUserInfo['account'] = prefs.getString('account');
-    currentUserInfo['sex'] = prefs.getString('sex');
-    currentUserId = prefs.getString('userId') ?? '';
-    onNotifyFriendList();
-    onChatGroupList();
-    onFriendList();
-  }
 
   void onFriendList() => _friendApi.list().then((res) {
         if (res['code'] == 0) {
@@ -80,6 +68,18 @@ class ContactsLogic extends GetxController {
           update([const Key("contacts")]);
         }
       });
+
+  void init() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    currentUserInfo['name'] = prefs.getString('username');
+    currentUserInfo['portrait'] = prefs.getString('portrait');
+    currentUserInfo['account'] = prefs.getString('account');
+    currentUserInfo['sex'] = prefs.getString('sex');
+    currentUserId = prefs.getString('userId') ?? '';
+    onNotifyFriendList();
+    onChatGroupList();
+    onFriendList();
+  }
 
   void onReadNotify() async {
     await _notifyApi.read('friend');
@@ -181,15 +181,14 @@ class ContactsLogic extends GetxController {
     return "";
   }
 
-  void onToSendGroupMsg(id) {
-    _chatListApi.create(id, type: 'group').then((res) {
-      if (res['code'] == 0) {
-        Get.toNamed('/chat_frame', arguments: {
-          'chatInfo': res['data'],
-        });
-      }
-    });
-  }
+  void onToSendGroupMsg(id) =>
+      _chatListApi.create(id, type: 'group').then((res) {
+        if (res['code'] == 0) {
+          Get.toNamed('/chat_frame', arguments: {
+            'chatInfo': res['data'],
+          });
+        }
+      });
 
   @override
   void onClose() {

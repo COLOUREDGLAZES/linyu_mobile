@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/api/friend_api.dart';
+import 'package:linyu_mobile/utils/api/friend_api.dart';
 
 class UserSelectLogic extends GetxController {
   final _friendApi = FriendApi();

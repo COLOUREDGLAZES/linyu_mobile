@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/api/chat_group_notice_api.dart';
+import 'package:linyu_mobile/utils/api/chat_group_notice_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 
 class AddChatGroupNoticeLogic extends GetxController {

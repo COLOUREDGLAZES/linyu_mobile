@@ -16,10 +16,10 @@ import 'package:get/get.dart'
         StringExtension,
         obs;
 import 'package:image_picker/image_picker.dart';
-import 'package:linyu_mobile/api/chat_group_member.dart';
-import 'package:linyu_mobile/api/chat_list_api.dart';
-import 'package:linyu_mobile/api/msg_api.dart';
-import 'package:linyu_mobile/api/video_api.dart';
+import 'package:linyu_mobile/utils/api/chat_group_member.dart';
+import 'package:linyu_mobile/utils/api/chat_list_api.dart';
+import 'package:linyu_mobile/utils/api/msg_api.dart';
+import 'package:linyu_mobile/utils/api/video_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/cropPicture.dart';

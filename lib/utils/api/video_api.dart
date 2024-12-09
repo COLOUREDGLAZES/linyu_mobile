@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:linyu_mobile/api/http.dart';
+import 'package:linyu_mobile/utils/api/http.dart';
 
 class VideoApi {
   final Dio _dio = Http().dio;

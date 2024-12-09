@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:linyu_mobile/api/friend_api.dart';
-import 'package:linyu_mobile/api/qr_api.dart';
+import 'package:linyu_mobile/utils/api/friend_api.dart';
+import 'package:linyu_mobile/utils/api/qr_api.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QRCodeScanLogic extends GetxController {

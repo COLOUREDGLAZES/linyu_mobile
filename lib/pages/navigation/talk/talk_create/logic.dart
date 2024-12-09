@@ -6,7 +6,7 @@ import 'package:get/get.dart'
     show Get, GetInstance, GetNavigation, GetxController, TextEditingController;
 import 'package:get/get_rx/get_rx.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:linyu_mobile/api/talk_api.dart';
+import 'package:linyu_mobile/utils/api/talk_api.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 

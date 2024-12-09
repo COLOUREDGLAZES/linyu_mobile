@@ -1,5 +1,5 @@
 import 'package:pointycastle/asymmetric/api.dart';
-import 'package:linyu_mobile/api/user_api.dart';
+import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
 final _useApi = UserApi();

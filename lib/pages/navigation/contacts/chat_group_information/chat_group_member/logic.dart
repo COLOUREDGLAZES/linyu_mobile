@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/api/chat_group_api.dart';
-import 'package:linyu_mobile/api/chat_group_member.dart';
-import 'package:linyu_mobile/api/notify_api.dart';
+import 'package:linyu_mobile/utils/api/chat_group_api.dart';
+import 'package:linyu_mobile/utils/api/chat_group_member.dart';
+import 'package:linyu_mobile/utils/api/notify_api.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 

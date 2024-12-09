@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/api/talk_api.dart';
-import 'package:linyu_mobile/api/talk_comment_api.dart';
-import 'package:linyu_mobile/api/talk_like_api.dart';
+import 'package:linyu_mobile/utils/api/talk_api.dart';
+import 'package:linyu_mobile/utils/api/talk_comment_api.dart';
+import 'package:linyu_mobile/utils/api/talk_like_api.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/navigation/talk/logic.dart';

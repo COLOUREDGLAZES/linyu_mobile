@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/api/talk_api.dart';
-import 'package:linyu_mobile/api/user_api.dart';
+import 'package:linyu_mobile/utils/api/talk_api.dart';
+import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

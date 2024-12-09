@@ -18,6 +18,22 @@ import 'text.dart';
 typedef CallBack = dynamic Function(dynamic data);
 
 class ChatMessage extends StatelessThemeWidget {
+  const ChatMessage({
+    super.key,
+    this.chatPortrait = 'http://192.168.101.4:9000/linyu/default-portrait.jpg',
+    this.onTapCopy,
+    this.onTapRetransmission,
+    this.onTapDelete,
+    this.onTapRetract,
+    this.onTapCite,
+    this.onTapMsg,
+    this.reEdit,
+    this.onTapVoice,
+    required this.msg,
+    required this.chatInfo,
+    required this.member,
+  });
+
   final Map<String, dynamic> msg;
   final Map<String, dynamic> chatInfo;
   final Map<String, dynamic>? member;
@@ -42,22 +58,6 @@ class ChatMessage extends StatelessThemeWidget {
 
   // 点击转文字回调
   final CallBack? onTapVoice;
-
-  const ChatMessage({
-    super.key,
-    this.chatPortrait = 'http://192.168.101.4:9000/linyu/default-portrait.jpg',
-    this.onTapCopy,
-    this.onTapRetransmission,
-    this.onTapDelete,
-    this.onTapRetract,
-    this.onTapCite,
-    this.onTapMsg,
-    this.reEdit,
-    this.onTapVoice,
-    required this.msg,
-    required this.chatInfo,
-    required this.member,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +110,7 @@ class ChatMessage extends StatelessThemeWidget {
                     isRight &&
                     msg['msgContent']['ext'] != null &&
                     msg['msgContent']['ext'] == 'text')
-                  const SizedBox(width: 5),
+                  const SizedBox(width: 1.2),
                 if (msg['msgContent']['type'] == 'retraction' &&
                     isRight &&
                     msg['msgContent']['ext'] != null &&
@@ -189,15 +189,23 @@ class ChatMessage extends StatelessThemeWidget {
   }
 
   String _handlerGroupDisplayName() {
+    // 检查 member 是否为 null
     if (member == null) {
       return msg['msgContent']?['formUserName'] ?? '';
     }
-    if (member!.containsKey('groupName') && member!['groupName'] != null) {
-      return member!['groupName']!;
-    } else if (member!.containsKey('remark') && member!['remark'] != null) {
-      return member!['remark']!;
-    } else {
-      return member!['name'] ?? '';
+
+    // 尝试从 member 中获取优先属性
+    try {
+      return member?.containsKey('groupName') == true &&
+              member!['groupName'] != null
+          ? member!['groupName']!
+          : member?.containsKey('remark') == true && member!['remark'] != null
+              ? member!['remark']!
+              : member!['name'] ?? '';
+    } catch (e) {
+      // 异常处理：返回一个空字符串或增加日志记录
+      debugPrint('Error fetching display name: $e');
+      return '';
     }
   }
 

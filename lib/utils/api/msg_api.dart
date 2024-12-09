@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:linyu_mobile/api/http.dart';
+import 'package:linyu_mobile/utils/api/http.dart';
 
 class MsgApi {
   final Dio _dio = Http().dio;
