@@ -53,7 +53,7 @@ class FriendRequestPage extends CustomWidgetNew<FriendRequestLogic> {
                                 borderRadius: BorderRadius.circular(35),
                               ),
                               child: CustomPortrait(
-                                  url: controller.friendPortrait ?? '',
+                                  url: controller.friendPortrait,
                                   size: 70,
                                   radius: 35),
                             ),
@@ -69,7 +69,7 @@ class FriendRequestPage extends CustomWidgetNew<FriendRequestLogic> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       CustomShadowText(
-                                          text: controller.friendName ?? ''),
+                                          text: controller.friendName),
                                       const SizedBox(height: 10),
                                     ],
                                   ),

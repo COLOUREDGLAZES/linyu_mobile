@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -12,8 +14,7 @@ import 'package:get/get.dart'
         Inst,
         RxBool,
         RxString,
-        StringExtension,
-        obs;
+        StringExtension;
 import 'package:image_picker/image_picker.dart';
 import 'package:linyu_mobile/utils/api/chat_group_member.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
@@ -260,16 +261,15 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     }
   }
 
-  // 语音通话
+  // 音视通话
   void onInviteVideoChat(isOnlyAudio) =>
       _videoApi.invite(targetId, isOnlyAudio).then((res) {
-        if (res['code'] == 0) {
+        if (res['code'] == 0)
           Get.toNamed('video_chat', arguments: {
             'userId': targetId,
             'isSender': true,
             'isOnlyAudio': isOnlyAudio,
           });
-        }
       });
 
   // 选择图片
@@ -361,17 +361,15 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     widget?.hidePanel();
     final msgContent = msg['msgContent'] as Map<String, dynamic>;
     // 检查消息类型是否为非文本类型
-    if (msgContent['type'] != 'text') {
+    if (msgContent['type'] != 'text')
       try {
         final Map<String, dynamic> content = jsonDecode(msgContent['content']);
         // 处理通话消息
-        if (msgContent['type'] == 'call') {
-          onInviteVideoChat(content['type'] == 'video');
-        }
+        if (msgContent['type'] == 'call')
+          onInviteVideoChat(content['type'] != 'video');
       } catch (e) {
         CustomFlutterToast.showErrorToast('解析消息内容时发生错误: $e');
       }
-    }
   }
 
   //撤回消息

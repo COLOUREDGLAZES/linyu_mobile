@@ -33,9 +33,4 @@ class AddFriendLogic extends Logic<AddFriendPage> {
   // 申请加好友
   void goApplyFriend(dynamic friend) =>
       Get.toNamed('/friend_request', arguments: {'friendInfo': friend});
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
 }

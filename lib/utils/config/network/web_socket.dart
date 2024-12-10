@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:get/get_instance/src/get_instance.dart';
+import 'package:linyu_mobile/utils/config/getx/global_data.dart';
 import 'package:linyu_mobile/utils/linyu_msg.dart';
 import 'package:linyu_mobile/utils/notification.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketUtil {
@@ -16,44 +17,42 @@ class WebSocketUtil {
   final int _reconnectCountMax = 200;
   int _reconnectCount = 0;
 
+  final GlobalData _globalData = GetInstance().find<GlobalData>();
+
   // 事件总线，用于消息分发
   static final eventController =
       StreamController<Map<String, dynamic>>.broadcast();
 
   Stream<Map<String, dynamic>> get eventStream => eventController.stream;
 
+  WebSocketUtil._internal();
+
   factory WebSocketUtil() {
     _instance ??= WebSocketUtil._internal();
     return _instance!;
   }
 
-  WebSocketUtil._internal();
-
   Future<void> connect() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('x-token');
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String? token = prefs.getString('x-token');
+    // if (token == null || _isConnected) return;
+    String? token = _globalData.currentToken;
     if (token == null || _isConnected) return;
-
-    _isConnected = true;
-
     try {
-      if (kDebugMode) {
-        print('WebSocket connecting...');
-      }
+      if (kDebugMode) print('WebSocket connecting...');
       //使用的内网穿透
-      // String wsIp = '114.96.70.115:19100';
-      String wsIp = '192.168.101.4:9100';
+      String wsIp = '114.96.70.115:19100';
+      // String wsIp = '192.168.101.4:9100';
       // String wsIp = '114.96.70.115:9100';
       _channel = WebSocketChannel.connect(
         Uri.parse('ws://$wsIp/ws?x-token=$token'),
       );
-
       _channel!.stream.listen(
         _handleMessage,
         onDone: _handleClose,
         onError: _handleError,
       );
-
+      _isConnected = true;
       _clearTimer();
       _startHeartbeat();
     } catch (e) {
@@ -63,24 +62,17 @@ class WebSocketUtil {
 
   void _handleMessage(dynamic message) {
     if (message == null) return _handleClose();
-
     try {
       Map<String, dynamic> wsContent = jsonDecode(message);
-
       if (wsContent.containsKey('type')) {
-        if (wsContent['data']?['code'] == -1) {
-          return _handleClose();
-        }
-
+        if (wsContent['data']?['code'] == -1) return _handleClose();
         String contentType = wsContent['type'];
         if (['msg', 'notify', 'video'].contains(contentType)) {
           eventController.add({
             'type': 'on-receive-$contentType',
             'content': wsContent['content']
           });
-          if (contentType == 'msg') {
-            sendNotification(wsContent['content']);
-          }
+          if (contentType == 'msg') sendNotification(wsContent['content']);
         }
       }
     } catch (e) {
@@ -88,9 +80,7 @@ class WebSocketUtil {
     }
   }
 
-  void send(String message) {
-    _channel?.sink.add(message);
-  }
+  void send(String message) => _channel?.sink.add(message);
 
   void _startHeartbeat() {
     _clearHeartbeat();
@@ -108,14 +98,11 @@ class WebSocketUtil {
     _reconnect();
   }
 
-  void _handleError(dynamic error) {
-    _handleClose();
-  }
+  void _handleError(dynamic error) => _handleClose();
 
   void _reconnect() {
     if (_lockReconnect || _reconnectCount >= _reconnectCountMax) return;
     _lockReconnect = true;
-
     _reconnectTimer = Timer(
       const Duration(seconds: 5),
       () {

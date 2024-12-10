@@ -16,15 +16,13 @@ class SetRemarkLogic extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     remarkController.text = Get.arguments['remark'];
     friendId = Get.arguments['friendId'];
     remarkLength = remarkController.text.length;
   }
 
   void onSetRemark() async {
-    if (remarkController.text == null) {
-      return;
-    }
     final response =
         await _friendApi.setRemark(friendId, remarkController.text);
     if (response['code'] == 0) {

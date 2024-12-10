@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
-import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_search_box/index.dart';
 import 'package:linyu_mobile/components/custom_text_button/index.dart';
@@ -116,11 +115,13 @@ class ChatGroupSelectUserPage
           centerTitle: true,
           title: const AppBarTitle('选择好友'),
           backgroundColor: const Color(0xFFF9FBFF),
-          actions: [ CustomTextButton('完成(${controller.users.length})',
-              onTap: controller.onSubmitPress,
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0, vertical: 5.0),
-              fontSize: 14),],
+          actions: [
+            CustomTextButton('完成(${controller.users.length})',
+                onTap: controller.onSubmitPress,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
+                fontSize: 14),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16.0),

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
@@ -48,9 +47,7 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
         color: Colors.white,
         child: InkWell(
           onTap: () async {
-            var result = await Get.toNamed('/chat_frame', arguments: {
-              'chatInfo': chat,
-            });
+            await Get.toNamed('/chat_frame', arguments: {'chatInfo': chat});
             controller.onGetChatList();
           },
           borderRadius: BorderRadius.circular(12),

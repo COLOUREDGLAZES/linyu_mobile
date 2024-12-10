@@ -8,6 +8,7 @@ class QRLoginAffirmLogic extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     qrCode = Get.arguments['qrCode'];
   }
 

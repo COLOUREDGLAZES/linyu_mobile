@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
@@ -70,11 +71,9 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
         final amplitude = await _record.getAmplitude();
         // 将 dB 转换为 0-1 的值，并调整范围
         double normalizedAmplitude = 0.0;
-        if (amplitude?.current != null) {
-          // 调整 dB 范围
-          normalizedAmplitude = (amplitude!.current + 50) / 50;
-          normalizedAmplitude = normalizedAmplitude.clamp(0.0, 1.0);
-        }
+        // 调整 dB 范围
+        normalizedAmplitude = (amplitude.current + 50) / 50;
+        normalizedAmplitude = normalizedAmplitude.clamp(0.0, 1.0);
         setState(() {
           // 将现有的振幅值向左移动
           for (int i = 0; i < _amplitudes.length - 1; i++) {
@@ -85,7 +84,7 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
         });
         _overlayEntry.markNeedsBuild();
       } catch (e) {
-        print(e);
+        if (kDebugMode) print(e);
       }
       await Future.delayed(const Duration(milliseconds: 50));
     }

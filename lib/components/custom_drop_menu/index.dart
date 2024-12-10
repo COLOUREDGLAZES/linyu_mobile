@@ -57,9 +57,6 @@ class _DropMenuWidgetState extends State<DropMenuWidget>
   void initState() {
     super.initState();
     _currentValue = widget.selectedValue ?? '';
-
-    print('当前选中的值：${widget.selectedValue}');
-
     if (widget.animation) {
       _animationController = AnimationController(
         vsync: this,
@@ -80,7 +77,7 @@ class _DropMenuWidgetState extends State<DropMenuWidget>
     super.dispose();
   }
 
-  _toggleExpand() {
+  _toggleExpand() =>
     setState(() {
       if (_isExpand) {
         _animationController.forward();
@@ -88,7 +85,7 @@ class _DropMenuWidgetState extends State<DropMenuWidget>
         _animationController.reverse();
       }
     });
-  }
+
 
   //根据传值处理显示的文字
   _initLabel() {

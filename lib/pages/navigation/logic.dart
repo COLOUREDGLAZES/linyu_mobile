@@ -15,10 +15,24 @@ class NavigationLogic extends GetxController {
   final _wsManager = WebSocketUtil();
   final List<GetPage> pages = pageRoute[0].children;
   StreamSubscription? _subscription;
-
   GlobalData get globalData => GetInstance().find<GlobalData>();
+  final List<String> selectedIcons = [
+    'chat',
+    'user',
+    'talk',
+  ];
+  final List<String> unselectedIcons = [
+    'assets/images/chat-empty.png',
+    'assets/images/user-empty.png',
+    'assets/images/talk-empty.png',
+  ];
+  final List<String> name = [
+    '消息',
+    '通讯',
+    '说说',
+  ];
 
-  Future<void> initThemeData() async {
+  Future<void> _initThemeData() async {
     late String sex = Get.parameters['sex'] ?? "男";
     GlobalThemeConfig theme = GetInstance().find<GlobalThemeConfig>();
     theme.changeThemeMode(sex == "女" ? 'pink' : 'blue');
@@ -29,48 +43,26 @@ class NavigationLogic extends GetxController {
     await NotificationUtil.initialize();
     await NotificationUtil.createNotificationChannel();
     await PermissionHandler.permissionRequest();
-    await connectWebSocket();
-    eventListen();
+    await _connectWebSocket();
+    _eventListen();
   }
 
-  void eventListen() {
-    // 监听消息
-    _subscription = _wsManager.eventStream.listen((event) {
-      globalData.onGetUserUnreadInfo();
-      if (event['type'] == 'on-receive-video') {
-        var data = event['content'];
-        if (data['type'] == "invite") {
-          Get.toNamed('/video_chat', arguments: {
-            'userId': data['fromId'],
-            'isSender': false,
-            'isOnlyAudio': data['isOnlyAudio'],
-          });
+  // 监听消息
+  void _eventListen() => _subscription = _wsManager.eventStream.listen((event) {
+        globalData.onGetUserUnreadInfo();
+        if (event['type'] == 'on-receive-video') {
+          var data = event['content'];
+          if (data['type'] == "invite") {
+            Get.toNamed('/video_chat', arguments: {
+              'userId': data['fromId'],
+              'isSender': false,
+              'isOnlyAudio': data['isOnlyAudio'],
+            });
+          }
         }
-      }
-    });
-  }
+      });
 
-  Future<void> connectWebSocket() async {
-    _wsManager.connect();
-  }
-
-  final List<String> selectedIcons = [
-    'chat',
-    'user',
-    'talk',
-  ];
-
-  final List<String> unselectedIcons = [
-    'assets/images/chat-empty.png',
-    'assets/images/user-empty.png',
-    'assets/images/talk-empty.png',
-  ];
-
-  final List<String> name = [
-    '消息',
-    '通讯',
-    '说说',
-  ];
+  Future<void> _connectWebSocket() async => _wsManager.connect();
 
   @override
   void onInit() {
@@ -79,9 +71,8 @@ class NavigationLogic extends GetxController {
       // 适当处理错误，例如记录日志或显示提示
       if (kDebugMode) print('初始化过程中发生错误: $error');
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await initThemeData();
-    });
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) async => await _initThemeData());
   }
 
   @override

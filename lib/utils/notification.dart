@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 
@@ -36,7 +37,7 @@ class NotificationUtil {
       // 处理通知点击事件
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         // 处理通知点击
-        print('通知点击: ${response.payload}');
+        if (kDebugMode) print('通知点击: ${response.payload}');
       },
     );
 

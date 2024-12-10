@@ -35,9 +35,9 @@ class TalkDetailsLogic extends GetxController {
 
   @override
   void onInit() {
-    SharedPreferences.getInstance().then((prefs) {
-      currentUserId = prefs.getString('userId') ?? '';
-    });
+    super.onInit();
+    SharedPreferences.getInstance()
+        .then((prefs) => currentUserId = prefs.getString('userId') ?? '');
     talkId = Get.arguments['talkId'];
     _onGetTalkDetails();
     _onGetTalkLikeList();

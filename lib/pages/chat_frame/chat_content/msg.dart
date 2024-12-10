@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:custom_pop_up_menu_fork/custom_pop_up_menu.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_text_button/index.dart';

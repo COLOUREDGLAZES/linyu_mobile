@@ -11,15 +11,13 @@ class SetGroupRemarkLogic extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     remarkController.text = Get.arguments['remark'];
     chatGroupId = Get.arguments['chatGroupId'];
     remarkLength.value = remarkController.text.length;
   }
 
   void onSetName() async {
-    if (remarkController.text == null) {
-      return;
-    }
     final response = await _chatGroupApi.update(
         chatGroupId, 'group_remark', remarkController.text);
     if (response['code'] == 0) {

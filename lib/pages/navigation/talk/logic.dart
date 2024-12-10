@@ -56,24 +56,26 @@ class TalkLogic extends GetxController {
     if (!hasMore || isLoading) return;
     isLoading = true;
     update([const Key("talk")]);
-    _talkApi.list(index, 10, targetUserId).then((res) {
-      if (res['code'] == 0) {
-        final List<dynamic> newTalks = res['data'];
-        if (newTalks.isEmpty) {
-          hasMore = false;
-        } else {
-          talkList.addAll(newTalks);
-          index += newTalks.length;
-        }
-        isLoading = false;
-      } else {
-        isLoading = false;
-      }
-    }).catchError(() {
-      isLoading = false;
-    }).whenComplete(() {
-      update([const Key("talk")]);
-    });
+    _talkApi
+        .list(index, 10, targetUserId)
+        .then((res) {
+          if (res['code'] == 0) {
+            final List<dynamic> newTalks = res['data'];
+            if (newTalks.isEmpty) {
+              hasMore = false;
+            } else {
+              talkList.addAll(newTalks);
+              index += newTalks.length;
+            }
+            isLoading = false;
+          } else {
+            isLoading = false;
+          }
+        })
+        .catchError(() => isLoading = false)
+        .whenComplete(() {
+          update([const Key("talk")]);
+        });
   }
 
   Future<void> refreshData() async {

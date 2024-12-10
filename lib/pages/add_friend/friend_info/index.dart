@@ -51,7 +51,7 @@ class SearchInfoPage extends CustomWidgetNew<SearchInfoLogic> {
                                 borderRadius: BorderRadius.circular(35),
                               ),
                               child: CustomPortrait(
-                                  url: controller.friendPortrait ?? '',
+                                  url: controller.friendPortrait,
                                   size: 70,
                                   radius: 35),
                             ),
@@ -66,10 +66,11 @@ class SearchInfoPage extends CustomWidgetNew<SearchInfoLogic> {
                                         CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      CustomShadowText(text: controller.friendName ?? ''),
+                                      CustomShadowText(
+                                          text: controller.friendName),
                                       const SizedBox(height: 10),
                                       Text(
-                                        controller.friendAccount ?? '',
+                                        controller.friendAccount,
                                         style: TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey[700]),

@@ -22,7 +22,7 @@ class CustomImage extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(5)),
         child: CachedNetworkImage(
           width: double.infinity,
-          imageUrl: url ?? '',
+          imageUrl: url,
           placeholder: (context, url) => Container(
             color: Colors.grey[300],
             child: const Center(

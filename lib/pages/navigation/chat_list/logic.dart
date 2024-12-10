@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get_instance/src/get_instance.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
@@ -53,11 +54,11 @@ class ChatListLogic extends GetxController {
         update([const Key("chat_list")]);
       } else {
         // 处理错误情况，比如提示用户
-        print('获取聊天列表失败: ${res['message']}');
+        if (kDebugMode) print('获取聊天列表失败: ${res['message']}');
       }
     } catch (e) {
       // 捕获和处理异常
-      print('发生错误: $e');
+      if (kDebugMode) print('发生错误: $e');
     }
   }
 

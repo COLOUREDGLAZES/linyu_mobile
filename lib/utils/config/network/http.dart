@@ -11,8 +11,8 @@ class Http {
   Http._internal() {
     dio = Dio(BaseOptions(
       //使用的内网穿透
-      // baseUrl: 'http://114.96.70.115:19200',
-      baseUrl: 'http://192.168.101.4:9200',
+      baseUrl: 'http://114.96.70.115:19200',
+      // baseUrl: 'http://192.168.101.4:9200',
       // baseUrl: 'http://114.96.70.115:9200',
       connectTimeout: const Duration(seconds: 20),
       receiveTimeout: const Duration(seconds: 20),

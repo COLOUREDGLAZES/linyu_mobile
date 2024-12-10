@@ -5,6 +5,7 @@ class QrOtherResultLogic extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     text = Get.arguments['text'];
   }
 }

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart'
-    show Get, GetInstance, GetNavigation, GetxController, TextEditingController;
+    show Get, GetInstance, GetNavigation, GetxController;
 import 'package:get/get_rx/get_rx.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:linyu_mobile/utils/api/talk_api.dart';
@@ -22,18 +22,14 @@ class TalkCreateLogic extends GetxController {
 
   Future<void> pickImages() async {
     final ImagePicker picker = ImagePicker();
-    final List<XFile>? images = await picker.pickMultiImage();
+    final List<XFile> images = await picker.pickMultiImage();
 
-    if (images != null) {
-      for (var image in images) {
-        selectedImages.add(File(image.path));
-      }
+    for (var image in images) {
+      selectedImages.add(File(image.path));
     }
   }
 
-  void removeImage(int index) {
-    selectedImages.removeAt(index);
-  }
+  void removeImage(int index) => selectedImages.removeAt(index);
 
   Future<void> onUploadImg(String talkId, File img) async {
     Map<String, dynamic> map = {};

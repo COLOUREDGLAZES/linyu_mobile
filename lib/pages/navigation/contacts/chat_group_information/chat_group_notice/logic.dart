@@ -12,6 +12,7 @@ class ChatGroupNoticeLogic extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     chatGroupId = Get.arguments['chatGroupId'];
     isOwner = Get.arguments['isOwner'] ?? false;
     onGetChatGroupNoticeList();

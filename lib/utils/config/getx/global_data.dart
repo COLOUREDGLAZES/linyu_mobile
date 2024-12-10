@@ -12,28 +12,24 @@ class GlobalData extends GetxController {
   late String? currentUserName;
   late String? currentAvatarUrl =
       'http://192.168.101.4:9000/linyu/default-portrait.jpg';
+  late String? currentToken;
 
   Future<void> init() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('x-token');
       if (token == null) return;
-
+      currentToken = token;
       currentUserId = prefs.getString('userId') ?? '';
       currentUserAccount = prefs.getString('account') ?? '';
       currentUserName = prefs.getString('username');
       currentAvatarUrl = prefs.getString('portrait') ??
           'http://192.168.101.4:9000/linyu/default-portrait.jpg';
-
       // 仅当用户 ID 不为空时才获取未读信息
-      if (currentUserId.isNotEmpty) {
-        await onGetUserUnreadInfo();
-      }
+      if (currentUserId.isNotEmpty) await onGetUserUnreadInfo();
     } catch (e) {
       // 增加错误处理
-      if (kDebugMode) {
-        print('初始化失败: $e');
-      }
+      if (kDebugMode) print('初始化失败: $e');
       // 根据需求可以添加其他处理逻辑，比如记录日志等
     }
   }
@@ -60,9 +56,7 @@ class GlobalData extends GetxController {
   }
 
   int getUnreadCount(String type) {
-    if (unread.value.containsKey(type)) {
-      return unread.value[type]!;
-    }
+    if (unread.value.containsKey(type)) return unread.value[type]!;
     return 0;
   }
 

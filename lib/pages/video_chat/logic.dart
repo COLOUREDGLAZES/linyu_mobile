@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 import 'package:get/get.dart';
@@ -34,70 +35,50 @@ class VideoChatLogic extends GetxController {
   late RTCPeerConnection peerConnection;
   late MediaStream webcamStream;
 
-  @override
-  void onInit() async {
-    super.onInit();
-    userId = Get.arguments['userId'];
-    isOnlyAudio = Get.arguments['isOnlyAudio'];
-    isSender = Get.arguments['isSender'];
-    smallWindowOffset = Offset(Get.size.width - 116, 16).obs;
-    await onGetChatDetail();
-    await initializeRenderers();
-    await initRTCPeerConnection();
-    await videoCall();
-    videoEvent();
-  }
-
-  Future<void> onGetChatDetail() async {
-    _chatListApi.detail(userId, 'user').then((res) {
-      if (res['code'] == 0) {
-        userInfo = res['data'];
-        update([const Key('video_chat')]);
-      }
-    });
-  }
+  Future<void> onGetChatDetail() async =>
+      _chatListApi.detail(userId, 'user').then((res) {
+        if (res['code'] == 0) {
+          userInfo = res['data'];
+          update([const Key('video_chat')]);
+        }
+      });
 
   void updateSmallWindowPosition(Offset delta) {
     final screenSize = Get.size;
-
     // 计算新的位置
     double newX = smallWindowOffset.value.dx + delta.dx;
     double newY = smallWindowOffset.value.dy + delta.dy;
-
     // 确保小窗口不会超出屏幕边界
     newX = newX.clamp(0, screenSize.width - 100); // 100是小窗口的宽度
     newY = newY.clamp(0, screenSize.height - 150); // 150是小窗口的高度
-
     // 更新位置
     smallWindowOffset.value = Offset(newX, newY);
   }
 
-  void videoEvent() {
-    _subscription = _wsManager.eventStream.listen((event) {
-      if (event['type'] == 'on-receive-video') {
-        var data = event['content'];
-        switch (data['type']) {
-          case 'offer':
-            handleVideoOfferMsg(data);
-            break;
-          case 'answer':
-            handleVideoAnswerMsg(data);
-            break;
-          case 'candidate':
-            handleNewICECandidateMsg(data);
-            break;
-          case 'hangup':
-            handlerDestroyTime();
-            CustomFlutterToast.showErrorToast('对方已挂断~');
-            Get.back();
-            break;
-          case 'accept':
-            onOffer();
-            break;
+  void videoEvent() => _subscription = _wsManager.eventStream.listen((event) {
+        if (event['type'] == 'on-receive-video') {
+          var data = event['content'];
+          switch (data['type']) {
+            case 'offer':
+              handleVideoOfferMsg(data);
+              break;
+            case 'answer':
+              handleVideoAnswerMsg(data);
+              break;
+            case 'candidate':
+              handleNewICECandidateMsg(data);
+              break;
+            case 'hangup':
+              handlerDestroyTime();
+              CustomFlutterToast.showErrorToast('对方已挂断~');
+              Get.back();
+              break;
+            case 'accept':
+              onOffer();
+              break;
+          }
         }
-      }
-    });
-  }
+      });
 
   Future<void> handleVideoOfferMsg(data) async {
     final RTCSessionDescription desc =
@@ -116,7 +97,7 @@ class VideoChatLogic extends GetxController {
       );
       await peerConnection.setRemoteDescription(remoteDesc);
     } catch (e) {
-      print('Error in handleVideoAnswerMsg: $e');
+      if (kDebugMode) print('Error in handleVideoAnswerMsg: $e');
     }
   }
 
@@ -129,7 +110,7 @@ class VideoChatLogic extends GetxController {
       );
       await peerConnection.addCandidate(candidate);
     } catch (e) {
-      print('Error in handleNewICECandidateMsg: $e');
+      if (kDebugMode) print('Error in handleNewICECandidateMsg: $e');
     }
   }
 
@@ -139,18 +120,8 @@ class VideoChatLogic extends GetxController {
       await peerConnection.setLocalDescription(offer);
       await _videoApi.offer(userId, {'sdp': offer.sdp, 'type': offer.type});
     } catch (e) {
-      print('Error in onOffer: $e');
+      if (kDebugMode) print('Error in onOffer: $e');
     }
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-    _subscription?.cancel();
-    localRenderer.dispose();
-    remoteRenderer.dispose();
-    webcamStream.dispose();
-    peerConnection.close();
   }
 
   Future<void> initializeRenderers() async {
@@ -165,20 +136,17 @@ class VideoChatLogic extends GetxController {
         'audio': true,
         'video': !isOnlyAudio, // 如果是音频通话，则禁用视频
       });
-
       localRenderer.srcObject = webcamStream;
       // 如果是音频通话，禁用视频轨道
       if (isOnlyAudio) {
-        webcamStream.getVideoTracks().forEach((track) {
-          track.enabled = false;
-        });
+        webcamStream.getVideoTracks().forEach((track) => track.enabled = false);
       }
       // 将所有的轨道添加到 PeerConnection
       webcamStream.getTracks().forEach((track) {
-        peerConnection?.addTrack(track, webcamStream!);
+        peerConnection.addTrack(track, webcamStream);
       });
     } catch (e) {
-      print('Error in videoCall: $e');
+      if (kDebugMode) print('Error in videoCall: $e');
     }
   }
 
@@ -194,7 +162,6 @@ class VideoChatLogic extends GetxController {
         },
       ],
     };
-
     // 创建 PeerConnection
     peerConnection = await createPeerConnection(iceServer);
     // 设置 ICE 候选者事件处理
@@ -205,22 +172,18 @@ class VideoChatLogic extends GetxController {
     peerConnection.onTrack = handleTrackEvent;
   }
 
-  Future<void> handleICECandidateEvent(RTCIceCandidate candidate) async {
-    if (candidate != null) {
+  Future<void> handleICECandidateEvent(RTCIceCandidate candidate) async =>
       await _videoApi.candidate(userId, {
         'candidate': candidate.candidate,
         'sdpMid': candidate.sdpMid,
         'sdpMLineIndex': candidate.sdpMLineIndex,
       });
-    }
-  }
 
   void handleICEConnectionStateChangeEvent(RTCIceConnectionState? state) {
     toUserIsReady = true;
     handlerDestroyTime();
-    timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
-      time.value = time.value + 1;
-    });
+    timer = Timer.periodic(
+        const Duration(seconds: 1), (Timer t) => time.value = time.value + 1);
   }
 
   void handleTrackEvent(RTCTrackEvent event) {
@@ -235,13 +198,11 @@ class VideoChatLogic extends GetxController {
     }
   }
 
-  void onAccept() async {
-    _videoApi.accept(userId).then((res) {
-      if (res['code'] == 0) {
-        toUserIsReady = true;
-      }
-    });
-  }
+  void onAccept() async => _videoApi.accept(userId).then((res) {
+        if (res['code'] == 0) {
+          toUserIsReady = true;
+        }
+      });
 
   void onHangup() async {
     Map<String, dynamic> msg = {
@@ -257,31 +218,50 @@ class VideoChatLogic extends GetxController {
         WebSocketUtil.eventController
             .add({'type': 'on-receive-msg', 'content': res['data']});
       }
-    }).whenComplete(() {
-      _videoApi.hangup(userId).then((res) {
-        Get.back();
-      });
-    });
+    }).whenComplete(() => _videoApi.hangup(userId).then((res) => Get.back()));
   }
 
   void toggleVideo() {
     isVideoEnabled.value = !isVideoEnabled.value;
-    webcamStream.getVideoTracks().forEach((track) {
-      track.enabled = isVideoEnabled.value;
-    });
+    webcamStream
+        .getVideoTracks()
+        .forEach((track) => track.enabled = isVideoEnabled.value);
   }
 
   void toggleAudio() {
     isAudioEnabled.value = !isAudioEnabled.value;
-    webcamStream.getAudioTracks().forEach((track) {
-      track.enabled = isAudioEnabled.value;
-    });
+    webcamStream
+        .getAudioTracks()
+        .forEach((track) => track.enabled = isAudioEnabled.value);
   }
 
-  void showExitConfirmDialog(context) {
-    CustomDialog.showTipDialog(context, text: "确定将结束本次通话，是否继续?", onOk: () {
-      onHangup();
-      Get.back();
-    }, onCancel: () {});
+  void showExitConfirmDialog(context) =>
+      CustomDialog.showTipDialog(context, text: "确定将结束本次通话，是否继续?", onOk: () {
+        onHangup();
+        Get.back();
+      }, onCancel: () {});
+
+  @override
+  void onInit() async {
+    super.onInit();
+    userId = Get.arguments['userId'];
+    isOnlyAudio = Get.arguments['isOnlyAudio'];
+    isSender = Get.arguments['isSender'];
+    smallWindowOffset = Offset(Get.size.width - 116, 16).obs;
+    await onGetChatDetail();
+    await initializeRenderers();
+    await initRTCPeerConnection();
+    await videoCall();
+    videoEvent();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    _subscription?.cancel();
+    localRenderer.dispose();
+    remoteRenderer.dispose();
+    webcamStream.dispose();
+    peerConnection.close();
   }
 }

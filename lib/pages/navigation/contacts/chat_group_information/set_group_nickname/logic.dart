@@ -11,15 +11,13 @@ class SetGroupNameNickLogic extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     nameController.text = Get.arguments['name'];
     chatGroupId = Get.arguments['chatGroupId'];
     nameLength.value = nameController.text.length;
   }
 
   void onSetName() async {
-    if (nameController.text == null) {
-      return;
-    }
     final response = await _chatGroupApi.update(
         chatGroupId, 'group_name', nameController.text);
     if (response['code'] == 0) {

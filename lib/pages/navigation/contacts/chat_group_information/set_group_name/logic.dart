@@ -11,13 +11,14 @@ class SetGroupNameLogic extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     nameController.text = Get.arguments['name'];
     chatGroupId = Get.arguments['chatGroupId'];
     nameLength.value = nameController.text.length;
   }
 
   void onSetName() async {
-    if (nameController.text == null || nameController.text.trim().isEmpty) {
+    if (nameController.text.trim().isEmpty) {
       CustomFlutterToast.showErrorToast('名称不能为空~');
       return;
     }

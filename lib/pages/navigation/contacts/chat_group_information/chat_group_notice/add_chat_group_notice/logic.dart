@@ -12,6 +12,7 @@ class AddChatGroupNoticeLogic extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     noticeController.text = Get.arguments['content'] ?? '';
     chatGroupNoticeId = Get.arguments['chatGroupNoticeId'];
     chatGroupId = Get.arguments['chatGroupId'];
@@ -19,7 +20,7 @@ class AddChatGroupNoticeLogic extends GetxController {
   }
 
   void onAddNotice() async {
-    if (noticeController.text == null || noticeController.text.trim().isEmpty) {
+    if (noticeController.text.trim().isEmpty) {
       CustomFlutterToast.showErrorToast('公告不能为空~');
       return;
     }
