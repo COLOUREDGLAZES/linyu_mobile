@@ -24,20 +24,6 @@ class NavigationLogic extends GetxController {
     theme.changeThemeMode(sex == "女" ? 'pink' : 'blue');
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    _initializeServices().catchError((error) {
-      // 适当处理错误，例如记录日志或显示提示
-      if (kDebugMode) {
-        print('初始化过程中发生错误: $error');
-      }
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await initThemeData();
-    });
-  }
-
   Future<void> _initializeServices() async {
     await globalData.init();
     await NotificationUtil.initialize();
@@ -85,6 +71,18 @@ class NavigationLogic extends GetxController {
     '通讯',
     '说说',
   ];
+
+  @override
+  void onInit() {
+    super.onInit();
+    _initializeServices().catchError((error) {
+      // 适当处理错误，例如记录日志或显示提示
+      if (kDebugMode) print('初始化过程中发生错误: $error');
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await initThemeData();
+    });
+  }
 
   @override
   void onClose() {

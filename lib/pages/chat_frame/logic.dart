@@ -399,6 +399,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     if (result['code'] == 0) {
       msgContentController.text = result['data']['msgContent']['content'];
       isRecording.value = false;
+      isSend.value = true;
       WidgetsBinding.instance
           .addPostFrameCallback((_) => focusNode.requestFocus());
       update([const Key('chat_frame')]);

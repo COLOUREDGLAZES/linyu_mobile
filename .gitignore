@@ -1,5 +1,6 @@
 # Miscellaneous
 *.class
+qodana.yaml
 *.log
 *.pyc
 *.swp
