@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:linyu_mobile/utils/api/http.dart';
+import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class MsgApi {
   final Dio _dio = Http().dio;
@@ -9,9 +9,7 @@ class MsgApi {
 
   MsgApi._internal();
 
-  factory MsgApi() {
-    return _instance;
-  }
+  factory MsgApi() => _instance;
 
   Future<Map<String, dynamic>> record(
       String targetId, int index, int num) async {
@@ -25,7 +23,6 @@ class MsgApi {
     } on DioException catch (e) {
       // 适当的错误处理机制
       if (kDebugMode) print('请求失败: ${e.message}');
-
       return {'error': e.message}; // 返回错误信息
     } catch (e) {
       if (kDebugMode) print('发生未知错误: $e');
@@ -36,7 +33,6 @@ class MsgApi {
 
   Future<Map<String, dynamic>> send(dynamic msg) async {
     if (msg == null) return {'error': '消息不能为空'};
-
     try {
       final response = await _dio.post('/v1/api/message/send', data: msg);
       return response.data ?? {}; // 加入空值处理
@@ -53,7 +49,6 @@ class MsgApi {
 
   Future<Map<String, dynamic>> getMedia(String msgId) async {
     if (msgId.isEmpty) return {'error': 'msgId 不能为空'};
-
     try {
       final response = await _dio
           .get('/v1/api/message/get/media', queryParameters: {'msgId': msgId});
@@ -71,7 +66,6 @@ class MsgApi {
 
   Future<Map<String, dynamic>> sendMedia(FormData formData) async {
     if ((formData.fields as List).isEmpty) return {'error': 'formData 不能为空'};
-
     try {
       final response =
           await _dio.post('/v1/api/message/send/file/form', data: formData);
@@ -89,7 +83,6 @@ class MsgApi {
 
   Future<Map<String, dynamic>> retract(String msgId, String? targetId) async {
     if (msgId.isEmpty) return {'error': 'msgId 不能为空'};
-
     try {
       final response = await _dio.post('/v1/api/message/retraction',
           data: {'msgId': msgId, 'targetId': targetId});
@@ -106,13 +99,27 @@ class MsgApi {
   }
 
   Future<Map<String, dynamic>> reEdit(String msgId) async {
-    if (msgId.isEmpty) {
-      return {'error': 'msgId 不能为空'};
-    }
-
+    if (msgId.isEmpty) return {'error': 'msgId 不能为空'};
     try {
       final response =
           await _dio.post('/v1/api/message/reedit', data: {'msgId': msgId});
+      return response.data ?? {}; // 增加空值处理
+    } on DioException catch (e) {
+      if (kDebugMode) print('请求失败: ${e.message}');
+
+      return {'error': e.message}; // 返回错误信息
+    } catch (e) {
+      if (kDebugMode) print('发生未知错误: $e');
+
+      return {'error': '发生未知错误'};
+    }
+  }
+
+  Future<Map<String, dynamic>> voiceToText(String msgId) async {
+    if (msgId.isEmpty) return {'error': 'msgId 不能为空'};
+    try {
+      final response = await _dio.get('/v1/api/message/voice/to/text',
+          queryParameters: {'msgId': msgId});
       return response.data ?? {}; // 增加空值处理
     } on DioException catch (e) {
       if (kDebugMode) print('请求失败: ${e.message}');

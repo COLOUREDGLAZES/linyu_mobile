@@ -10,12 +10,12 @@ import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_icon_button/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_text_field/index.dart';
-import 'package:linyu_mobile/components/custom_voice_record_buttom/index.dart';
+import 'package:linyu_mobile/components/custom_voice_record_button/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/msg.dart';
 import 'package:linyu_mobile/pages/chat_frame/logic.dart';
 import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/emoji.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 enum PanelType {
   none,
@@ -100,6 +100,7 @@ class ChatFramePage extends CustomWidgetNew<ChatFrameLogic>
                                 offset: selection.start + emoji.length,
                               ),
                             );
+                            controller.isSend.value = true;
                           },
                           child: Text(
                             emoji,
@@ -214,17 +215,17 @@ class ChatFramePage extends CustomWidgetNew<ChatFrameLogic>
     super.didChangeMetrics();
     final keyboardHeight = MediaQuery.of(Get.context!).viewInsets.bottom;
     if (keyboardHeight > 0) {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (controller.scrollController.hasClients) {
-            controller.scrollController.animateTo(
-              controller.scrollController.position.maxScrollExtent + 500,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.fastOutSlowIn,
-            );
-          }
-        });
-      });
+      Future.delayed(
+          const Duration(milliseconds: 300),
+          () => WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (controller.scrollController.hasClients) {
+                  controller.scrollController.animateTo(
+                    controller.scrollController.position.maxScrollExtent + 500,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.fastOutSlowIn,
+                  );
+                }
+              }));
     }
   }
 
@@ -254,7 +255,6 @@ class ChatFramePage extends CustomWidgetNew<ChatFrameLogic>
           ),
           body: Column(
             children: [
-              // 消息列表部分
               Expanded(
                 child: GestureDetector(
                   onTap: () => hidePanel(),
@@ -285,9 +285,12 @@ class ChatFramePage extends CustomWidgetNew<ChatFrameLogic>
                                     key: ValueKey(msg['id']),
                                     reEdit: () => controller.reEditMsg(msg),
                                     onTapMsg: () => controller.onTapMsg(msg),
-                                    onTapCopy: (data) =>
-                                        //复制到剪切板
-                                        Clipboard.setData(ClipboardData(
+                                    onTapVoiceToText: (data) =>
+                                        controller.onVoiceToTxt(msg),
+                                    onTapVoiceHiddenText: (data) =>
+                                        controller.onHideText(msg),
+                                    onTapCopy: (data) => Clipboard.setData(
+                                        ClipboardData(
                                             text: msg['msgContent']
                                                 ['content'])),
                                     onTapRetract: (data) =>

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:linyu_mobile/utils/api/http.dart';
+import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class UserApi {
   final Dio _dio = Http().dio;

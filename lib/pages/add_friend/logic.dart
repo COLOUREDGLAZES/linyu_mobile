@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'index.dart';
 
 class AddFriendLogic extends Logic<AddFriendPage> {

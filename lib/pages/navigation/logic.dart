@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalData.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/global_data.dart';
+import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/notification.dart';
 import 'package:linyu_mobile/utils/permission_handler.dart';
-import 'package:linyu_mobile/utils/web_socket.dart';
+import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 
 class NavigationLogic extends GetxController {
   late RxInt currentIndex = 0.obs;
@@ -25,7 +25,7 @@ class NavigationLogic extends GetxController {
   }
 
   @override
-   void onInit() {
+  void onInit() {
     super.onInit();
     _initializeServices().catchError((error) {
       // 适当处理错误，例如记录日志或显示提示
@@ -46,7 +46,6 @@ class NavigationLogic extends GetxController {
     await connectWebSocket();
     eventListen();
   }
-
 
   void eventListen() {
     // 监听消息

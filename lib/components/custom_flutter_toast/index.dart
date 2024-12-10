@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_instance/src/get_instance.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
+import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 
 class CustomFlutterToast {
   static void showSuccessToast(String msg) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
+import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 
 class CustomDialog {
   static void showTipDialog(BuildContext context,

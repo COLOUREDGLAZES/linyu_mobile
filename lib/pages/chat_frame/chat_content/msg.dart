@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:custom_pop_up_menu_fork/custom_pop_up_menu.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +13,7 @@ import 'package:linyu_mobile/pages/chat_frame/chat_content/system.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/time.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/voice.dart';
 import 'package:linyu_mobile/utils/date.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 import 'text.dart';
 
@@ -28,7 +30,8 @@ class ChatMessage extends StatelessThemeWidget {
     this.onTapCite,
     this.onTapMsg,
     this.reEdit,
-    this.onTapVoice,
+    this.onTapVoiceToText,
+    this.onTapVoiceHiddenText,
     required this.msg,
     required this.chatInfo,
     required this.member,
@@ -57,7 +60,10 @@ class ChatMessage extends StatelessThemeWidget {
   final CallBack? onTapCite;
 
   // 点击转文字回调
-  final CallBack? onTapVoice;
+  final CallBack? onTapVoiceToText;
+
+  // 点击隐藏文字回调
+  final CallBack? onTapVoiceHiddenText;
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +109,7 @@ class ChatMessage extends StatelessThemeWidget {
                     const SizedBox(height: 5),
                     // 动态组件
                     // getComponentByType(msg['msgContent']['type'], isRight),
-                    getComponentByType(msg, isRight),
+                    _getComponentByType(msg, isRight),
                   ],
                 ),
                 if (msg['msgContent']['type'] == 'retraction' &&
@@ -154,7 +160,7 @@ class ChatMessage extends StatelessThemeWidget {
                     ),
                   const SizedBox(width: 5),
                   // getComponentByType(msg['msgContent']['type'], isRight),
-                  getComponentByType(msg, isRight),
+                  _getComponentByType(msg, isRight),
                   if (msg['msgContent']['type'] == 'retraction' &&
                       isRight &&
                       msg['msgContent']['ext'] != null &&
@@ -190,10 +196,7 @@ class ChatMessage extends StatelessThemeWidget {
 
   String _handlerGroupDisplayName() {
     // 检查 member 是否为 null
-    if (member == null) {
-      return msg['msgContent']?['formUserName'] ?? '';
-    }
-
+    if (member == null) return msg['msgContent']?['formUserName'] ?? '';
     // 尝试从 member 中获取优先属性
     try {
       return member?.containsKey('groupName') == true &&
@@ -209,8 +212,7 @@ class ChatMessage extends StatelessThemeWidget {
     }
   }
 
-  List<PopMenuItemModel> menuItems(String type) => [
-        // if (msg['msgContent']['type'] == 'text')
+  List<PopMenuItemModel> _menuItems(String type, {bool? toText = true}) => [
         if (type == 'text')
           PopMenuItemModel(
             title: '复制',
@@ -218,12 +220,19 @@ class ChatMessage extends StatelessThemeWidget {
             callback:
                 onTapCopy ?? (data) => debugPrint("data: ${data.toString()}"),
           ),
-        if (type == 'voice')
+        if (type == 'voice' && toText!)
           PopMenuItemModel(
             title: '转文字',
             icon: Icons.text_fields,
-            callback:
-                onTapVoice ?? (data) => debugPrint("data: ${data.toString()}"),
+            callback: onTapVoiceToText ??
+                (data) => debugPrint("data: ${data.toString()}"),
+          ),
+        if (type == 'voice' && !toText!)
+          PopMenuItemModel(
+            title: '隐藏文字',
+            icon: Icons.high_quality,
+            callback: onTapVoiceHiddenText ??
+                (data) => debugPrint("data: ${data.toString()}"),
           ),
         PopMenuItemModel(
             title: '转发',
@@ -272,11 +281,10 @@ class ChatMessage extends StatelessThemeWidget {
         //     }),
       ];
 
-  Widget getComponentByType(Map<String, dynamic> msg, bool isRight) {
-    if (kDebugMode) {
-      print('msg: ${msg['msgContent']['ext']}');
-    }
+  Widget _getComponentByType(Map<String, dynamic> msg, bool isRight) {
     String? type = msg['msgContent']['type'];
+    Map<String, dynamic>? content;
+    if (type == 'voice') content = jsonDecode(msg['msgContent']['content']);
     final messageMap = {
       'text': (String? username) => TextMessage(value: msg, isRight: isRight),
       'file': (String? username) => FileMessage(value: msg, isRight: isRight),
@@ -298,7 +306,10 @@ class ChatMessage extends StatelessThemeWidget {
               showArrow: true,
               useGridView: false,
               pressType: PressType.longPress,
-              menuItems: menuItems(type!),
+              menuItems: _menuItems(type!,
+                  toText: content != null
+                      ? content['text'] == null || content['text'].isEmpty
+                      : false),
               dataObj: messageWidget,
               child: GestureDetector(
                 onTap: onTapMsg,

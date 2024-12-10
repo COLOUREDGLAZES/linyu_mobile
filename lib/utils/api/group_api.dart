@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:linyu_mobile/utils/api/http.dart';
+import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class GroupApi {
   final Dio _dio = Http().dio;
@@ -23,9 +23,9 @@ class GroupApi {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> update(String groupId,String groupName) async {
+  Future<Map<String, dynamic>> update(String groupId, String groupName) async {
     final response = await _dio.post('/v1/api/group/update', data: {
-      'groupId':groupId,
+      'groupId': groupId,
       'groupName': groupName,
     });
     return response.data;

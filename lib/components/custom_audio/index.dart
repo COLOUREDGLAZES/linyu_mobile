@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:linyu_mobile/components/custom_sound_icon/index.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
+import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 
 class CustomAudio extends StatefulWidget {
   final String audioUrl;
@@ -74,7 +75,9 @@ class _CustomAudioWidgetState extends State<CustomAudio> {
         await _audioPlayer.play();
       }
     } catch (e) {
-      print('Error playing audio: $e');
+      if (kDebugMode) {
+        print('Error playing audio: $e');
+      }
     }
   }
 
@@ -89,15 +92,15 @@ class _CustomAudioWidgetState extends State<CustomAudio> {
           // borderRadius: BorderRadius.circular(5),
           borderRadius: widget.isRight
               ? const BorderRadius.only(
-            topLeft: Radius.circular(10),
-            bottomLeft: Radius.circular(10),
-            bottomRight: Radius.circular(10),
-          )
+                  topLeft: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
+                )
               : const BorderRadius.only(
-            bottomLeft: Radius.circular(10),
-            bottomRight: Radius.circular(10),
-            topRight: Radius.circular(10),
-          ),
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                ),
         ),
         width: 120,
         height: 40,

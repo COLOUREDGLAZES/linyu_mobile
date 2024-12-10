@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/msg_api.dart';
 import 'package:linyu_mobile/components/custom_audio/index.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
+import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 
 class VoiceMessage extends StatefulWidget {
   final dynamic value;

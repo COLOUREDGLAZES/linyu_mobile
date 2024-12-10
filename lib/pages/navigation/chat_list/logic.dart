@@ -5,8 +5,8 @@ import 'package:get/get_instance/src/get_instance.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
 import 'package:linyu_mobile/utils/api/friend_api.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalData.dart';
-import 'package:linyu_mobile/utils/web_socket.dart';
+import 'package:linyu_mobile/utils/config/getx/global_data.dart';
+import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatListLogic extends GetxController {

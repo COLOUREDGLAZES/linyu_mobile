@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalData.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
-import 'package:linyu_mobile/utils/getx_config/route.dart';
-
-typedef FilterFunc<T> = Object Function(T value);
+import 'package:linyu_mobile/utils/config/getx/global_data.dart';
+import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
+import 'package:linyu_mobile/utils/config/getx/route.dart';
 
 //路由配置
 List<GetPage> pageRoute = AppRoutes.pageRoute;
@@ -128,7 +126,6 @@ abstract class CustomWidgetNew<T extends Logic> extends StatelessWidget {
   /// 依赖发生变化
   void didChangeDependencies(BuildContext context) {
     if (kDebugMode) print("change>$runtimeType");
-
   }
 
   /// 更新Widget
@@ -137,17 +134,15 @@ abstract class CustomWidgetNew<T extends Logic> extends StatelessWidget {
     GetBuilderState<T> state,
   ) {
     if (kDebugMode) print("update>$runtimeType");
-
   }
 
   /// 构建widget
   Widget buildWidget(BuildContext context);
 
   /// 关闭
-  void close(BuildContext context)  {
-  if (kDebugMode) print("close>$runtimeType");
-
-}
+  void close(BuildContext context) {
+    if (kDebugMode) print("close>$runtimeType");
+  }
 
   /// 创建上下文
   @override
@@ -157,6 +152,7 @@ abstract class CustomWidgetNew<T extends Logic> extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GetBuilder<T>(
         id: key,
+        key: Key("${context.widget.hashCode}_builder"),
         initState: (GetBuilderState<T> state) => this.init(context),
         didChangeDependencies: (GetBuilderState<T> state) =>
             this.didChangeDependencies(context),

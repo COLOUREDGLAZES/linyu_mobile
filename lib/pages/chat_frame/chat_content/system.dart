@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 class SystemMessage extends StatelessThemeWidget {
   final dynamic value;

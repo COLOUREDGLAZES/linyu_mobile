@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import 'logic.dart';

@@ -33,9 +33,8 @@ extension UsersListExtension<E extends Map<String, dynamic>> on List {
         }
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('复制列表时发生错误: $e');
-      } // 错误处理，输出错误信息
+      // 错误处理，输出错误信息
+      if (kDebugMode) print('复制列表时发生错误: $e');
     }
     return copyList; // 返回复制后的列表
   }
@@ -54,11 +53,8 @@ extension UsersListExtension<E extends Map<String, dynamic>> on List {
         }
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('替换值时发生错误: $e'); // 输出错误信息
-      }
+      if (kDebugMode) print('替换值时发生错误: $e'); // 输出错误信息
     }
-
     return sourceList; // 返回处理后的列表
   }
 }

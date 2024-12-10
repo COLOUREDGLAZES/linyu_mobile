@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 class SearchInfoLogic extends Logic {
   //搜索结果
@@ -88,7 +88,8 @@ class SearchInfoLogic extends Logic {
   //进入好友申请页面
   void goApplyFriend() =>
       // Get.toNamed('/friend_request', arguments: {'friendInfo': _friendInfo});
-      Get.offAndToNamed('/friend_request', arguments: {'friendInfo': _friendInfo});
+      Get.offAndToNamed('/friend_request',
+          arguments: {'friendInfo': _friendInfo});
 
   @override
   void onInit() {

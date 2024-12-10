@@ -3,7 +3,7 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/pages/image_viewer/image_viewer_update/logic.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:photo_view/photo_view.dart';
 
 class ImageViewerUpdatePage extends CustomWidget<ImageViewerUpdateLogic> {

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_label_value/index.dart';
 import 'package:linyu_mobile/pages/navigation/mine/about/logic.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 class AboutPage extends CustomWidget<AboutLogic> {
   AboutPage({super.key});

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'getx_config/GlobalThemeConfig.dart';
+import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 
 typedef UploadPictureCallback = Future<void> Function(File picture);
 

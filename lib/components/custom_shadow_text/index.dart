@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 class CustomShadowText extends StatelessThemeWidget {
   final String text;

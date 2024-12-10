@@ -1,8 +1,6 @@
 class DateUtil {
   static String formatTime(dynamic input) {
-    if (input == null || (input is String && input.isEmpty)) {
-      return '';
-    }
+    if (input == null || (input is String && input.isEmpty)) return '';
     DateTime? date;
     if (input is int) {
       date = DateTime.fromMillisecondsSinceEpoch(input);
@@ -22,7 +20,6 @@ class DateUtil {
     final isYesterday = now.day - date.day == 1 &&
         now.month == date.month &&
         now.year == date.year;
-
     if (diff < oneDay && !isYesterday) {
       final hour = date.hour;
       final minute = date.minute;
@@ -53,9 +50,7 @@ class DateUtil {
   }
 
   static String getYearDayMonth(dynamic date) {
-    if (date == null || date == '') {
-      return '';
-    }
+    if (date == null || date == '') return '';
     DateTime initDate = DateTime.now();
     if (date is int) {
       initDate = DateTime.fromMillisecondsSinceEpoch(date);
@@ -69,9 +64,7 @@ class DateUtil {
   }
 
   static String calculateAge(dynamic birthDate) {
-    if (birthDate == null || birthDate == '') {
-      return '';
-    }
+    if (birthDate == null || birthDate == '') return '';
     DateTime today = DateTime.now();
     DateTime birth = today;
     if (birthDate is int) {
@@ -89,9 +82,7 @@ class DateUtil {
   }
 
   static String formatTimingTime(dynamic time) {
-    if (time == null || time == '') {
-      return '';
-    }
+    if (time == null || time == '') return '';
     int totalSeconds;
     if (time is int) {
       totalSeconds = time;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/msg_api.dart';
 import 'package:linyu_mobile/components/custom_image/index.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 class ImageMessage extends StatelessThemeWidget {
   final _msgApi = MsgApi();
@@ -32,16 +32,16 @@ class ImageMessage extends StatelessThemeWidget {
         color: Colors.black,
         // borderRadius: BorderRadius.all(Radius.circular(5)),
         borderRadius: isRight
-          ? const BorderRadius.only(
-        topLeft: Radius.circular(10),
-        bottomLeft: Radius.circular(10),
-        bottomRight: Radius.circular(10),
-      )
-          : const BorderRadius.only(
-        bottomLeft: Radius.circular(10),
-        bottomRight: Radius.circular(10),
-        topRight: Radius.circular(10),
-      ),
+            ? const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+              )
+            : const BorderRadius.only(
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
       ),
       child: FutureBuilder<String>(
         future: onGetImg(),

@@ -40,11 +40,10 @@ class WebSocketUtil {
       if (kDebugMode) {
         print('WebSocket connecting...');
       }
-      // String wsIp = '192.168.101.4:9100';
-      // String wsIp = '114.96.70.115:9100';
       //使用的内网穿透
-      String wsIp = '114.96.70.115:19100';
-
+      // String wsIp = '114.96.70.115:19100';
+      String wsIp = '192.168.101.4:9100';
+      // String wsIp = '114.96.70.115:9100';
       _channel = WebSocketChannel.connect(
         Uri.parse('ws://$wsIp/ws?x-token=$token'),
       );
@@ -75,7 +74,10 @@ class WebSocketUtil {
 
         String contentType = wsContent['type'];
         if (['msg', 'notify', 'video'].contains(contentType)) {
-          eventController.add({'type': 'on-receive-$contentType', 'content': wsContent['content']});
+          eventController.add({
+            'type': 'on-receive-$contentType',
+            'content': wsContent['content']
+          });
           if (contentType == 'msg') {
             sendNotification(wsContent['content']);
           }
@@ -152,4 +154,3 @@ class WebSocketUtil {
     );
   }
 }
-

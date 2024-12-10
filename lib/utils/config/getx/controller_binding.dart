@@ -1,4 +1,4 @@
-import 'package:get/get.dart';
+import 'package:get/get.dart' show Bindings, Get, Inst;
 import 'package:linyu_mobile/pages/chat_frame/logic.dart';
 import 'package:linyu_mobile/pages/file_details/logic.dart';
 import 'package:linyu_mobile/pages/image_viewer/image_viewer_update/logic.dart';
@@ -39,8 +39,8 @@ import 'package:linyu_mobile/pages/qr_code_scan/qr_login_affirm/logic.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_other_result/logic.dart';
 import 'package:linyu_mobile/pages/register/logic.dart';
 import 'package:linyu_mobile/pages/video_chat/logic.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalData.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
+import 'package:linyu_mobile/utils/config/getx/global_data.dart';
+import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 
 //依赖注入
 class ControllerBinding extends Bindings {

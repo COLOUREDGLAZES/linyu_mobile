@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/friend_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/navigation/contacts/friend_information/logic.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
+import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 
 class SetRemarkLogic extends GetxController {
   final _friendApi = FriendApi();

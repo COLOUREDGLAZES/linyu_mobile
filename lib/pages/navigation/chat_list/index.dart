@@ -8,7 +8,7 @@ import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_search_box/index.dart';
 import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/date.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/linyu_msg.dart';
 
 import 'logic.dart';
@@ -48,16 +48,9 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
         color: Colors.white,
         child: InkWell(
           onTap: () async {
-            if (kDebugMode) {
-              print(chat);
-            }
             var result = await Get.toNamed('/chat_frame', arguments: {
               'chatInfo': chat,
             });
-            if (kDebugMode) {
-              print(result);
-              print(globalData.getUnreadCount('chat'));
-            }
             controller.onGetChatList();
           },
           borderRadius: BorderRadius.circular(12),

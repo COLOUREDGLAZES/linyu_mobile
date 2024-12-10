@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart'
     show
         BoolExtension,
@@ -24,31 +23,56 @@ import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/cropPicture.dart';
 import 'package:linyu_mobile/utils/extension.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalData.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
-import 'package:linyu_mobile/utils/web_socket.dart';
+import 'package:linyu_mobile/utils/config/getx/global_data.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
 
 import 'index.dart';
 
 class ChatFrameLogic extends Logic<ChatFramePage> {
+  // 后端api接口
   final _msgApi = MsgApi();
   final _chatListApi = ChatListApi();
   final _wsManager = WebSocketUtil();
   final _videoApi = VideoApi();
   final _chatGroupMemberApi = ChatGroupMemberApi();
+
+  // 控制器
   final TextEditingController msgContentController = TextEditingController();
   final ScrollController scrollController = ScrollController();
+
+  // 焦点
   final FocusNode focusNode = FocusNode(skipTraversal: true);
+
+  // 控制台类型
   final RxString panelType = "none".obs;
+
+  // 群成员
   late Map<String, dynamic> members = {};
+
+  // 消息记录
   late List<dynamic> msgList = [];
+
+  // 目标id
   late String targetId = '';
+
+  // 聊天信息
   late dynamic chatInfo = {targetId: ''};
+
+  // 发送状态
   late RxBool isSend = false.obs;
+
+  // 录制状态
   late RxBool isRecording = false.obs;
+
+  // 是否只读
   late RxBool isReadOnly = false.obs;
+
+  // 用于信息监听
   StreamSubscription? _subscription;
+
+  // 全局数据
   final GlobalData _globalData = Get.find<GlobalData>();
 
   // 分页相关
@@ -137,11 +161,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
           final double previousScrollOffset = scrollController.position.pixels;
           final double previousMaxScrollExtent =
               scrollController.position.maxScrollExtent;
-
           msgList.insertAll(0, res['data']);
           index = msgList.length;
           hasMore = res['data'].length >= 0;
-
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final double newMaxScrollExtent =
                 scrollController.position.maxScrollExtent;
@@ -180,11 +202,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     try {
       final route =
           chatInfo['type'] == 'group' ? '/chat_group_info' : '/friend_info';
-
       final arguments = chatInfo['type'] == 'group'
           ? {'chatGroupId': targetId}
           : {'friendId': targetId};
-
       Get.offAndToNamed(route, arguments: arguments);
     } catch (e) {
       CustomFlutterToast.showErrorToast('导航到详情页时发生错误: $e');
@@ -194,16 +214,17 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // 发送文本消息
   void sendTextMsg() async {
     if (StringUtil.isNullOrEmpty(msgContentController.text)) return;
+    final String content = msgContentController.text;
     dynamic msg = {
       'toUserId': targetId,
       'source': chatInfo['type'],
-      'msgContent': {'type': "text", 'content': msgContentController.text}
+      'msgContent': {'type': "text", 'content': content}
     };
+    msgContentController.clear(); // 使用clear()简化设置为空字符串
     try {
       final res = await _msgApi.send(msg);
       if (res['code'] == 0) {
         isSend.value = false;
-        msgContentController.clear(); // 使用clear()简化设置为空字符串
         msgListAddMsg(res['data']);
         _onRead();
       } else {
@@ -215,13 +236,18 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   }
 
   void msgListAddMsg(msg) {
-    if (kDebugMode) {
-      print('msgListAddMsg: $msg');
+    if (msg == null) {
+      CustomFlutterToast.showErrorToast('消息内容不能为空');
+      return;
     }
-    msgList.add(msg);
-    index = msgList.length;
-    update([const Key('chat_frame')]);
-    scrollBottom();
+    try {
+      msgList.add(msg);
+      index = msgList.length;
+      update([const Key('chat_frame')]);
+      scrollBottom();
+    } catch (e) {
+      CustomFlutterToast.showErrorToast('添加消息时发生错误: $e');
+    }
   }
 
   // 消息已读
@@ -235,17 +261,16 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   }
 
   // 语音通话
-  void onInviteVideoChat(isOnlyAudio) {
-    _videoApi.invite(targetId, isOnlyAudio).then((res) {
-      if (res['code'] == 0) {
-        Get.toNamed('video_chat', arguments: {
-          'userId': targetId,
-          'isSender': true,
-          'isOnlyAudio': isOnlyAudio,
-        });
-      }
-    });
-  }
+  void onInviteVideoChat(isOnlyAudio) =>
+      _videoApi.invite(targetId, isOnlyAudio).then((res) {
+        if (res['code'] == 0) {
+          Get.toNamed('video_chat', arguments: {
+            'userId': targetId,
+            'isSender': true,
+            'isOnlyAudio': isOnlyAudio,
+          });
+        }
+      });
 
   // 选择图片
   void selectFile() async {
@@ -297,9 +322,8 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 发送语音消息
   void onSendVoiceMsg(filePath, time) async {
-    if (StringUtil.isNullOrEmpty(filePath)) {
-      return;
-    }
+    if (StringUtil.isNullOrEmpty(filePath)) return;
+
     if (time == 0) {
       CustomFlutterToast.showSuccessToast('录制时间太短~');
       return;
@@ -379,6 +403,50 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
           .addPostFrameCallback((_) => focusNode.requestFocus());
       update([const Key('chat_frame')]);
     }
+  }
+
+  // 语音转文字
+  void onVoiceToTxt(dynamic msg) async {
+    Map<String, dynamic> newMsg = Map<String, dynamic>.from(msg);
+    var content = jsonDecode(newMsg['msgContent']['content']);
+    content['text'] = '正在识别中...';
+    newMsg['msgContent']['content'] = jsonEncode(content);
+    _updateMessageList(msg, newMsg);
+    try {
+      final result = await _msgApi.voiceToText(msg['id']);
+      if (result['code'] == 0) {
+        _updateMessageList(msg, result['data']);
+      } else {
+        _handleVoiceToTextError(msg, content, '语音转文字失败: 网络错误');
+      }
+    } catch (e) {
+      CustomFlutterToast.showErrorToast('语音转文字时发生错误: $e');
+    }
+  }
+
+  void _updateMessageList(dynamic oldMsg, dynamic newMsg) {
+    msgList = msgList.replace(oldValue: oldMsg, newValue: newMsg);
+    update([const Key('chat_frame')]);
+  }
+
+  void _handleVoiceToTextError(
+      dynamic msg, Map<String, dynamic> content, String errorMessage) {
+    CustomFlutterToast.showErrorToast(errorMessage);
+    content['text'] = '';
+    msgList = msgList.replace(
+        oldValue: msg,
+        newValue: msg..['msgContent']['content'] = jsonEncode(content));
+    update([const Key('chat_frame')]);
+  }
+
+  // 隐藏文字
+  void onHideText(dynamic msg) {
+    Map<String, dynamic> newMsg = Map<String, dynamic>.from(msg);
+    var content = jsonDecode(newMsg['msgContent']['content']);
+    content['text'] = '';
+    newMsg['msgContent']['content'] = jsonEncode(content);
+    msgList = msgList.replace(oldValue: msg, newValue: newMsg);
+    update([const Key('chat_frame')]);
   }
 
   @override

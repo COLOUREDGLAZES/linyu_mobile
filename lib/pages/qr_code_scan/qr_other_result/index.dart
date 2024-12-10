@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_other_result/logic.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 class QrOtherResultPage extends CustomWidget<QrOtherResultLogic> {
   QrOtherResultPage({super.key});

@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/friend_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/navigation/contacts/create_chat_group/logic.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'index.dart';
 import 'package:linyu_mobile/utils/extension.dart';
 
@@ -94,9 +94,6 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
 
   //当被选中时进行的操作
   void onSelect(dynamic user) {
-    if (kDebugMode) {
-      print('user:$user');
-    }
     if (!users.include(user)) {
       addUsers(user);
       return;
@@ -131,10 +128,6 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
   }
 
   void onSelectGroup(dynamic group) {
-    if (kDebugMode) {
-      print('group:$group');
-      print('friends:${group['friends']}');
-    }
     // 检查是否存在'friends'字段并且是一个列表
     final List<dynamic>? friends =
         group['friends'] is List ? group['friends'] : null;
@@ -155,9 +148,6 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
   Color checkBoxFillColor(dynamic group) {
     try {
       final List<dynamic>? friends = group['friends'] as List<dynamic>?;
-      if (kDebugMode) {
-        print('${group['name']} friends is null:${friends?.isEmpty}');
-      }
       // 如果没有朋友列表，返回默认颜色
       if (friends == null || friends.isEmpty) return Colors.transparent;
 

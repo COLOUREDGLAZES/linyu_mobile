@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:linyu_mobile/utils/date.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 class CallMessage extends StatelessThemeWidget {
   final dynamic value;
@@ -28,15 +28,15 @@ class CallMessage extends StatelessThemeWidget {
         // borderRadius: BorderRadius.circular(5),
         borderRadius: isRight
             ? const BorderRadius.only(
-          topLeft: Radius.circular(10),
-          bottomLeft: Radius.circular(10),
-          bottomRight: Radius.circular(10),
-        )
+                topLeft: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+              )
             : const BorderRadius.only(
-          bottomLeft: Radius.circular(10),
-          bottomRight: Radius.circular(10),
-          topRight: Radius.circular(10),
-        ),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,

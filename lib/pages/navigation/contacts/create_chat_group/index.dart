@@ -6,7 +6,7 @@ import 'package:linyu_mobile/components/custom_label_value_button/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_text_button/index.dart';
 import 'package:linyu_mobile/components/custom_text_field/index.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 import 'logic.dart';
 

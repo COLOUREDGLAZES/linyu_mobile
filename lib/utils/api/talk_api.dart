@@ -1,6 +1,6 @@
 // lib/services/user_service.dart
 import 'package:dio/dio.dart';
-import 'package:linyu_mobile/utils/api/http.dart';
+import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class TalkApi {
   final Dio _dio = Http().dio;

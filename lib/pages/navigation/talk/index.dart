@@ -6,7 +6,7 @@ import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_text_button/index.dart';
 import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/date.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 import 'logic.dart';
 
@@ -18,10 +18,10 @@ class TalkPage extends CustomWidget<TalkLogic> {
     return Scaffold(
       appBar: AppBar(
         leading: Container(
-          margin: const EdgeInsets.only(left: 13.2,top: 10.8),
+          margin: const EdgeInsets.only(left: 13.2, top: 10.8),
           child: CustomPortrait(
             // url: controller.currentUserInfo['portrait']??'',
-            url: globalData.currentAvatarUrl??'',
+            url: globalData.currentAvatarUrl ?? '',
             size: 40,
             radius: 20,
             onTap: () => Scaffold.of(context).openDrawer(),

@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_text_field/index.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'logic.dart';
 import 'package:flutter/material.dart';
 

@@ -15,9 +15,8 @@ import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/navigation/chat_list/logic.dart';
 import 'package:linyu_mobile/pages/navigation/contacts/logic.dart';
 import 'package:linyu_mobile/pages/navigation/mine/logic.dart';
-import 'package:linyu_mobile/pages/navigation/talk/logic.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
 
@@ -293,11 +292,10 @@ class EditMineLogic extends Logic<EditMinePage> {
   void _whenClose() async {
     _theme.changeThemeMode(_prefs.getString('sex') == "女" ? "pink" : "blue");
     //以及返回上一页时更新页面
-    if(_mineLogic.initialized)_mineLogic.init();
-    if(_chatListLogic.initialized)_chatListLogic.onGetChatList();
-    if(_contactsLogic.initialized)_contactsLogic.init();
+    if (_mineLogic.initialized) _mineLogic.init();
+    if (_chatListLogic.initialized) _chatListLogic.onGetChatList();
+    if (_contactsLogic.initialized) _contactsLogic.init();
     // if(_talkLogic.initialized)_talkLogic.init();
-
   }
 
   //初始化

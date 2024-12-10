@@ -6,7 +6,7 @@ import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_search_box/index.dart';
 import 'package:linyu_mobile/components/custom_text_button/index.dart';
 import 'package:linyu_mobile/pages/add_friend/logic.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 class AddFriendPage extends CustomWidgetNew<AddFriendLogic> {
   AddFriendPage({super.key});

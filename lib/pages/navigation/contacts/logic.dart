@@ -8,8 +8,8 @@ import 'package:linyu_mobile/utils/api/chat_list_api.dart';
 import 'package:linyu_mobile/utils/api/friend_api.dart';
 import 'package:linyu_mobile/utils/api/notify_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalData.dart';
-import 'package:linyu_mobile/utils/web_socket.dart';
+import 'package:linyu_mobile/utils/config/getx/global_data.dart';
+import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ContactsLogic extends GetxController {
@@ -45,12 +45,21 @@ class ContactsLogic extends GetxController {
         }
       });
 
-  void onFriendList() => _friendApi.list().then((res) {
-        if (res['code'] == 0) {
-          friendList = res['data'];
-          update([const Key("contacts")]);
-        }
-      });
+  void onFriendList() async {
+    try {
+      final res = await _friendApi.list();
+      if (res['code'] == 0) {
+        friendList = res['data'];
+        update([const Key("contacts")]);
+      } else {
+        // 处理非成功状态
+        CustomFlutterToast.showErrorToast("获取好友列表失败: ${res['msg']}");
+      }
+    } catch (e) {
+      // 捕获异常并处理
+      CustomFlutterToast.showErrorToast("网络错误: $e");
+    }
+  }
 
   void onChatGroupList() {
     globalData.onGetUserUnreadInfo();

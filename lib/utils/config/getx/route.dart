@@ -40,7 +40,7 @@ import 'package:linyu_mobile/pages/qr_code_scan/qr_login_affirm/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_other_result/index.dart';
 import 'package:linyu_mobile/pages/register/index.dart';
 import 'package:linyu_mobile/pages/video_chat/index.dart';
-import 'ControllerBinding.dart';
+import 'controller_binding.dart';
 
 class AppRoutes {
   static List<GetPage> pageRoute = [
@@ -333,18 +333,4 @@ class AppRoutes {
       binding: ControllerBinding(),
     ),
   ];
-
-  static GetPage createGetPage(String name, Widget page,
-      {List<GetPage>? children,
-      Transition? transition,
-      Duration? transitionDuration}) {
-    return GetPage(
-      name: name,
-      page: () => page,
-      binding: ControllerBinding(),
-      transition: transition,
-      transitionDuration: transitionDuration,
-      children: children ?? [],
-    );
-  }
 }

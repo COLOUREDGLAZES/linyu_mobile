@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linyu_mobile/utils/getx_config/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 class CustomSearchBox extends StatelessThemeWidget {
   final bool isCentered;

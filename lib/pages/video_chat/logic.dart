@@ -9,7 +9,7 @@ import 'package:linyu_mobile/utils/api/msg_api.dart';
 import 'package:linyu_mobile/utils/api/video_api.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/web_socket.dart';
+import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 
 class VideoChatLogic extends GetxController {
   final _chatListApi = ChatListApi();
