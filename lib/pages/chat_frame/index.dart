@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'package:chat_bottom_container/panel_container.dart';
 import 'package:chat_bottom_container/typedef.dart';
 import 'package:flutter/cupertino.dart';
@@ -148,13 +150,12 @@ class ChatFramePage extends CustomWidgetNew<ChatFrameLogic>
                   _buildIconButton2(
                     '图片',
                     const IconData(0xe9f4, fontFamily: 'IconFont'),
-                    () => controller.cropChatBackgroundPicture(null),
+                    () => controller.cropChatPicture(null),
                   ),
                   _buildIconButton2(
                     '拍照',
                     const IconData(0xe9f3, fontFamily: 'IconFont'),
-                    () => controller
-                        .cropChatBackgroundPicture(ImageSource.camera),
+                    () => controller.cropChatPicture(ImageSource.camera),
                   ),
                   _buildIconButton2(
                     '文件',
@@ -214,19 +215,17 @@ class ChatFramePage extends CustomWidgetNew<ChatFrameLogic>
   void didChangeMetrics() {
     super.didChangeMetrics();
     final keyboardHeight = MediaQuery.of(Get.context!).viewInsets.bottom;
-    if (keyboardHeight > 0) {
+    if (keyboardHeight > 0)
       Future.delayed(
           const Duration(milliseconds: 300),
           () => WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (controller.scrollController.hasClients) {
+                if (controller.scrollController.hasClients)
                   controller.scrollController.animateTo(
                     controller.scrollController.position.maxScrollExtent + 500,
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.fastOutSlowIn,
                   );
-                }
               }));
-    }
   }
 
   @override
