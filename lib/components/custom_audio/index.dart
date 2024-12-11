@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/components/custom_sound_icon/index.dart';
 import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 
@@ -39,9 +40,7 @@ class _CustomAudioWidgetState extends State<CustomAudio> {
   void _setupAudioPlayer() {
     _audioPlayer.playerStateStream.listen((playerState) async {
       if (playerState.processingState == ProcessingState.completed) {
-        setState(() {
-          _isPlaying = false;
-        });
+        setState(() => _isPlaying = false);
         await _audioPlayer.pause();
         _audioPlayer.seek(Duration.zero);
       }
@@ -62,22 +61,20 @@ class _CustomAudioWidgetState extends State<CustomAudio> {
     try {
       if (_isPlaying) {
         await _audioPlayer.pause();
-        setState(() {
-          _isPlaying = false;
-        });
+        setState(() => _isPlaying = false);
       } else {
-        setState(() {
-          _isPlaying = true;
-        });
+        setState(() => _isPlaying = true);
         if (_audioPlayer.duration == null) {
-          await _audioPlayer.setUrl(widget.audioUrl);
+          if (kDebugMode) print(widget.audioUrl);
+          await _audioPlayer
+              .setAudioSource(AudioSource.uri(Uri.parse(widget.audioUrl)));
+          // await _audioPlayer.setUrl(widget.audioUrl);
         }
         await _audioPlayer.play();
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error playing audio: $e');
-      }
+      if (kDebugMode) print('Error playing audio: $e');
+      CustomFlutterToast.showErrorToast('$e');
     }
   }
 

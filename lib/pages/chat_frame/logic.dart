@@ -323,7 +323,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // 发送语音消息
   void onSendVoiceMsg(filePath, time) async {
     if (StringUtil.isNullOrEmpty(filePath)) return;
-
     if (time == 0) {
       CustomFlutterToast.showSuccessToast('录制时间太短~');
       return;
