@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -8,6 +10,7 @@ import 'package:linyu_mobile/utils/api/chat_group_member.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/navigation/contacts/logic.dart';
+import 'package:linyu_mobile/utils/api/chat_list_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
 
@@ -15,6 +18,7 @@ class ChatGroupInformationLogic extends GetxController {
   final ContactsLogic _contactsLogic = GetInstance().find<ContactsLogic>();
   final _chatGroupApi = ChatGroupApi();
   final _chatGroupMemberApi = ChatGroupMemberApi();
+  final _chatListApi = new ChatListApi();
   late String? _currentUserId = '';
   late bool isOwner = false;
   late dynamic chatGroupDetails = {
@@ -36,7 +40,7 @@ class ChatGroupInformationLogic extends GetxController {
     'groupRemark': '',
   };
   late List<dynamic> chatGroupMembers = [];
-  final String chatGroupId = Get.arguments['chatGroupId'];
+  final String _chatGroupId = Get.arguments['chatGroupId'];
   double _groupMemberWidth = 0;
 
   double get groupMemberWidth => _groupMemberWidth;
@@ -46,15 +50,8 @@ class ChatGroupInformationLogic extends GetxController {
     update([const Key('chat_group_info')]);
   }
 
-  @override
-  void onInit() {
-    onGetGroupChatDetails();
-    onGetGroupChatMembers();
-    super.onInit();
-  }
-
-  Future<void> onGetGroupChatDetails() async {
-    await _chatGroupApi.details(chatGroupId).then((res) async {
+  Future<void> _onGetGroupChatDetails() async {
+    await _chatGroupApi.details(_chatGroupId).then((res) async {
       if (res['code'] == 0) {
         chatGroupDetails = res['data'];
         final prefs = await SharedPreferences.getInstance();
@@ -69,18 +66,17 @@ class ChatGroupInformationLogic extends GetxController {
     });
   }
 
-  void onGetGroupChatMembers() async {
-    _chatGroupMemberApi.listPage(chatGroupId).then((res) {
-      if (res['code'] == 0) {
-        chatGroupMembers = res['data'];
-        groupMemberWidth = chatGroupMembers.length * 40 + 10;
-        if (groupMemberWidth >= 190) {
-          groupMemberWidth = 190;
+  void _onGetGroupChatMembers() async =>
+      _chatGroupMemberApi.listPage(_chatGroupId).then((res) {
+        if (res['code'] == 0) {
+          chatGroupMembers = res['data'];
+          groupMemberWidth = chatGroupMembers.length * 40 + 10;
+          if (groupMemberWidth >= 190) {
+            groupMemberWidth = 190;
+          }
+          // update([const Key('chat_group_info')]);
         }
-        // update([const Key('chat_group_info')]);
-      }
-    });
-  }
+      });
 
   Future<void> _onUpdateChatGroupPortrait(File picture) async {
     Map<String, dynamic> map = {};
@@ -90,7 +86,7 @@ class ChatGroupInformationLogic extends GetxController {
     map['name'] = picture.path.split('/').last;
     map['size'] = picture.lengthSync();
     map["file"] = file;
-    map['groupId'] = chatGroupId;
+    map['groupId'] = _chatGroupId;
     FormData formData = FormData.fromMap(map);
     final result = await _chatGroupApi.upload(formData);
     if (result['code'] == 0) {
@@ -102,17 +98,15 @@ class ChatGroupInformationLogic extends GetxController {
     }
   }
 
-  void selectPortrait() {
-    Get.toNamed('/image_viewer_update', arguments: {
-      'imageUrl': chatGroupDetails['portrait'],
-      'onConfirm': _onUpdateChatGroupPortrait,
-      'isUpdate': isOwner
-    });
-  }
+  void selectPortrait() => Get.toNamed('/image_viewer_update', arguments: {
+        'imageUrl': chatGroupDetails['portrait'],
+        'onConfirm': _onUpdateChatGroupPortrait,
+        'isUpdate': isOwner
+      });
 
   void setGroupName() async {
     var result = await Get.toNamed('/set_group_name', arguments: {
-      'chatGroupId': chatGroupId,
+      'chatGroupId': _chatGroupId,
       'name': chatGroupDetails['name']
     });
     if (result != null) {
@@ -123,7 +117,7 @@ class ChatGroupInformationLogic extends GetxController {
 
   void setGroupRemark() async {
     var result = await Get.toNamed('/set_group_remark', arguments: {
-      'chatGroupId': chatGroupId,
+      'chatGroupId': _chatGroupId,
       'remark': chatGroupDetails['groupRemark'] ?? ''
     });
     if (result != null) {
@@ -134,7 +128,7 @@ class ChatGroupInformationLogic extends GetxController {
 
   void setGroupNickname() async {
     var result = await Get.toNamed('/set_group_nickname', arguments: {
-      'chatGroupId': chatGroupId,
+      'chatGroupId': _chatGroupId,
       'name': chatGroupDetails['groupName'] ?? ''
     });
     if (result != null) {
@@ -145,22 +139,20 @@ class ChatGroupInformationLogic extends GetxController {
 
   void chatGroupNotice() async {
     await Get.toNamed('/chat_group_notice', arguments: {
-      'chatGroupId': chatGroupId,
+      'chatGroupId': _chatGroupId,
       'isOwner': isOwner,
     });
-    if (isOwner) {
-      onGetGroupChatDetails();
-    }
+    if (isOwner) _onGetGroupChatDetails();
   }
 
   void chatGroupMember() async {
     await Get.toNamed('/chat_group_member', arguments: {
-      'chatGroupId': chatGroupId,
+      'chatGroupId': _chatGroupId,
       'isOwner': isOwner,
       'chatGroupDetails': chatGroupDetails
     });
-    onGetGroupChatMembers();
-    onGetGroupChatDetails();
+    _onGetGroupChatMembers();
+    _onGetGroupChatDetails();
   }
 
   void onGroupMemberPress(dynamic member) async {
@@ -171,26 +163,40 @@ class ChatGroupInformationLogic extends GetxController {
     });
   }
 
-  void onQuitGroup(context) async {
-    CustomDialog.showTipDialog(context, text: "确定退出该群聊?", onOk: () {
-      _chatGroupApi.quitChatGroup(chatGroupId).then((res) {
-        if (res['code'] == 0) {
-          CustomFlutterToast.showSuccessToast('退出群聊成功~');
-          Get.back(result: true);
-        }
-      });
-    }, onCancel: () {});
-  }
+  void onQuitGroup(context) async =>
+      CustomDialog.showTipDialog(context, text: "确定退出该群聊?", onOk: () {
+        _chatGroupApi.quitChatGroup(_chatGroupId).then((res) {
+          if (res['code'] == 0) {
+            CustomFlutterToast.showSuccessToast('退出群聊成功~');
+            Get.back(result: true);
+          }
+        });
+      }, onCancel: () {});
 
-  void onDissolveGroup(context) async {
-    CustomDialog.showTipDialog(context, text: "确定解散该群聊?", onOk: () {
-      _chatGroupApi.dissolveChatGroup(chatGroupId).then((res) {
+  void onDissolveGroup(context) async =>
+      CustomDialog.showTipDialog(context, text: "确定解散该群聊?", onOk: () {
+        _chatGroupApi.dissolveChatGroup(_chatGroupId).then((res) {
+          if (res['code'] == 0) {
+            CustomFlutterToast.showSuccessToast('解散群聊成功~');
+            Get.back(result: true);
+          }
+        });
+      }, onCancel: () {});
+
+  void onToSendGroupMsg() =>
+      _chatListApi.create(_chatGroupId, type: 'group').then((res) {
         if (res['code'] == 0) {
-          CustomFlutterToast.showSuccessToast('解散群聊成功~');
-          Get.back(result: true);
+          Get.offAndToNamed('/chat_frame', arguments: {
+            'chatInfo': res['data'],
+          });
         }
       });
-    }, onCancel: () {});
+
+  @override
+  void onInit() {
+    _onGetGroupChatDetails();
+    _onGetGroupChatMembers();
+    super.onInit();
   }
 
   @override

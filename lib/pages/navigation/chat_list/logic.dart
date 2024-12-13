@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get_instance/src/get_instance.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';

@@ -221,7 +221,7 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
         borderRadius: BorderRadius.circular(12),
         color: Colors.white,
         child: InkWell(
-          onTap: () async => controller.onToSendGroupMsg(group['id']),
+          onTap: () async => controller.toChatGroupInfo(group),
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10.0),

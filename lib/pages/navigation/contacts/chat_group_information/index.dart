@@ -186,7 +186,7 @@ class ChatGroupInformationPage extends CustomWidget<ChatGroupInformationLogic> {
                       text: '发送消息',
                       width: MediaQuery.of(context).size.width,
                       type: 'gradient',
-                      onTap: () {},
+                      onTap: controller.onToSendGroupMsg,
                     ),
                     const SizedBox(height: 10),
                     if (controller.isOwner)

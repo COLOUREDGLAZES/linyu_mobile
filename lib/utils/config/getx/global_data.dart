@@ -10,8 +10,10 @@ class GlobalData extends GetxController {
   var currentUserId = '';
   var currentUserAccount = '';
   late String? currentUserName;
+  // late String? currentAvatarUrl =
+  //     'http://192.168.101.4:9000/linyu/default-portrait.jpg';
   late String? currentAvatarUrl =
-      'http://192.168.101.4:9000/linyu/default-portrait.jpg';
+      'http://114.96.70.115:19000/linyu/default-portrait.jpg';
   late String? currentToken;
 
   Future<void> init() async {
@@ -24,7 +26,7 @@ class GlobalData extends GetxController {
       currentUserAccount = prefs.getString('account') ?? '';
       currentUserName = prefs.getString('username');
       currentAvatarUrl = prefs.getString('portrait') ??
-          'http://192.168.101.4:9000/linyu/default-portrait.jpg';
+          'http://114.96.70.115:19000/linyu/default-portrait.jpg';
       // 仅当用户 ID 不为空时才获取未读信息
       if (currentUserId.isNotEmpty) await onGetUserUnreadInfo();
     } catch (e) {

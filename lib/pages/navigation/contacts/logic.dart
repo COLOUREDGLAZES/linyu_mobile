@@ -32,12 +32,6 @@ class ContactsLogic extends GetxController {
 
   GlobalData get globalData => GetInstance().find<GlobalData>();
 
-  @override
-  void onInit() {
-    super.onInit();
-    eventListen();
-  }
-
   // 监听消息
   void eventListen() => _subscription = _wsManager.eventStream.listen((event) {
         if (event['type'] == 'on-receive-notify') {
@@ -198,6 +192,24 @@ class ContactsLogic extends GetxController {
           });
         }
       });
+
+  void toChatGroupInfo(dynamic group) {
+    if (group == null || !group.containsKey('id')) {
+      CustomFlutterToast.showErrorToast("群组信息无效");
+      return;
+    }
+    try {
+      Get.toNamed('/chat_group_info', arguments: {'chatGroupId': group['id']});
+    } catch (e) {
+      CustomFlutterToast.showErrorToast("导航到群组信息页面失败: $e");
+    }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    eventListen();
+  }
 
   @override
   void onClose() {

@@ -44,6 +44,7 @@ class WebSocketUtil {
       String wsIp = '114.96.70.115:19100';
       // String wsIp = '192.168.101.4:9100';
       // String wsIp = '114.96.70.115:9100';
+      // String wsIp = '47.99.61.62:9100';
       _channel = WebSocketChannel.connect(
         Uri.parse('ws://$wsIp/ws?x-token=$token'),
       );
