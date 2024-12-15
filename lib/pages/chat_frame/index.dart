@@ -26,7 +26,7 @@ enum PanelType {
   tool,
 }
 
-class ChatFramePage extends CustomWidgetNew<ChatFrameLogic>
+class ChatFramePage extends CustomView<ChatFrameLogic>
     with WidgetsBindingObserver {
   ChatFramePage({super.key});
 

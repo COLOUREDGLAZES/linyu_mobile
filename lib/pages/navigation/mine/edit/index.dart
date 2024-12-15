@@ -7,7 +7,7 @@ import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 import 'logic.dart';
 
-class EditMinePage extends CustomWidgetNew<EditMineLogic> {
+class EditMinePage extends CustomView<EditMineLogic> {
   EditMinePage({super.key});
 
   @override

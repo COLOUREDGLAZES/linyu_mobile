@@ -7,7 +7,7 @@ import 'package:linyu_mobile/utils/date.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'logic.dart';
 
-class SearchInfoPage extends CustomWidgetNew<SearchInfoLogic> {
+class SearchInfoPage extends CustomView<SearchInfoLogic> {
   SearchInfoPage({super.key});
 
   //好友搜索详情页

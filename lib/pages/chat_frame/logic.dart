@@ -1,5 +1,3 @@
-// ignore_for_file: curly_braces_in_flow_control_structures
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -135,10 +133,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         hasMore = msgList.isNotEmpty; // 判断是否还有更多数据
         update([const Key('chat_frame')]);
         scrollBottom();
-      } else {
+      } else
         CustomFlutterToast.showErrorToast(
             '获取消息记录失败: ${res['message'] ?? '未知错误'}');
-      }
     } catch (e) {
       CustomFlutterToast.showErrorToast('获取消息记录时发生错误: $e');
     } finally {
@@ -154,29 +151,27 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     update([const Key('chat_frame')]);
     try {
       final res = await _msgApi.record(_targetId, _index, _num);
-      if (res['code'] == 0) {
-        if (res['data'].isEmpty)
-          hasMore = false;
-        else {
-          final double previousScrollOffset = scrollController.position.pixels;
-          final double previousMaxScrollExtent =
+      if (res['code'] == 0) if (res['data'].isEmpty)
+        hasMore = false;
+      else {
+        final double previousScrollOffset = scrollController.position.pixels;
+        final double previousMaxScrollExtent =
+            scrollController.position.maxScrollExtent;
+        msgList.insertAll(0, res['data']);
+        _index = msgList.length;
+        hasMore = res['data'].length >= 0;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final double newMaxScrollExtent =
               scrollController.position.maxScrollExtent;
-          msgList.insertAll(0, res['data']);
-          _index = msgList.length;
-          hasMore = res['data'].length >= 0;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            final double newMaxScrollExtent =
-                scrollController.position.maxScrollExtent;
-            final double newOffset = previousScrollOffset +
-                (newMaxScrollExtent - previousMaxScrollExtent) -
-                10;
-            scrollController.animateTo(
-              newOffset,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.fastOutSlowIn,
-            );
-          });
-        }
+          final double newOffset = previousScrollOffset +
+              (newMaxScrollExtent - previousMaxScrollExtent) -
+              10;
+          scrollController.animateTo(
+            newOffset,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.fastOutSlowIn,
+          );
+        });
       }
     } finally {
       isLoading = false;
@@ -250,10 +245,10 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   }
 
   // 消息已读
-  void _onRead() async {
+  Future<void> _onRead() async {
     try {
       await _chatListApi.read(_targetId);
-      _globalData.onGetUserUnreadInfo();
+      await _globalData.onGetUserUnreadInfo();
     } catch (e) {
       CustomFlutterToast.showErrorToast('标记为已读时发生错误: $e');
     }
@@ -320,7 +315,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       cropPicture(type, _onUploadImg, isVariable: true);
 
   // 发送语音消息
-  void onSendVoiceMsg(filePath, time) async {
+  void onSendVoiceMsg(String filePath, int time) async {
     if (StringUtil.isNullOrEmpty(filePath)) return;
     if (time == 0) {
       CustomFlutterToast.showSuccessToast('录制时间太短~');

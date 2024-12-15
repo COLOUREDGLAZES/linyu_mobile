@@ -41,8 +41,8 @@ class WebSocketUtil {
     try {
       if (kDebugMode) print('WebSocket connecting...');
       //使用的内网穿透
-      String wsIp = '114.96.70.115:19100';
-      // String wsIp = '192.168.101.4:9100';
+      // String wsIp = '114.96.70.115:19100';
+      String wsIp = '192.168.101.4:9100';
       // String wsIp = '114.96.70.115:9100';
       // String wsIp = '47.99.61.62:9100';
       _channel = WebSocketChannel.connect(
@@ -133,6 +133,7 @@ class WebSocketUtil {
   }
 
   void sendNotification(dynamic msg) {
+    if (kDebugMode) print('发送通知 $msg');
     dynamic msgContent = msg['msgContent'];
     String contentStr = LinyuMsgUtil.getMsgContent(msgContent);
     NotificationUtil.showNotification(

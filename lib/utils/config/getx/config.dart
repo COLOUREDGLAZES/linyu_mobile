@@ -96,10 +96,10 @@ abstract class Logic<W extends Widget> extends GetxController {
 // late final dynamic  arguments;
 }
 
-abstract class CustomWidgetNew<T extends Logic> extends StatelessWidget {
+abstract class CustomView<T extends Logic> extends StatelessWidget {
   /// 构造函数
   /// 当传入key的时候，若更新widget需使用controller.update([key],)
-  CustomWidgetNew({
+  CustomView({
     super.key,
   });
 

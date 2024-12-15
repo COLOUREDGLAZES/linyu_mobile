@@ -8,8 +8,7 @@ import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/extension.dart';
 import 'logic.dart';
 
-class ChatGroupSelectUserPage
-    extends CustomWidgetNew<ChatGroupSelectUserLogic> {
+class ChatGroupSelectUserPage extends CustomView<ChatGroupSelectUserLogic> {
   ChatGroupSelectUserPage({super.key});
 
   Widget _selectedUserItem(dynamic user) => Container(

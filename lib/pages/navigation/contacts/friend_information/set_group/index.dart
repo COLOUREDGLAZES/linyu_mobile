@@ -12,7 +12,7 @@ import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 import 'logic.dart';
 
-class SetGroupPage extends CustomWidgetNew<SetGroupLogic> {
+class SetGroupPage extends CustomView<SetGroupLogic> {
   SetGroupPage({super.key});
 
   void showAddAndUpdateGroupDialog(
