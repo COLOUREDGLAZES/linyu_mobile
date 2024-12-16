@@ -1,5 +1,3 @@
-// ignore_for_file: curly_braces_in_flow_control_structures
-
 import 'package:chat_bottom_container/panel_container.dart';
 import 'package:chat_bottom_container/typedef.dart';
 import 'package:flutter/cupertino.dart';
@@ -86,24 +84,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                   children: Emoji.emojis
                       .map(
                         (emoji) => GestureDetector(
-                          onTap: () {
-                            final text = controller.msgContentController.text;
-                            final selection =
-                                controller.msgContentController.selection;
-                            final newText = text.replaceRange(
-                              selection.start,
-                              selection.end,
-                              emoji,
-                            );
-                            controller.msgContentController.value =
-                                TextEditingValue(
-                              text: newText,
-                              selection: TextSelection.collapsed(
-                                offset: selection.start + emoji.length,
-                              ),
-                            );
-                            controller.isSend.value = true;
-                          },
+                          onTap: () => controller.onEmojiTap(emoji),
                           child: Text(
                             emoji,
                             style: const TextStyle(fontSize: 24),
@@ -412,17 +393,15 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                             else
                               _buildIconButton1(
                                 const IconData(0xe636, fontFamily: 'IconFont'),
-                                () {
-                                  WidgetsBinding.instance
-                                      .addPostFrameCallback((_) {
-                                    panelController.updatePanelType(
-                                        ChatBottomPanelType.other,
-                                        data: PanelType.tool);
-                                    Future.delayed(
-                                        const Duration(milliseconds: 500),
-                                        () => controller.scrollBottom());
-                                  });
-                                },
+                                () => WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  panelController.updatePanelType(
+                                      ChatBottomPanelType.other,
+                                      data: PanelType.tool);
+                                  Future.delayed(
+                                      const Duration(milliseconds: 500),
+                                      () => controller.scrollBottom());
+                                }),
                               ),
                           ],
                         ),

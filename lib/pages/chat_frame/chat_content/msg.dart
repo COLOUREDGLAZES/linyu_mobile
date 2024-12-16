@@ -21,6 +21,9 @@ typedef CallBack = dynamic Function(dynamic data);
 class ChatMessage extends StatelessThemeWidget {
   const ChatMessage({
     super.key,
+    required this.msg,
+    required this.chatInfo,
+    required this.member,
     this.chatPortrait = 'http://192.168.101.4:9000/linyu/default-portrait.jpg',
     this.onTapCopy,
     this.onTapRetransmission,
@@ -31,23 +34,25 @@ class ChatMessage extends StatelessThemeWidget {
     this.reEdit,
     this.onTapVoiceToText,
     this.onTapVoiceHiddenText,
-    required this.msg,
-    required this.chatInfo,
-    required this.member,
+    this.onTapMultipleChoice,
+    this.onTapRemind,
+    this.onTapSearch,
+    this.onTapFavorite,
   });
 
-  final Map<String, dynamic> msg;
-  final Map<String, dynamic> chatInfo;
+  final Map<String, dynamic> msg, chatInfo;
   final Map<String, dynamic>? member;
   final String? chatPortrait;
-  final void Function()? onTapMsg;
-  final void Function()? reEdit;
+  final void Function()? onTapMsg, reEdit;
 
   // 点击复制回调
   final CallBack? onTapCopy;
 
   // 点击转发回调
   final CallBack? onTapRetransmission;
+
+  // 点击收藏回调
+  final CallBack? onTapFavorite;
 
   // 点击删除回调
   final CallBack? onTapDelete;
@@ -63,6 +68,15 @@ class ChatMessage extends StatelessThemeWidget {
 
   // 点击隐藏文字回调
   final CallBack? onTapVoiceHiddenText;
+
+  // 点击多选回调
+  final CallBack? onTapMultipleChoice;
+
+  // 点击提醒回调
+  final CallBack? onTapRemind;
+
+  // 点击搜一搜回调
+  final CallBack? onTapSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +121,6 @@ class ChatMessage extends StatelessThemeWidget {
                       ),
                     const SizedBox(height: 5),
                     // 动态组件
-                    // getComponentByType(msg['msgContent']['type'], isRight),
                     _getComponentByType(msg, isRight),
                   ],
                 ),
@@ -172,12 +185,10 @@ class ChatMessage extends StatelessThemeWidget {
                     Column(
                       children: [
                         const SizedBox(height: 1.2),
-                        CustomTextButton('重新编辑',
-                            fontSize: 12,
-                            onTap: reEdit ??
-                                () {
-                                  debugPrint("重新编辑");
-                                }),
+                        CustomTextButton('重新编辑', fontSize: 12, onTap: () {
+                          debugPrint("重新编辑");
+                          reEdit?.call();
+                        }),
                       ],
                     ),
                   const SizedBox(width: 5),
@@ -216,68 +227,86 @@ class ChatMessage extends StatelessThemeWidget {
           PopMenuItemModel(
             title: '复制',
             icon: Icons.content_copy,
-            callback:
-                onTapCopy ?? (data) => debugPrint("data: ${data.toString()}"),
+            callback: (data) {
+              debugPrint("data: ${data.toString()}");
+              onTapCopy?.call(data);
+            },
           ),
         if (type == 'voice' && toText!)
           PopMenuItemModel(
             title: '转文字',
             icon: Icons.text_fields,
-            callback: onTapVoiceToText ??
-                (data) => debugPrint("data: ${data.toString()}"),
+            callback: (data) {
+              debugPrint("data: ${data.toString()}");
+              onTapVoiceToText?.call(data);
+            },
           ),
         if (type == 'voice' && !toText!)
           PopMenuItemModel(
-            title: '隐藏文字',
+            title: '隐藏',
             icon: Icons.high_quality,
-            callback: onTapVoiceHiddenText ??
-                (data) => debugPrint("data: ${data.toString()}"),
+            callback: (data) {
+              debugPrint("data: ${data.toString()}");
+              onTapVoiceHiddenText?.call(data);
+            },
           ),
         PopMenuItemModel(
             title: '转发',
             icon: Icons.send,
-            callback: onTapRetransmission ??
-                (data) => debugPrint("data: ${data.toString()}")),
-        // PopMenuItemModel(
-        //     title: '收藏',
-        //     icon: Icons.collections,
-        //     callback: (data) {
-        //       debugPrint("data: " + data);
-        //     }),
+            callback: (data) {
+              debugPrint("data: ${data.toString()}");
+              onTapRetransmission?.call(data);
+            }),
+        PopMenuItemModel(
+            title: '收藏',
+            icon: Icons.collections,
+            callback: (data) {
+              debugPrint("data: ${data.toString()}");
+              onTapFavorite?.call(data);
+            }),
         PopMenuItemModel(
             title: '删除',
             icon: Icons.delete,
-            callback: onTapDelete ??
-                (data) => debugPrint("data: ${data.toString()}")),
+            callback: (data) {
+              debugPrint("data: ${data.toString()}");
+              onTapDelete?.call(data);
+            }),
         if (msg['fromId'] == globalData.currentUserId)
           PopMenuItemModel(
               title: '撤回',
               icon: Icons.reply,
-              callback: onTapRetract ??
-                  (data) => debugPrint("data: ${data.toString()}")),
-        // PopMenuItemModel(
-        //     title: '多选',
-        //     icon: Icons.playlist_add_check,
-        //     callback:  (data) {
-        //       debugPrint("data: ${data.toString()}");
-        //     }),
+              callback: (data) {
+                debugPrint("data: ${data.toString()}");
+                onTapRetract?.call(data);
+              }),
+        PopMenuItemModel(
+            title: '多选',
+            icon: Icons.playlist_add_check,
+            callback: (data) {
+              debugPrint("data: ${data.toString()}");
+              onTapMultipleChoice?.call(data);
+            }),
         PopMenuItemModel(
             title: '引用',
             icon: Icons.format_quote,
-            callback:
-                onTapCite ?? (data) => debugPrint("data: ${data.toString()}")),
-        // PopMenuItemModel(
-        //     title: '提醒',
-        //     icon: Icons.add_alert,
-        //     callback: (data) {
-        //       debugPrint("data: " + data);
-        //     }),
-        // PopMenuItemModel(
-        //     title: '搜一搜',
-        //     icon: Icons.search,
-        //     callback: (data) {
-        //       debugPrint("data: " + data);
-        //     }),
+            callback: (data) {
+              debugPrint("data: ${data.toString()}");
+              onTapCite?.call(data);
+            }),
+        PopMenuItemModel(
+            title: '提醒',
+            icon: Icons.add_alert,
+            callback: (data) {
+              debugPrint("data: ${data.toString()}");
+              onTapRemind?.call(data);
+            }),
+        PopMenuItemModel(
+            title: '搜一搜',
+            icon: Icons.search,
+            callback: (data) {
+              debugPrint("data: ${data.toString()} ");
+              onTapSearch?.call(data);
+            }),
       ];
 
   Widget _getComponentByType(Map<String, dynamic> msg, bool isRight) {
@@ -303,7 +332,9 @@ class ChatMessage extends StatelessThemeWidget {
           ? messageWidget
           : QuickPopUpMenu(
               showArrow: true,
-              useGridView: false,
+              // useGridView: false,
+              useGridView: true,
+              darkMode: true,
               pressType: PressType.longPress,
               menuItems: _menuItems(type!,
                   toText: content != null
@@ -315,9 +346,8 @@ class ChatMessage extends StatelessThemeWidget {
                 child: messageWidget,
               ),
             );
-    } else {
+    } else
       // 异常处理
       return const Text('暂不支持该消息类型');
-    }
   }
 }

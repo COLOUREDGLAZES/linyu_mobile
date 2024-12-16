@@ -36,17 +36,14 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
 
   void _parseValue() {
     final content = jsonDecode(widget.value['msgContent']['content']);
-    if (content != null) {
+    if (content != null)
       setState(() {
         audioTime = content['time'] ?? 0;
         text = content['text'] ?? '';
         loading = false;
       });
-    } else {
-      setState(() {
-        loading = true;
-      });
-    }
+    else
+      setState(() => loading = true);
   }
 
   Future<String> onGetVoice() async {
@@ -60,9 +57,7 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
   @override
   void didUpdateWidget(covariant oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.value != widget.value) {
-      _parseValue();
-    }
+    if (oldWidget.value != widget.value) _parseValue();
   }
 
   @override
@@ -78,36 +73,32 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
           if (audioTime > 0)
             FutureBuilder<String>(
               future: onGetVoice(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return CustomAudio(
-                    isRight: widget.isRight,
-                    audioUrl: snapshot.data ?? '',
-                    time: audioTime,
-                    type: widget.isRight ? '' : 'minor',
-                    onLoadedMetadata: () {},
-                  );
-                } else {
-                  return Container(
-                    width: 120,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color:
-                          widget.isRight ? _theme.primaryColor : Colors.white,
-                    ),
-                    alignment: Alignment.center,
-                    child: const SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(
-                        color: Color(0xffffffff),
-                        strokeWidth: 2,
+              builder: (context, snapshot) => snapshot.hasData
+                  ? CustomAudio(
+                      isRight: widget.isRight,
+                      audioUrl: snapshot.data ?? '',
+                      time: audioTime,
+                      type: widget.isRight ? '' : 'minor',
+                      onLoadedMetadata: () {},
+                    )
+                  : Container(
+                      width: 120,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color:
+                            widget.isRight ? _theme.primaryColor : Colors.white,
+                      ),
+                      alignment: Alignment.center,
+                      child: const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          color: Color(0xffffffff),
+                          strokeWidth: 2,
+                        ),
                       ),
                     ),
-                  );
-                }
-              },
             ),
           if (loading && text.isEmpty)
             const Text(

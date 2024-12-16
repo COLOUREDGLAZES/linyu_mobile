@@ -27,7 +27,6 @@ class ImageMessage extends StatelessThemeWidget {
         width: MediaQuery.of(Get.context!).size.width * 0.4,
         decoration: BoxDecoration(
           color: Colors.black,
-          // borderRadius: BorderRadius.all(Radius.circular(5)),
           borderRadius: isRight
               ? const BorderRadius.only(
                   topLeft: Radius.circular(10),
@@ -42,26 +41,22 @@ class ImageMessage extends StatelessThemeWidget {
         ),
         child: FutureBuilder<String>(
           future: _onGetImg(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return CustomImage(url: snapshot.data ?? '');
-            } else {
-              return Container(
-                width: MediaQuery.of(Get.context!).size.width * 0.4,
-                color: isRight ? theme.primaryColor : Colors.white,
-                height: MediaQuery.of(Get.context!).size.width * 0.4,
-                alignment: Alignment.center,
-                child: const SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: CircularProgressIndicator(
-                    color: Color(0xffffffff),
-                    strokeWidth: 2,
+          builder: (context, snapshot) => snapshot.hasData
+              ? CustomImage(url: snapshot.data ?? '')
+              : Container(
+                  width: MediaQuery.of(Get.context!).size.width * 0.4,
+                  color: isRight ? theme.primaryColor : Colors.white,
+                  height: MediaQuery.of(Get.context!).size.width * 0.4,
+                  alignment: Alignment.center,
+                  child: const SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: CircularProgressIndicator(
+                      color: Color(0xffffffff),
+                      strokeWidth: 2,
+                    ),
                   ),
                 ),
-              );
-            }
-          },
         ),
       );
 }

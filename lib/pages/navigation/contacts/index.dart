@@ -55,6 +55,7 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
             children: [
               ...controller.friendList.map(
                 (group) => GestureDetector(
+                  key: Key(group['name']),
                   onLongPress: controller.onLongPressGroup,
                   child: ExpansionTile(
                     iconColor: theme.primaryColor,

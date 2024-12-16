@@ -36,27 +36,17 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   final _wsManager = WebSocketUtil();
   final _videoApi = VideoApi();
   final _chatGroupMemberApi = ChatGroupMemberApi();
-
-  // 控制器
   final TextEditingController msgContentController = TextEditingController();
   final ScrollController scrollController = ScrollController();
 
   // 焦点
   final FocusNode focusNode = FocusNode(skipTraversal: true);
-
-  // 控制台类型
   final RxString panelType = "none".obs;
-
-  // 群成员
   late Map<String, dynamic> members = {};
 
   // 消息记录
   late List<dynamic> msgList = [];
-
-  // 目标id
   late String _targetId = '';
-
-  // 聊天信息
   late dynamic chatInfo = {_targetId: ''};
 
   // 发送状态
@@ -64,8 +54,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 录制状态
   late RxBool isRecording = false.obs;
-
-  // 是否只读
   late RxBool isReadOnly = false.obs;
 
   // 用于信息监听
@@ -104,9 +92,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
             CustomFlutterToast.showErrorToast('处理消息时发生错误: $e');
           }
         }
-      }, onError: (error) {
-        CustomFlutterToast.showErrorToast('WebSocket发生错误: $error');
-      });
+      },
+          onError: (error) =>
+              CustomFlutterToast.showErrorToast('WebSocket发生错误: $error'));
 
   // 获取群成员
   void _onGetMembers() async {
@@ -270,7 +258,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
     final path = result?.files.single.path;
     if (path != null) {
-      File file = File(path);
+      File file = new File(path);
       _onSendImgOrFileMsg(file, 'file');
     }
   }
@@ -451,6 +439,29 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       }
     } catch (e) {
       CustomFlutterToast.showErrorToast('隐藏文字时发生错误: $e');
+    }
+  }
+
+  //点击表情添加到消息输入框
+  void onEmojiTap(String emoji) {
+    try {
+      if (emoji.isEmpty) return; // 检查传入的表情是否为空
+      final text = msgContentController.text;
+      final selection = msgContentController.selection;
+      // 使用 StringBuffer 减少不必要的字符串创建
+      final newText = StringBuffer()
+        ..write(text.substring(0, selection.start))
+        ..write(emoji)
+        ..write(text.substring(selection.end));
+      msgContentController.value = TextEditingValue(
+        text: newText.toString(),
+        selection: TextSelection.collapsed(
+          offset: selection.start + emoji.length,
+        ),
+      );
+      isSend.value = true;
+    } catch (e) {
+      CustomFlutterToast.showErrorToast('添加表情时发生错误: $e');
     }
   }
 

@@ -27,7 +27,7 @@ class CustomAudio extends StatefulWidget {
 }
 
 class _CustomAudioWidgetState extends State<CustomAudio> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = new AudioPlayer();
   bool _isPlaying = false;
   final GlobalThemeConfig _globalThemeConfig = Get.find<GlobalThemeConfig>();
 
@@ -64,12 +64,10 @@ class _CustomAudioWidgetState extends State<CustomAudio> {
         setState(() => _isPlaying = false);
       } else {
         setState(() => _isPlaying = true);
-        if (_audioPlayer.duration == null) {
-          if (kDebugMode) print(widget.audioUrl);
+        if (_audioPlayer.duration == null)
           await _audioPlayer
               .setAudioSource(AudioSource.uri(Uri.parse(widget.audioUrl)));
-          // await _audioPlayer.setUrl(widget.audioUrl);
-        }
+        // await _audioPlayer.setUrl(widget.audioUrl);
         await _audioPlayer.play();
       }
     } catch (e) {
