@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart'
     show
         BoolExtension,
@@ -68,6 +69,18 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   bool isLoading = false;
   bool hasMore = true;
 
+  // 消息已读
+  Future<void> _onRead(String? targetId) async {
+    try {
+      if (kDebugMode) print('onRead:$_targetId');
+      await _chatListApi.read(targetId ?? _targetId);
+      await _globalData.onGetUserUnreadInfo();
+    } catch (e) {
+      CustomFlutterToast.showErrorToast('标记为已读时发生错误: $e');
+      Get.delete<ChatFrameLogic>();
+    }
+  }
+
   // 监听消息
   void _eventListen() => _subscription = _wsManager.eventStream.listen((event) {
         if (event['type'] == 'on-receive-msg') {
@@ -81,11 +94,11 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
             if (isRelevantMsg) {
               if (data['msgContent']['type'] == 'retraction') {
                 msgList = msgList.replace(newValue: data);
-                _onRead();
+                _onRead(null);
                 update([const Key('chat_frame')]);
                 return;
               }
-              _onRead();
+              _onRead(null);
               _msgListAddMsg(event['content']);
             }
           } catch (e) {
@@ -207,7 +220,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       if (res['code'] == 0) {
         isSend.value = false;
         _msgListAddMsg(res['data']);
-        _onRead();
+        await _onRead(null);
       } else {
         CustomFlutterToast.showErrorToast('发送失败: ${res['message'] ?? '未知错误'}');
       }
@@ -229,16 +242,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       scrollBottom();
     } catch (e) {
       CustomFlutterToast.showErrorToast('添加消息时发生错误: $e');
-    }
-  }
-
-  // 消息已读
-  Future<void> _onRead() async {
-    try {
-      await _chatListApi.read(_targetId);
-      await _globalData.onGetUserUnreadInfo();
-    } catch (e) {
-      CustomFlutterToast.showErrorToast('标记为已读时发生错误: $e');
     }
   }
 
@@ -288,7 +291,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         FormData formData = FormData.fromMap(map);
         _msgApi.sendMedia(formData).then((v) {
           _msgListAddMsg(res['data']);
-          _onRead();
+          _onRead(null);
         });
       }
     });
@@ -331,7 +334,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         FormData formData = FormData.fromMap(map);
         _msgApi.sendMedia(formData).then((v) {
           _msgListAddMsg(res['data']);
-          _onRead();
+          _onRead(null);
         });
       }
     });
@@ -339,7 +342,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   //点击通话消息记录
   void onTapMsg(dynamic msg) {
-    widget?.hidePanel();
+    view?.hidePanel();
     final msgContent = msg['msgContent'] as Map<String, dynamic>;
     // 检查消息类型是否为非文本类型
     if (msgContent['type'] != 'text')
@@ -473,7 +476,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     _onGetMembers();
     _onGetMsgRecode();
     _eventListen();
-    _onRead();
+    _onRead(null);
     // 添加滚动监听
     scrollController.addListener(() {
       if (scrollController.hasClients &&

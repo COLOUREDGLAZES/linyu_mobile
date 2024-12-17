@@ -12,7 +12,7 @@ class FriendRequestPage extends CustomView<FriendRequestLogic> {
 
   //申请好友页面
   @override
-  Widget buildWidget(BuildContext context) => Scaffold(
+  Widget buildView(BuildContext context) => Scaffold(
         backgroundColor: const Color(0xFFF9FBFF),
         appBar: AppBar(
           backgroundColor: const Color(0xFFF9FBFF),

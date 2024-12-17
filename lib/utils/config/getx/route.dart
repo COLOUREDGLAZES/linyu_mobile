@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart' show Key;
+import 'package:get/get.dart' show GetPage, Transition;
 import 'package:linyu_mobile/pages/chat_frame/index.dart';
 import 'package:linyu_mobile/pages/file_details/index.dart';
 import 'package:linyu_mobile/pages/image_viewer/image_viewer_update/index.dart';
@@ -39,6 +39,7 @@ import 'package:linyu_mobile/pages/qr_code_scan/qr_friend_affirm/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_login_affirm/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_other_result/index.dart';
 import 'package:linyu_mobile/pages/register/index.dart';
+import 'package:linyu_mobile/pages/repost/index.dart';
 import 'package:linyu_mobile/pages/video_chat/index.dart';
 import 'controller_binding.dart';
 
@@ -331,6 +332,14 @@ class AppRoutes {
         key: const Key('video_chat'),
       ),
       binding: ControllerBinding(),
+    ),
+    GetPage(
+      name: '/repost',
+      page: () => RepostPage(
+        key: const Key('repost'),
+      ),
+      binding: ControllerBinding(),
+      transition: Transition.downToUp,
     ),
   ];
 }

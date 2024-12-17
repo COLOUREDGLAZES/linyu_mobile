@@ -81,7 +81,7 @@ class AddFriendPage extends CustomView<AddFriendLogic> {
 
   //添加好友页面
   @override
-  Widget buildWidget(BuildContext context) => Scaffold(
+  Widget buildView(BuildContext context) => Scaffold(
         backgroundColor: const Color(0xFFF9FBFF),
         appBar: AppBar(
             automaticallyImplyLeading: false,

@@ -101,7 +101,7 @@ class ChatGroupSelectUserPage extends CustomView<ChatGroupSelectUserLogic> {
       );
 
   @override
-  Widget buildWidget(BuildContext context) => Scaffold(
+  Widget buildView(BuildContext context) => Scaffold(
         backgroundColor: const Color(0xFFF9FBFF),
         appBar: AppBar(
           leading: TextButton(

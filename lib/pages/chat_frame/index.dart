@@ -15,7 +15,7 @@ import 'package:linyu_mobile/pages/chat_frame/chat_content/msg.dart';
 import 'package:linyu_mobile/pages/chat_frame/logic.dart';
 import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/emoji.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart' show CustomView;
 
 enum PanelType {
   none,
@@ -210,7 +210,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
   }
 
   @override
-  Widget buildWidget(BuildContext context) => GestureDetector(
+  Widget buildView(BuildContext context) => GestureDetector(
         onTap: () => controller.panelType.value = 'none',
         child: Scaffold(
           resizeToAvoidBottomInset: false,

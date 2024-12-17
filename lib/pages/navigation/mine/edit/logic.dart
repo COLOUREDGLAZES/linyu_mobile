@@ -159,7 +159,7 @@ class EditMineLogic extends Logic<EditMinePage> {
       currentUserInfo['portrait'] = result['data'];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('portrait', currentUserInfo['portrait']);
-      widget?.globalData.currentAvatarUrl = currentUserInfo['portrait'];
+      view?.globalData.currentAvatarUrl = currentUserInfo['portrait'];
       update([const Key("edit_mine")]);
     } else {
       CustomFlutterToast.showErrorToast(result['msg']);

@@ -292,7 +292,7 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                 Expanded(
                   child: CustomButton(
                     text: '发消息',
-                    onTap: () => controller.onToSendMsg(),
+                    onTap: controller.onToSendMsg,
                   ),
                 ),
                 const SizedBox(width: 20),
@@ -324,9 +324,7 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                           ),
                         ],
                       ),
-                    )
-                    // controller.onVideoChat();
-                    ,
+                    ),
                     type: 'minor',
                   ),
                 ),

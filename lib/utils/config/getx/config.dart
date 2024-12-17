@@ -1,9 +1,28 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/config/getx/global_data.dart';
-import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
-import 'package:linyu_mobile/utils/config/getx/route.dart';
+import 'package:flutter/cupertino.dart'
+    show
+        BuildContext,
+        Key,
+        StatelessElement,
+        StatelessWidget,
+        Widget,
+        debugPrint;
+import 'package:flutter/foundation.dart' show Key, debugPrint, kDebugMode;
+import 'package:get/get.dart'
+    show
+        Get,
+        GetBuilder,
+        GetBuilderState,
+        GetInstance,
+        GetNavigation,
+        GetPage,
+        GetView,
+        GetxController,
+        Obx;
+import 'package:linyu_mobile/utils/config/getx/global_data.dart'
+    show GlobalData;
+import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart'
+    show GlobalThemeConfig;
+import 'package:linyu_mobile/utils/config/getx/route.dart' show AppRoutes;
 
 //路由配置
 List<GetPage> pageRoute = AppRoutes.pageRoute;
@@ -67,6 +86,7 @@ abstract class CustomWidget<T extends GetxController> extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GetBuilder<T>(
         id: this.key,
+        assignId: true,
         initState: (GetBuilderState<T> state) => this.init(context),
         didChangeDependencies: (GetBuilderState<T> state) =>
             this.didChangeDependencies(context),
@@ -78,13 +98,13 @@ abstract class CustomWidget<T extends GetxController> extends StatelessWidget {
       );
 }
 
-abstract class Logic<W extends Widget> extends GetxController {
+abstract class Logic<V extends Widget> extends GetxController {
   /// 当前widget
   /// 不要在controller的[onInit()]中使用，会导致widget为null
   /// 若需要使用widget中的属性需要在Logic的泛型声明 否则不要轻易使用
   /// 例如：
   /// class HomeLogic extends Logic<HomeWidget> {}
-  late final W? widget;
+  V? view;
 
   //主题配置
   GlobalThemeConfig get theme => GetInstance().find<GlobalThemeConfig>();
@@ -120,7 +140,9 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
   /// 初始化
   void init(BuildContext context) {
     if (kDebugMode) print("init>$runtimeType");
-    if (controller.initialized) controller.widget = this;
+    if (!controller.initialized || controller.view != null)
+      return; // 提前返回，减少不必要的计算
+    controller.view = this; // 分支内赋值
   }
 
   /// 依赖发生变化
@@ -137,7 +159,7 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
   }
 
   /// 构建widget
-  Widget buildWidget(BuildContext context);
+  Widget buildView(BuildContext context);
 
   /// 关闭
   void close(BuildContext context) {
@@ -152,12 +174,13 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GetBuilder<T>(
         id: key,
+        assignId: true,
         key: Key("${context.widget.hashCode}_builder"),
         initState: (GetBuilderState<T> state) => this.init(context),
         didChangeDependencies: (GetBuilderState<T> state) =>
             this.didChangeDependencies(context),
         didUpdateWidget: this.didUpdateWidget,
-        builder: (controller) => this.buildWidget(context),
+        builder: (_) => this.buildView(context),
         dispose: (GetBuilderState<T> state) => this.close(context),
       );
 }

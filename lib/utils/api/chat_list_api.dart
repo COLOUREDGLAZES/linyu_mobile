@@ -61,12 +61,12 @@ class ChatListApi {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> create(String userId,
+  Future<Map<String, dynamic>> create(String toId,
       {String? type = 'user'}) async {
     final response = await _dio.post(
       '/v1/api/chat-list/create',
       data: {
-        'userId': userId,
+        'userId': toId,
         'type': type,
       },
     );

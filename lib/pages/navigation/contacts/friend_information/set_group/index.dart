@@ -128,7 +128,7 @@ class SetGroupPage extends CustomView<SetGroupLogic> {
   }
 
   @override
-  Widget buildWidget(BuildContext context) => Scaffold(
+  Widget buildView(BuildContext context) => Scaffold(
         backgroundColor: const Color(0xFFF9FBFF),
         appBar: AppBar(
             backgroundColor: Colors.transparent,

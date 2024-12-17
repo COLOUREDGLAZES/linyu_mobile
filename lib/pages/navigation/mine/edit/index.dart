@@ -11,7 +11,7 @@ class EditMinePage extends CustomView<EditMineLogic> {
   EditMinePage({super.key});
 
   @override
-  Widget buildWidget(BuildContext context) {
+  Widget buildView(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(

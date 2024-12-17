@@ -11,10 +11,10 @@ class FriendInformationLogic extends Logic {
   //联系人逻辑
   final ContactsLogic _contactsLogic = GetInstance().find<ContactsLogic>();
 
-  //好友api
-  final _friendApi = FriendApi();
-  final _videoApi = VideoApi();
-  final _chatListApi = ChatListApi();
+  //后端api
+  final _friendApi = new FriendApi();
+  final _videoApi = new VideoApi();
+  final _chatListApi = new ChatListApi();
 
   //初始化获取从联系人页面传递过来的好友信息参数
   Map<String, dynamic> get friendData => arguments['friend'];
@@ -159,12 +159,6 @@ class FriendInformationLogic extends Logic {
     }
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    getFriendInfo();
-  }
-
   //设置特别关心
   void setConcern() async {
     if (isConcern) {
@@ -215,6 +209,12 @@ class FriendInformationLogic extends Logic {
           });
         }
       });
+
+  @override
+  void onInit() {
+    super.onInit();
+    getFriendInfo();
+  }
 
   @override
   void onClose() {

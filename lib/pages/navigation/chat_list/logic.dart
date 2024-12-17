@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:get/get_instance/src/get_instance.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
 import 'package:linyu_mobile/utils/api/friend_api.dart';
 import 'package:linyu_mobile/utils/config/getx/global_data.dart';
@@ -12,20 +12,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ChatListLogic extends GetxController {
   final _chatListApi = ChatListApi();
   final _friendApi = FriendApi();
+  final FocusNode focusNode = new FocusNode(skipTraversal: true);
   late List<dynamic> topList = [];
   late List<dynamic> otherList = [];
   late List<dynamic> searchList = [];
   final _wsManager = WebSocketUtil();
   StreamSubscription? _subscription;
   late dynamic currentUserInfo = {};
+  final TextEditingController searchBoxController = new TextEditingController();
 
   GlobalData get globalData => GetInstance().find<GlobalData>();
-
-  @override
-  void onInit() {
-    super.onInit();
-    eventListen();
-  }
 
   void eventListen() {
     // 监听消息
@@ -80,7 +76,6 @@ class ChatListLogic extends GetxController {
   void onSearchFriend(String friendInfo) {
     if (friendInfo.trim() == '') {
       searchList = [];
-      searchList = [];
       update([const Key("chat_list")]);
       return;
     }
@@ -90,6 +85,32 @@ class ChatListLogic extends GetxController {
         update([const Key("chat_list")]);
       }
     });
+  }
+
+  void onTapSearchFriend(dynamic friend) async {
+    if (kDebugMode) print('tap search friend: $friend');
+    try {
+      final result =
+          await _chatListApi.create(friend['friendId'], type: 'user');
+      if (result['code'] == 0) {
+        if (kDebugMode) print('创建聊天成功: ${result['data']}');
+        await Get.toNamed('/chat_frame', arguments: {
+          'chatInfo': result['data'],
+        });
+      } else {
+        // 处理错误情况，提示用户
+        if (kDebugMode) print('创建聊天失败: ${result['message']}');
+      }
+    } catch (e) {
+      // 捕获和处理异常
+      if (kDebugMode) print('发生错误: $e');
+    }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    eventListen();
   }
 
   @override

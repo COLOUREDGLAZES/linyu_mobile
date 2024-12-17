@@ -1,8 +1,9 @@
-import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:get/get.dart' show GetxController, MapExtension;
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/app_badger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart'
+    show SharedPreferences;
 
 class GlobalData extends GetxController {
   final _userApi = UserApi();
