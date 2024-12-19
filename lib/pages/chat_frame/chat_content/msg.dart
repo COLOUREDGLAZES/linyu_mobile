@@ -26,7 +26,7 @@ class ChatMessage extends StatelessThemeWidget {
     required this.member,
     this.chatPortrait = 'http://192.168.101.4:9000/linyu/default-portrait.jpg',
     this.onTapCopy,
-    this.onTapRetransmission,
+    this.onTapRepost,
     this.onTapDelete,
     this.onTapRetract,
     this.onTapCite,
@@ -49,7 +49,7 @@ class ChatMessage extends StatelessThemeWidget {
   final CallBack? onTapCopy;
 
   // 点击转发回调
-  final CallBack? onTapRetransmission;
+  final CallBack? onTapRepost;
 
   // 点击收藏回调
   final CallBack? onTapFavorite;
@@ -250,13 +250,14 @@ class ChatMessage extends StatelessThemeWidget {
               onTapVoiceHiddenText?.call(data);
             },
           ),
-        PopMenuItemModel(
-            title: '转发',
-            icon: Icons.send,
-            callback: (data) {
-              debugPrint("data: ${data.toString()}");
-              onTapRetransmission?.call(data);
-            }),
+        if (type != 'call')
+          PopMenuItemModel(
+              title: '转发',
+              icon: Icons.send_sharp,
+              callback: (data) {
+                debugPrint("data: ${data.toString()}");
+                onTapRepost?.call(data);
+              }),
         PopMenuItemModel(
             title: '收藏',
             icon: Icons.collections,
@@ -274,7 +275,7 @@ class ChatMessage extends StatelessThemeWidget {
         if (msg['fromId'] == globalData.currentUserId)
           PopMenuItemModel(
               title: '撤回',
-              icon: Icons.reply,
+              icon: Icons.reply_all,
               callback: (data) {
                 debugPrint("data: ${data.toString()}");
                 onTapRetract?.call(data);

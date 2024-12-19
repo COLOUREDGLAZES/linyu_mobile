@@ -295,7 +295,7 @@ class EditMineLogic extends Logic<EditMinePage> {
     if (_mineLogic.initialized) _mineLogic.init();
     if (_chatListLogic.initialized) _chatListLogic.onGetChatList();
     if (_contactsLogic.initialized) _contactsLogic.init();
-    // if(_talkLogic.initialized)_talkLogic.init();
+    // if (_talkLogic.initialized) _talkLogic.init();
   }
 
   //初始化

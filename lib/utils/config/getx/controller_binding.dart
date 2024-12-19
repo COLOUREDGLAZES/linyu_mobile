@@ -37,8 +37,8 @@ import 'package:linyu_mobile/pages/qr_code_scan/logic.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_friend_affirm/logic.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_login_affirm/logic.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_other_result/logic.dart';
+import 'package:linyu_mobile/pages/re_forward/logic.dart';
 import 'package:linyu_mobile/pages/register/logic.dart';
-import 'package:linyu_mobile/pages/repost/logic.dart';
 import 'package:linyu_mobile/pages/video_chat/logic.dart';
 import 'package:linyu_mobile/utils/config/getx/global_data.dart';
 import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
@@ -47,8 +47,8 @@ import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 class ControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(GlobalThemeConfig(), permanent: true);
-    Get.put(GlobalData(), permanent: true);
+    Get.put<GlobalThemeConfig>(GlobalThemeConfig(), permanent: true);
+    Get.put<GlobalData>(GlobalData(), permanent: true);
     Get.lazyPut<NavigationLogic>(() => NavigationLogic(), fenix: true);
     Get.lazyPut<LoginPageLogic>(() => LoginPageLogic(), fenix: true);
     Get.lazyPut<RegisterPageLogic>(() => RegisterPageLogic(), fenix: true);
@@ -99,6 +99,6 @@ class ControllerBinding extends Bindings {
     Get.lazyPut<ChatFrameLogic>(() => ChatFrameLogic(), fenix: true);
     Get.lazyPut<FileDetailsLogic>(() => FileDetailsLogic(), fenix: true);
     Get.lazyPut<VideoChatLogic>(() => VideoChatLogic(), fenix: true);
-    Get.lazyPut<RepostLogic>(() => RepostLogic(), fenix: true);
+    Get.lazyPut<ReForwardLogic>(() => ReForwardLogic(), fenix: true);
   }
 }

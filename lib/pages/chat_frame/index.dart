@@ -263,6 +263,8 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                 ),
                               ...controller.msgList.map((msg) => ChatMessage(
                                     key: ValueKey(msg['id']),
+                                    onTapRepost: (data) =>
+                                        controller.onRepostMsg(msg),
                                     reEdit: () => controller.reEditMsg(msg),
                                     onTapMsg: () => controller.onTapMsg(msg),
                                     onTapVoiceToText: (data) =>

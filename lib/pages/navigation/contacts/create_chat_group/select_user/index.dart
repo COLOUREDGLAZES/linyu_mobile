@@ -116,7 +116,7 @@ class ChatGroupSelectUserPage extends CustomView<ChatGroupSelectUserLogic> {
           backgroundColor: const Color(0xFFF9FBFF),
           actions: [
             CustomTextButton('完成(${controller.users.length})',
-                onTap: controller.onSubmitPress,
+                onTap: () => Get.back(result: controller.users),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
                 fontSize: 14),

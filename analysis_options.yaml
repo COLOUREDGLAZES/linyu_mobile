@@ -9,6 +9,7 @@
 # packages, and plugins designed to encourage good coding practices.
 analyzer:
   errors:
+    avoid_function_literals_in_foreach_calls: ignore
     curly_braces_in_flow_control_structures: ignore
     unnecessary_new: ignore
 

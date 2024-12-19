@@ -38,8 +38,8 @@ import 'package:linyu_mobile/pages/qr_code_scan/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_friend_affirm/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_login_affirm/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_other_result/index.dart';
+import 'package:linyu_mobile/pages/re_forward/index.dart';
 import 'package:linyu_mobile/pages/register/index.dart';
-import 'package:linyu_mobile/pages/repost/index.dart';
 import 'package:linyu_mobile/pages/video_chat/index.dart';
 import 'controller_binding.dart';
 
@@ -139,6 +139,7 @@ class AppRoutes {
         key: const Key('mine_qr_code'),
       ),
       binding: ControllerBinding(),
+      transition: Transition.fadeIn,
     ),
     GetPage(
       name: '/qr_friend_affirm',
@@ -335,7 +336,7 @@ class AppRoutes {
     ),
     GetPage(
       name: '/repost',
-      page: () => RepostPage(
+      page: () => ReForwardPage(
         key: const Key('repost'),
       ),
       binding: ControllerBinding(),

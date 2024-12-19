@@ -121,12 +121,12 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   }
 
   // 获取消息记录
-  Future<void> _onGetMsgRecode() async {
+  Future<void> _onGetMsgRecode({int? index}) async {
     if (isLoading) return; // 防止重复加载
     isLoading = true;
     update([const Key('chat_frame')]);
     try {
-      final res = await _msgApi.record(_targetId, _index, _num);
+      final res = await _msgApi.record(_targetId, index ?? _index, _num);
       if (res['code'] == 0 && res['data'] is List) {
         // 确认返回的数据类型
         msgList = res['data'];
@@ -412,19 +412,36 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 语音转文字
   void onVoiceToTxt(dynamic msg) async {
+    if (kDebugMode) print("from chat_frame: ${msg['fromForwardMsgId']}");
+    final fromForwardMsgId = msg['fromForwardMsgId'];
+    // 显示转文字tips
     Map<String, dynamic> newMsg = Map<String, dynamic>.from(msg);
     var content = jsonDecode(newMsg['msgContent']['content']);
     content['text'] = '正在识别中...';
     newMsg['msgContent']['content'] = jsonEncode(content);
     _updateMessageList(msg, newMsg);
+    // 转文字
     try {
-      final result = await _msgApi.voiceToText(msg['id']);
-      if (result['code'] == 0)
-        _updateMessageList(msg, result['data']);
-      else
+      // 优先使用转发消息的id，否则使用当前消息的id
+      final String idToUse = fromForwardMsgId ?? msg['id'];
+      // 转文字
+      final result = await _msgApi.voiceToText(idToUse);
+      if (result['code'] == 0) {
+        final newMsg = result['data'];
+        if (kDebugMode) print('newMsg data: $newMsg');
+        newMsg['id'] = msg['id'];
+        newMsg['fromForwardMsgId'] = fromForwardMsgId;
+        newMsg['fromId'] = msg['fromId'];
+        newMsg['msgContent']['formUserPortrait'] =
+            msg['msgContent']['formUserPortrait'];
+        _updateMessageList(msg, newMsg);
+      } else
         _handleVoiceToTextError(msg, content, '语音转文字失败: 网络错误');
     } catch (e) {
       CustomFlutterToast.showErrorToast('语音转文字时发生错误: $e');
+      content['text'] = '识别失败!';
+      _updateMessageList(
+          msg, msg..['msgContent']['content'] = jsonEncode(content));
     }
   }
 
@@ -465,6 +482,18 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       isSend.value = true;
     } catch (e) {
       CustomFlutterToast.showErrorToast('添加表情时发生错误: $e');
+    }
+  }
+
+  // 转发消息
+  void onRepostMsg(dynamic msg) async {
+    try {
+      final resultMsg = await Get.toNamed('/repost', arguments: {'msg': msg});
+      if (kDebugMode) print('result: $resultMsg');
+      await _onGetMsgRecode(index: 0);
+    } on Exception catch (e) {
+      CustomFlutterToast.showErrorToast('转发消息时发生错误: $e');
+      if (kDebugMode) print('转发消息时发生错误: $e');
     }
   }
 

@@ -107,13 +107,13 @@ abstract class Logic<V extends Widget> extends GetxController {
   V? view;
 
   //主题配置
-  GlobalThemeConfig get theme => GetInstance().find<GlobalThemeConfig>();
+  GlobalThemeConfig get theme =>
+      GetInstance().find<GlobalThemeConfig>(tag: null);
 
-  // late final GlobalThemeConfig theme;
+  GlobalData get globalData => GetInstance().find<GlobalData>(tag: null);
 
   //路由参数
   dynamic get arguments => Get.arguments;
-// late final dynamic  arguments;
 }
 
 abstract class CustomView<T extends Logic> extends StatelessWidget {
@@ -121,13 +121,14 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
   /// 当传入key的时候，若更新widget需使用controller.update([key],)
   CustomView({
     super.key,
+    this.tag,
   });
 
   /// 传入的参数
   final dynamic arguments = Get.arguments;
 
   /// 控制器的tag
-  final String? tag = null;
+  final String? tag;
 
   /// 获取控制器
   T get controller => GetInstance().find<T>(tag: tag);
@@ -174,7 +175,7 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GetBuilder<T>(
         id: key,
-        assignId: true,
+        assignId: true, // 开启控制器随着view的生命周期一起销毁
         key: Key("${context.widget.hashCode}_builder"),
         initState: (GetBuilderState<T> state) => this.init(context),
         didChangeDependencies: (GetBuilderState<T> state) =>
@@ -203,10 +204,6 @@ abstract class CustomWidgetObx<T extends GetxController> extends GetView<T> {
   Widget buildWidget(BuildContext context);
 
   @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      return buildWidget(context);
-    });
-    // return  buildWidget();
-  }
+  Widget build(BuildContext context) => Obx(() => buildWidget(context));
+  // return  buildWidget();
 }

@@ -1,4 +1,3 @@
-// ignore_for_file: unnecessary_new
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -179,7 +178,7 @@ class ContactsLogic extends GetxController {
   //长按分组进入分组设置页面
   void onLongPressGroup() {
     try {
-      Get.toNamed("/set_group", arguments: {'groupName': '', 'friendId': ''});
+      Get.toNamed("/set_group", arguments: {'groupName': '0', 'friendId': '0'});
     } catch (e) {
       CustomFlutterToast.showErrorToast("导航到群组设置页面失败: $e");
     }

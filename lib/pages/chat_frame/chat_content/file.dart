@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/msg_api.dart';
@@ -18,9 +19,13 @@ class FileMessage extends StatelessThemeWidget {
   });
 
   Future<String> onGetFile() async {
-    dynamic res = await _msgApi.getMedia(value['id']);
-    if (res['code'] == 0) {
-      return res['data'];
+    try {
+      final fromForwardMsgId = value['fromForwardMsgId'];
+      final res = await _msgApi.getMedia(fromForwardMsgId ?? value['id']);
+      if (res['code'] == 0) return res['data'];
+    } catch (e) {
+      // 处理错误，您可以记录日志或执行其他操作
+      if (kDebugMode) print('获取图片时出错: $e');
     }
     return '';
   }
