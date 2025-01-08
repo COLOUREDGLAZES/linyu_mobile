@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart' show Get, GetInstance, GetNavigation, GetxController;
+import 'package:get/get.dart'
+    show Get, GetInstance, GetNavigation, GetxController;
 import 'package:linyu_mobile/api/chat_group_api.dart';
 import 'package:linyu_mobile/api/chat_group_member.dart';
 import 'package:linyu_mobile/api/chat_list_api.dart';
@@ -11,7 +12,7 @@ import 'package:linyu_mobile/pages/contacts/logic.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
 
-class ChatGroupInformationLogic extends GetxController{
+class ChatGroupInformationLogic extends GetxController {
   final ContactsLogic _contactsLogic = GetInstance().find<ContactsLogic>();
   final _chatGroupApi = ChatGroupApi();
   final _chatGroupMemberApi = ChatGroupMemberApi();
@@ -20,6 +21,7 @@ class ChatGroupInformationLogic extends GetxController{
   late bool isOwner = false;
   late dynamic chatGroupDetails = {
     'id': '',
+    'chatGroupNumber': '',
     'userId': '',
     'ownerUserId': '',
     'portrait': '',
@@ -51,6 +53,7 @@ class ChatGroupInformationLogic extends GetxController{
     try {
       final res = await _chatGroupApi.details(_chatGroupId);
       if (res['code'] == 0) {
+        debugPrint("chatGroupDetails is: ${res['data'].toString()}");
         chatGroupDetails = res['data'];
         final prefs = await SharedPreferences.getInstance();
         _currentUserId = prefs.getString('userId');
@@ -84,7 +87,7 @@ class ChatGroupInformationLogic extends GetxController{
     try {
       final filename = picture.path.split('/').last;
       final file =
-      await MultipartFile.fromFile(picture.path, filename: filename);
+          await MultipartFile.fromFile(picture.path, filename: filename);
       final formData = FormData.fromMap({
         'type': 'image/jpeg',
         'name': filename,
@@ -215,23 +218,23 @@ class ChatGroupInformationLogic extends GetxController{
   }
 
   void onQuitGroup(BuildContext context) async => CustomDialog.showTipDialog(
-    context,
-    text: "确定退出该群聊?",
-    onOk: () async {
-      try {
-        final res = await _chatGroupApi.quitChatGroup(_chatGroupId);
-        if (res['code'] == 0) {
-          CustomFlutterToast.showSuccessToast('退出群聊成功~');
-          Get.back(result: true);
-        } else {
-          CustomFlutterToast.showErrorToast('退出群聊失败: ${res['msg']}');
-        }
-      } catch (error) {
-        CustomFlutterToast.showErrorToast('退出群聊时发生错误: $error');
-      }
-    },
-    onCancel: () {},
-  );
+        context,
+        text: "确定退出该群聊?",
+        onOk: () async {
+          try {
+            final res = await _chatGroupApi.quitChatGroup(_chatGroupId);
+            if (res['code'] == 0) {
+              CustomFlutterToast.showSuccessToast('退出群聊成功~');
+              Get.back(result: true);
+            } else {
+              CustomFlutterToast.showErrorToast('退出群聊失败: ${res['msg']}');
+            }
+          } catch (error) {
+            CustomFlutterToast.showErrorToast('退出群聊时发生错误: $error');
+          }
+        },
+        onCancel: () {},
+      );
 
   void onDissolveGroup(BuildContext context) async =>
       CustomDialog.showTipDialog(
@@ -254,7 +257,16 @@ class ChatGroupInformationLogic extends GetxController{
       );
 
   void onToSendGroupMsg() {
-    _chatListApi.createChat(_chatGroupId, type: 'group').then((res) {
+    if (Get.arguments['isFromChatPage'] == true) {
+      Get.back(result: true);
+      return;
+    }
+    if (Get.arguments['isFromChatSetting'] == true) {
+      // Get.back(result: true);
+      Get.until((route) => Get.currentRoute == '/chat_frame');
+      return;
+    }
+    _chatListApi.create(_chatGroupId, type: 'group').then((res) {
       if (res['code'] == 0) {
         Get.offAndToNamed('/chat_frame', arguments: {
           'chatInfo': res['data'],

@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/api/chat_group_api.dart';
 import 'package:linyu_mobile/api/chat_group_member.dart';
 import 'package:linyu_mobile/api/notify_api.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
+import 'package:linyu_mobile/utils/getx_config/config.dart';
 
-class ChatGroupMemberLogic extends GetxController {
+// class ChatGroupMemberLogic extends GetxController {
+class ChatGroupMemberLogic extends Logic {
   final _chatGroupMemberApi = ChatGroupMemberApi();
   final _chatGroupApi = ChatGroupApi();
   final _notifyApi = NotifyApi();
@@ -19,6 +22,7 @@ class ChatGroupMemberLogic extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     chatGroupId = Get.arguments['chatGroupId'];
     isOwner = Get.arguments['isOwner'] ?? false;
     chatGroupDetails = Get.arguments['chatGroupDetails'] ?? {};
@@ -97,5 +101,28 @@ class ChatGroupMemberLogic extends GetxController {
         }
       });
     }, onCancel: () {});
+  }
+
+  // 点击群成员
+  void onTapMember(dynamic user) async {
+    if (kDebugMode) print('onTapMember: $user');
+    try {
+      if (user['friendId'] == null &&
+          user['userId'] != globalData.currentUserId) {
+        final friend = {
+          'id': user['userId'],
+          'name': user['name'] ?? '',
+          'portrait': user['portrait'] ?? '',
+        };
+        await Get.toNamed('/friend_request', arguments: {'friendInfo': friend});
+      } else {
+        await Get.toNamed('/friend_info',
+            arguments: {'friendId': user['userId']});
+      }
+    } catch (e) {
+      // 适当的错误处理
+      CustomFlutterToast.showErrorToast("发生错误，请稍后重试");
+      if (kDebugMode) print('Error in onTapMember: $e');
+    }
   }
 }

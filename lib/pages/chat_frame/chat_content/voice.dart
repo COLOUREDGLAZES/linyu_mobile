@@ -52,17 +52,15 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
       final fromForwardMsgId = widget.value['fromForwardMsgId'];
       dynamic res;
       // 是否为转发消息，则尝试使用 fromForwardMsgId 获取媒体
-      if (fromForwardMsgId != null) {
+      if (fromForwardMsgId != null)
         res = await _msgApi.getMedia(fromForwardMsgId);
-      }
+
       // 如果没有获取到结果，则尝试使用 id 获取媒体
-      if (res == null || res['code'] != 0) {
+      if (res == null || res['code'] != 0)
         res = await _msgApi.getMedia(widget.value['id']);
-      }
+
       // 检查获取的结果
-      if (res['code'] == 0) {
-        return res['data'] ?? '';
-      }
+      if (res['code'] == 0) return res['data'] ?? '';
     } catch (e) {
       if (kDebugMode) print('Error fetching voice: $e');
     }
@@ -78,7 +76,7 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
   @override
   Widget build(BuildContext context) {
     final alignment =
-    widget.isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+        widget.isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -90,30 +88,30 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
               future: onGetVoice(),
               builder: (context, snapshot) => snapshot.hasData
                   ? CustomAudio(
-                isRight: widget.isRight,
-                audioUrl: snapshot.data ?? '',
-                time: audioTime,
-                type: widget.isRight ? '' : 'minor',
-                onLoadedMetadata: () {},
-              )
+                      isRight: widget.isRight,
+                      audioUrl: snapshot.data ?? '',
+                      time: audioTime,
+                      type: widget.isRight ? '' : 'minor',
+                      onLoadedMetadata: () {},
+                    )
                   : Container(
-                width: 120,
-                height: 32,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color:
-                  widget.isRight ? _theme.primaryColor : Colors.white,
-                ),
-                alignment: Alignment.center,
-                child: const SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                    color: Color(0xffffffff),
-                    strokeWidth: 2,
-                  ),
-                ),
-              ),
+                      width: 120,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color:
+                            widget.isRight ? _theme.primaryColor : Colors.white,
+                      ),
+                      alignment: Alignment.center,
+                      child: const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          color: Color(0xffffffff),
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
             ),
           if (loading && text.isEmpty)
             const Text(

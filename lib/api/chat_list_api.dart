@@ -26,9 +26,15 @@ class ChatListApi {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> create(String userId, String type) async {
-    final response = await _dio.post('/v1/api/chat-list/create',
-        data: {'userId': userId, 'type': type});
+  Future<Map<String, dynamic>> create(String toId,
+      {String? type = 'user'}) async {
+    final response = await _dio.post(
+      '/v1/api/chat-list/create',
+      data: {
+        'toId': toId,
+        'type': type,
+      },
+    );
     return response.data;
   }
 
@@ -63,4 +69,11 @@ class ChatListApi {
     return response.data;
   }
 
+  Future<Map<String, dynamic>> search(String searchInfo) async {
+    final response = await _dio.post(
+      '/v1/api/chat-list/search',
+      data: {'searchInfo': searchInfo},
+    );
+    return response.data;
+  }
 }

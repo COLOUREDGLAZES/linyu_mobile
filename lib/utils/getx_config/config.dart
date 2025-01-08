@@ -1,30 +1,34 @@
 import 'package:flutter/cupertino.dart'
     show
-    BuildContext,
-    Key,
-    StatelessElement,
-    StatelessWidget,
-    Widget,
-    debugPrint;
+        BuildContext,
+        Key,
+        StatelessElement,
+        StatelessWidget,
+        Widget,
+        debugPrint;
 import 'package:flutter/foundation.dart' show Key, debugPrint, kDebugMode;
 import 'package:get/get.dart'
     show
-    Get,
-    GetBuilder,
-    GetBuilderState,
-    GetInstance,
-    GetNavigation,
-    GetPage,
-    GetView,
-    GetxController,
-    Obx;
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
+        Get,
+        GetBuilder,
+        GetBuilderState,
+        GetInstance,
+        GetNavigation,
+        GetPage,
+        GetView,
+        GetxController,
+        Obx;
 import 'package:linyu_mobile/utils/getx_config/route.dart';
 
+import 'package:linyu_mobile/utils/web_socket.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'GlobalData.dart';
+import 'GlobalThemeConfig.dart';
 
 //路由配置
-List<GetPage> pageRoute = AppRoutes.pageRoute;
+List<GetPage> get pageRoute => AppRoutes.routeConfig[1];
+Map get widgetMap => AppRoutes.routeConfig[0];
 
 //路由监听
 void routingCallback(router) {
@@ -66,9 +70,9 @@ abstract class CustomWidget<T extends GetxController> extends StatelessWidget {
 
   /// 更新Widget
   void didUpdateWidget(
-      GetBuilder oldWidget,
-      GetBuilderState<T> state,
-      ) =>
+    GetBuilder oldWidget,
+    GetBuilderState<T> state,
+  ) =>
       print("update>$runtimeType");
 
   /// 构建widget
@@ -84,35 +88,42 @@ abstract class CustomWidget<T extends GetxController> extends StatelessWidget {
   /// 构建
   @override
   Widget build(BuildContext context) => GetBuilder<T>(
-    id: this.key,
-    assignId: true,
-    initState: (GetBuilderState<T> state) => this.init(context),
-    didChangeDependencies: (GetBuilderState<T> state) =>
-        this.didChangeDependencies(context),
-    didUpdateWidget: this.didUpdateWidget,
-    builder: (controller) {
-      return this.buildWidget(context);
-    },
-    dispose: (GetBuilderState<T> state) => this.close(context),
-  );
+        id: this.key,
+        assignId: true,
+        initState: (GetBuilderState<T> state) => this.init(context),
+        didChangeDependencies: (GetBuilderState<T> state) =>
+            this.didChangeDependencies(context),
+        didUpdateWidget: this.didUpdateWidget,
+        builder: (controller) {
+          return this.buildWidget(context);
+        },
+        dispose: (GetBuilderState<T> state) => this.close(context),
+      );
 }
 
 abstract class Logic<V extends Widget> extends GetxController {
-  /// 当前widget
-  /// 不要在controller的[onInit()]中使用，会导致widget为null
-  /// 若需要使用widget中的属性需要在Logic的泛型声明 否则不要轻易使用
-  /// 例如：
-  /// class HomeLogic extends Logic<HomeWidget> {}
-  V? view;
+  /// 当前与controller绑定的view
+  /// 当不传入泛型时，view为null 不能在controller的onInit中使用view
+  /// 若需要在onInit中使用view，则需要传入泛型
+  /// like: class HomeLogic extends Logic<HomeView>{}
+  V? view = widgetMap[V];
+
+  //路由参数
+  dynamic get arguments => Get.arguments;
 
   //主题配置
   GlobalThemeConfig get theme =>
       GetInstance().find<GlobalThemeConfig>(tag: null);
 
+  //全局数据
   GlobalData get globalData => GetInstance().find<GlobalData>(tag: null);
 
-  //路由参数
-  dynamic get arguments => Get.arguments;
+  //websocket管理
+  WebSocketUtil get wsManager => GetInstance().find<WebSocketUtil>(tag: null);
+
+  //数据存储（本地存储）
+  SharedPreferences get sharedPreferences =>
+      GetInstance().find<SharedPreferences>(tag: null);
 }
 
 abstract class CustomView<T extends Logic> extends StatelessWidget {
@@ -142,7 +153,7 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
     if (kDebugMode) print("init>$runtimeType");
     if (!controller.initialized || controller.view != null)
       return; // 提前返回，减少不必要的计算
-    controller.view = this; // 分支内赋值
+    controller.view = this;
   }
 
   /// 依赖发生变化
@@ -152,9 +163,9 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
 
   /// 更新Widget
   void didUpdateWidget(
-      GetBuilder oldWidget,
-      GetBuilderState<T> state,
-      ) {
+    GetBuilder oldWidget,
+    GetBuilderState<T> state,
+  ) {
     if (kDebugMode) print("update>$runtimeType");
   }
 
@@ -173,16 +184,17 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
   /// 构建
   @override
   Widget build(BuildContext context) => GetBuilder<T>(
-    id: key,
-    assignId: true, // 开启控制器随着view的生命周期一起销毁
-    key: Key("${context.widget.hashCode}_builder"),
-    initState: (GetBuilderState<T> state) => this.init(context),
-    didChangeDependencies: (GetBuilderState<T> state) =>
-        this.didChangeDependencies(context),
-    didUpdateWidget: this.didUpdateWidget,
-    builder: (_) => this.buildView(context),
-    dispose: (GetBuilderState<T> state) => this.close(context),
-  );
+        id: key,
+        assignId: true,
+        // 开启控制器随着view的生命周期一起销毁
+        key: Key("${context.widget.hashCode}_builder"),
+        initState: (GetBuilderState<T> state) => this.init(context),
+        didChangeDependencies: (GetBuilderState<T> state) =>
+            this.didChangeDependencies(context),
+        didUpdateWidget: this.didUpdateWidget,
+        builder: (_) => this.buildView(context),
+        dispose: (GetBuilderState<T> state) => this.close(context),
+      );
 }
 
 abstract class StatelessThemeWidget extends StatelessWidget {
@@ -204,5 +216,4 @@ abstract class CustomWidgetObx<T extends GetxController> extends GetView<T> {
 
   @override
   Widget build(BuildContext context) => Obx(() => buildWidget(context));
-// return  buildWidget();
 }

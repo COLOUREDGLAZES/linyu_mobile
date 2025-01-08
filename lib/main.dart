@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:get/get_core/src/smart_management.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:linyu_mobile/utils/getx_config/ControllerBinding.dart';
 import 'package:linyu_mobile/utils/getx_config/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart'
+    show Get, GetMaterialApp, Inst, SmartManagement, Transition;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+  // SharedPreferences prefs = await SharedPreferences.getInstance();
+  SharedPreferences prefs = await Get.putAsync<SharedPreferences>(
+      () async => await SharedPreferences.getInstance(),
+      permanent: true);
   String? token = prefs.getString('x-token');
   String? sex = prefs.getString('sex');
   runApp(MyApp(initialRoute: token != null ? '/?sex=$sex' : '/login'));

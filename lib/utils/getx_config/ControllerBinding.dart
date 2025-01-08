@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:linyu_mobile/pages/chat_frame/chat_setting/logic.dart';
 import 'package:linyu_mobile/pages/chat_frame/logic.dart';
 import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_member/logic.dart';
 import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_notice/add_chat_group_notice/logic.dart';
@@ -42,13 +43,24 @@ import 'package:linyu_mobile/pages/video_chat/logic.dart';
 import 'package:linyu_mobile/utils/getx_config/GlobalData.dart';
 import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
 import 'package:linyu_mobile/pages/mine/edit/logic.dart';
+import 'package:linyu_mobile/utils/web_socket.dart';
 
 //依赖注入
 class ControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put<GlobalThemeConfig>(GlobalThemeConfig(), permanent: true);
+    //全局依赖
     Get.put<GlobalData>(GlobalData(), permanent: true);
+    Get.put<GlobalThemeConfig>(GlobalThemeConfig(), permanent: true);
+    Get.put<WebSocketUtil>(WebSocketUtil(), permanent: true);
+    // Get.putAsync<SharedPreferences>(() async {
+    //   final sp = await SharedPreferences.getInstance();
+    //   return sp;
+    // }, permanent: true);
+    // Get.putAsync<SharedPreferences>(
+    //     () async => await SharedPreferences.getInstance(),
+    //     permanent: true);
+    //页面业务逻辑依赖注入
     Get.lazyPut<NavigationLogic>(() => NavigationLogic(), fenix: true);
     Get.lazyPut<LoginPageLogic>(() => LoginPageLogic(), fenix: true);
     Get.lazyPut<RegisterPageLogic>(() => RegisterPageLogic(), fenix: true);
@@ -100,5 +112,6 @@ class ControllerBinding extends Bindings {
     Get.lazyPut<FileDetailsLogic>(() => FileDetailsLogic(), fenix: true);
     Get.lazyPut<VideoChatLogic>(() => VideoChatLogic(), fenix: true);
     Get.lazyPut<ReForwardLogic>(() => ReForwardLogic(), fenix: true);
+    Get.lazyPut<ChatSettingLogic>(() => ChatSettingLogic(), fenix: true);
   }
 }

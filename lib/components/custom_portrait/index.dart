@@ -5,7 +5,7 @@ class CustomPortrait extends StatelessWidget {
   final double size;
   final String url;
   final double radius;
-  final VoidCallback? onTap;
+  final VoidCallback? onTap, onDoubleTap, onLongPress;
   final bool? isGreyColor;
 
   const CustomPortrait({
@@ -15,12 +15,16 @@ class CustomPortrait extends StatelessWidget {
     this.radius = 25,
     this.onTap,
     this.isGreyColor = false,
+    this.onDoubleTap,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onDoubleTap: onDoubleTap,
+      onLongPress: onLongPress,
       child: Stack(
         children: [
           ClipRRect(
@@ -50,7 +54,7 @@ class CustomPortrait extends StatelessWidget {
             ),
           ),
           Opacity(
-            opacity: !isGreyColor! ?  0:  0.5,
+            opacity: !isGreyColor! ? 0 : 0.5,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(radius),
               child: Container(

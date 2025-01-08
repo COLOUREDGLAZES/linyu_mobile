@@ -23,4 +23,12 @@ class ChatGroupMemberApi {
         data: {'chatGroupId': chatGroupId});
     return response.data;
   }
+
+  Future<Map<String, dynamic>> setChatBackground(FormData formData) async {
+    final response = await _dio.post(
+      '/v1/api/chat-group-member/set-chat-background',
+      data: formData,
+    );
+    return response.data;
+  }
 }

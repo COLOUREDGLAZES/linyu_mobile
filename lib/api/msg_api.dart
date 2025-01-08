@@ -33,40 +33,51 @@ class MsgApi {
 
   Future<Map<String, dynamic>> sendMedia(FormData formData) async {
     final response =
-    await _dio.post('/v1/api/message/send/file/form', data: formData);
+        await _dio.post('/v1/api/message/send/file/form', data: formData);
     return response.data;
   }
 
-  Future<Map<String, dynamic>> retract(String msgId,String? targetId) async {
-    final response =
-    await _dio.post('/v1/api/message/retraction', data: {
-      'msgId': msgId,
-      'targetId':targetId
-    });
+  Future<Map<String, dynamic>> retract(String msgId, String? targetId) async {
+    final response = await _dio.post('/v1/api/message/retraction',
+        data: {'msgId': msgId, 'targetId': targetId});
     return response.data;
   }
 
   Future<Map<String, dynamic>> reEdit(String msgId) async {
     final response =
-    await _dio.post('/v1/api/message/reedit', data: {'msgId': msgId});
+        await _dio.post('/v1/api/message/reedit', data: {'msgId': msgId});
     return response.data;
   }
 
-  Future<Map<String, dynamic>> voiceToText(String msgId) async {
+  Future<Map<String, dynamic>> voiceToText(String msgId,
+      {bool? isChatGroupMessage}) async {
     if (msgId.isEmpty) return {'error': 'msgId 不能为空'};
     try {
-      final response = await _dio.get('/v1/api/message/voice/to/text',
-          queryParameters: {'msgId': msgId});
+      final response = await _dio.get('/v1/api/message/voice/to/text/from',
+          queryParameters: {
+            'msgId': msgId,
+            'isChatGroupMessage': isChatGroupMessage
+          });
       return response.data ?? {}; // 增加空值处理
     } on DioException catch (e) {
       if (kDebugMode) print('请求失败: ${e.message}');
-
       return {'error': e.message}; // 返回错误信息
     } catch (e) {
       if (kDebugMode) print('发生未知错误: $e');
-
       return {'error': '发生未知错误'};
     }
   }
 
+  Future<Map<String, dynamic>> getLifeString() async {
+    try {
+      final response = await _dio.get('https://api.xygeng.cn/one');
+      return response.data ?? {}; // 增加空值处理
+    } on DioException catch (e) {
+      if (kDebugMode) print('请求失败: ${e.message}');
+      return {'error': e.message}; // 返回错误信息
+    } catch (e) {
+      if (kDebugMode) print('发生未知错误: $e');
+      return {'error': '发生未知错误'};
+    }
+  }
 }
