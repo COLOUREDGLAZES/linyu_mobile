@@ -14,17 +14,15 @@ import 'package:linyu_mobile/utils/getx_config/config.dart';
 class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
   FriendInformationPage({super.key});
 
-  PopupMenuEntry<int> _buildPopupDivider() {
-    return PopupMenuItem<int>(
-      enabled: false,
-      height: 1,
-      child: Container(
+  PopupMenuEntry<int> _buildPopupDivider() => PopupMenuItem<int>(
+        enabled: false,
         height: 1,
-        padding: const EdgeInsets.all(0),
-        color: Colors.grey[200],
-      ),
-    );
-  }
+        child: Container(
+          height: 1,
+          padding: const EdgeInsets.all(0),
+          color: Colors.grey[200],
+        ),
+      );
 
   @override
   Widget buildWidget(BuildContext context) => GestureDetector(
@@ -125,7 +123,7 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                                   borderRadius: BorderRadius.circular(35),
                                 ),
                                 child: CustomPortrait(
-                                    url: controller.friendPortrait ?? '',
+                                    url: controller.friendPortrait,
                                     size: 70,
                                     radius: 35),
                               ),
@@ -142,10 +140,10 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                                           MainAxisAlignment.center,
                                       children: [
                                         CustomShadowText(
-                                            text: controller.friendName ?? ''),
+                                            text: controller.friendName),
                                         const SizedBox(height: 10),
                                         Text(
-                                          controller.friendAccount ?? '',
+                                          controller.friendAccount,
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.grey[700]),
@@ -239,6 +237,7 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                         const SizedBox(height: 1),
                         CustomLabelValueButton(
                           onTap: () => Get.toNamed('/talk', arguments: {
+                            'isNotShowLeading': true,
                             'userId': controller.friendId,
                             'title': StringUtil.isNotNullOrEmpty(
                                     controller.friendRemark)
@@ -293,18 +292,39 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                 Expanded(
                   child: CustomButton(
                     text: '发消息',
-                    onTap: () {
-                      controller.onToSendMsg();
-                    },
+                    onTap: controller.onToSendMsg,
                   ),
                 ),
                 const SizedBox(width: 20),
                 Expanded(
                   child: CustomButton(
-                    text: '视频聊天',
-                    onTap: () {
-                      controller.onVideoChat();
-                    },
+                    text: '音视通话',
+                    onTap: () => Get.bottomSheet(
+                      backgroundColor: Colors.white,
+                      Wrap(
+                        children: [
+                          Center(
+                            child: TextButton(
+                              onPressed: () =>
+                                  controller.onVideoChat(isOnlyAudio: true),
+                              child: Text(
+                                '语音通话',
+                                style: TextStyle(color: theme.primaryColor),
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: TextButton(
+                              onPressed: () => controller.onVideoChat(),
+                              child: Text(
+                                '视频通话',
+                                style: TextStyle(color: theme.primaryColor),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     type: 'minor',
                   ),
                 ),

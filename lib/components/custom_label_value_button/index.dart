@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:linyu_mobile/components/custom_material_button/index.dart';
 
 class CustomLabelValueButton extends StatelessWidget {
-  final String label;
+  final String? label;
   final String? value;
   final double? width;
   final VoidCallback onTap;
@@ -11,10 +11,13 @@ class CustomLabelValueButton extends StatelessWidget {
   final String hint;
   final Color? color;
   final bool compact;
+  final bool? iconShowCenter;
+  final GestureLongPressCallback? onLongPress;
+  final GestureTapCallback? onDoubleTap;
 
   const CustomLabelValueButton({
     super.key,
-    required this.label,
+    @Deprecated('Use child instead') this.label,
     required this.onTap,
     this.value,
     this.child,
@@ -23,6 +26,9 @@ class CustomLabelValueButton extends StatelessWidget {
     this.width = 60,
     this.color,
     this.compact = true,
+    this.iconShowCenter = false,
+    this.onLongPress,
+    this.onDoubleTap,
   });
 
   Widget _getContent() {
@@ -54,6 +60,8 @@ class CustomLabelValueButton extends StatelessWidget {
     return CustomMaterialButton(
       color: color,
       onTap: onTap,
+      onLongPress: onLongPress,
+      onDoubleTap: onDoubleTap,
       child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -64,19 +72,22 @@ class CustomLabelValueButton extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: iconShowCenter!
+                    ? CrossAxisAlignment.center
+                    : CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    width: width,
-                    child: Text(
-                      label,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
+                  if (label != null)
+                    SizedBox(
+                      width: width,
+                      child: Text(
+                        label!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
                       ),
                     ),
-                  ),
                   if (compact)
                     Expanded(
                       child: _getContent(),
