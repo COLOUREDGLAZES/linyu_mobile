@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pickers/pickers.dart';
 import 'package:flutter_pickers/style/picker_style.dart';
@@ -6,23 +7,26 @@ import 'package:flutter_pickers/time_picker/model/date_type.dart';
 import 'package:flutter_pickers/time_picker/model/pduration.dart';
 import 'package:get/get.dart' as getx;
 import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/get_instance.dart';
 import 'package:intl/intl.dart';
 import 'package:linyu_mobile/api/user_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
+import 'package:linyu_mobile/pages/chat_list/logic.dart';
+import 'package:linyu_mobile/pages/contacts/logic.dart';
 import 'package:linyu_mobile/pages/mine/logic.dart';
-import 'package:linyu_mobile/utils/getx_config/GlobalThemeConfig.dart';
+import 'package:linyu_mobile/utils/getx_config/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
 
+import 'index.dart';
+
 //个人资料编辑页面逻辑
-class EditMineLogic extends getx.GetxController {
+class EditMineLogic extends Logic<EditMinePage> {
   //上个页面控制器
   final MineLogic _mineLogic = getx.Get.find<MineLogic>();
 
-  final GlobalThemeConfig _theme = GetInstance().find<GlobalThemeConfig>();
+  final ChatListLogic _chatListLogic = getx.Get.find<ChatListLogic>();
 
-  late SharedPreferences _prefs;
+  final ContactsLogic _contactsLogic = getx.Get.find<ContactsLogic>();
 
   //用户API
   final _useApi = UserApi();
@@ -143,8 +147,10 @@ class EditMineLogic extends getx.GetxController {
     if (result['code'] == 0) {
       CustomFlutterToast.showSuccessToast('头像修改成功');
       currentUserInfo['portrait'] = result['data'];
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('portrait', currentUserInfo['portrait']);
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      sharedPreferences.setString('portrait', currentUserInfo['portrait']);
+      globalData.currentAvatarUrl = currentUserInfo['portrait'];
       update([const Key("edit_mine")]);
     } else {
       CustomFlutterToast.showErrorToast(result['msg']);
@@ -161,9 +167,9 @@ class EditMineLogic extends getx.GetxController {
   }
 
   //设置性别值
-  void setSexValue(String value) {
+  void _setSexValue(String value) {
     sex = value;
-    _theme.changeThemeMode(sex == "女" ? "pink" : "blue");
+    theme.changeThemeMode(sex == "女" ? "pink" : "blue");
     if (value == "男") {
       maleColorActive = const Color(0xFF4C9BFF);
       maleTextColorActive = Colors.white;
@@ -179,9 +185,7 @@ class EditMineLogic extends getx.GetxController {
 
   //设置性别
   void setSex(String value) {
-    if (isEdit) {
-      setSexValue(value);
-    }
+    if (isEdit) _setSexValue(value);
     return;
   }
 
@@ -210,7 +214,7 @@ class EditMineLogic extends getx.GetxController {
             alignment: Alignment.center,
             padding: const EdgeInsets.only(left: 12, right: 22),
             child: Text('确定',
-                style: TextStyle(color: _theme.primaryColor, fontSize: 16.0)),
+                style: TextStyle(color: theme.primaryColor, fontSize: 16.0)),
           ),
           headDecoration: BoxDecoration(
             color:
@@ -247,7 +251,6 @@ class EditMineLogic extends getx.GetxController {
       isEdit = true;
       return;
     } else {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       String name = nameController.text;
       String signature = signatureController.text;
       String birthday = this.birthday.toString();
@@ -260,11 +263,11 @@ class EditMineLogic extends getx.GetxController {
           portrait: portrait);
       if (updateResult['code'] == 0) {
         CustomFlutterToast.showSuccessToast('资料修改成功~');
-        prefs.setString('username', name);
-        prefs.setString('portrait', portrait);
-        prefs.setString('sex', sex);
-        prefs.setString('birthday', birthday);
-        prefs.setString('signature', signature);
+        sharedPreferences.setString('username', name);
+        sharedPreferences.setString('portrait', portrait);
+        sharedPreferences.setString('sex', sex);
+        sharedPreferences.setString('birthday', birthday);
+        sharedPreferences.setString('signature', signature);
         isEdit = false;
         return;
       } else {
@@ -274,10 +277,21 @@ class EditMineLogic extends getx.GetxController {
     }
   }
 
-  void whenClose() async {
-    _theme.changeThemeMode(_prefs.getString('sex') == "女" ? "pink" : "blue");
-    //以及返回上一页时更新页面
-    _mineLogic.init();
+  void _whenClose() async {
+    try {
+      theme.changeThemeMode(
+          sharedPreferences.getString('sex') == "女" ? "pink" : "blue");
+    } catch (e) {
+      if (kDebugMode) print('error when close EditMinePage:$e');
+    } finally {
+      nameController.dispose();
+      signatureController.dispose();
+      birthdayController.dispose();
+      //以及返回上一页时更新页面
+      if (_mineLogic.initialized) _mineLogic.init();
+      if (_chatListLogic.initialized) _chatListLogic.onGetChatList();
+      if (_contactsLogic.initialized) _contactsLogic.init();
+    }
   }
 
   //初始化
@@ -285,32 +299,28 @@ class EditMineLogic extends getx.GetxController {
   void onInit() async {
     super.onInit();
     final userInfo = await _useApi.info();
-    _prefs = await SharedPreferences.getInstance();
     currentUserInfo['name'] =
-        _prefs.getString('username') ?? userInfo['data']['name'];
+        sharedPreferences.getString('username') ?? userInfo['data']['name'];
     currentUserInfo['portrait'] =
-        _prefs.getString('portrait') ?? userInfo['data']['portrait'];
+        sharedPreferences.getString('portrait') ?? userInfo['data']['portrait'];
     nameController.text = currentUserInfo['name'];
     nameTextLength = nameController.text.length;
-    sex = _prefs.getString('sex') ?? userInfo['data']['sex'];
-    setSexValue(sex);
+    sex = sharedPreferences.getString('sex') ?? userInfo['data']['sex'];
+    _setSexValue(sex);
     currentUserInfo['sex'] = sex;
     birthday = DateTime.parse(userInfo['data']['birthday']).toLocal();
     birthdayController.text =
         DateFormat('yyyy-MM-dd').format(birthday); // 格式化日期
     currentUserInfo['birthday'] = birthday;
-    signatureController.text =
-        _prefs.getString('signature') ?? userInfo['data']['signature'];
+    signatureController.text = sharedPreferences.getString('signature') ??
+        userInfo['data']['signature'];
     signatureTextLength = signatureController.text.length;
   }
 
   //当页面返回时，销毁控制器
   @override
   void onClose() {
+    _whenClose();
     super.onClose();
-    nameController.dispose();
-    signatureController.dispose();
-    birthdayController.dispose();
-    whenClose();
   }
 }

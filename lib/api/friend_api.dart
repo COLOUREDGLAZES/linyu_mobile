@@ -126,4 +126,12 @@ class FriendApi {
     );
     return response.data;
   }
+
+  Future<Map<String, dynamic>> setChatBackground(FormData formData) async {
+    final response = await _dio.post(
+      '/v1/api/friend/set-chat-background',
+      data: formData,
+    );
+    return response.data;
+  }
 }

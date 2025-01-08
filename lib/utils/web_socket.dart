@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:linyu_mobile/utils/linyu_msg.dart';
 import 'package:linyu_mobile/utils/notification.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class WebSocketUtil {
+class WebSocketUtil extends GetxController {
   static WebSocketUtil? _instance;
   WebSocketChannel? _channel;
   Timer? _heartbeatTimer;
   Timer? _reconnectTimer;
   bool _lockReconnect = false;
-  bool _isConnected = false;
+  bool isConnected = false;
   String? _token;
   final int _reconnectCountMax = 200;
   int _reconnectCount = 0;
@@ -33,8 +34,8 @@ class WebSocketUtil {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('x-token');
     if (token == null) return;
-    if (_isConnected || _channel != null) return;
-    _isConnected = true;
+    if (isConnected || _channel != null) return;
+    isConnected = true;
 
     try {
       print('WebSocket connecting...');
@@ -117,7 +118,7 @@ class WebSocketUtil {
       _channel!.sink.close();
       _channel = null;
     }
-    _isConnected = false;
+    isConnected = false;
     _reconnect();
   }
 
@@ -156,14 +157,6 @@ class WebSocketUtil {
     _reconnectTimer = null;
   }
 
-  void dispose() {
-    _clearHeartbeat();
-    _clearTimer();
-    _channel?.sink.close();
-    eventController.close();
-    _instance = null;
-  }
-
   void sendNotification(dynamic msg) {
     dynamic msgContent = msg['msgContent'];
     String contentStr = LinyuMsgUtil.getMsgContent(msgContent);
@@ -172,5 +165,28 @@ class WebSocketUtil {
       title: msgContent['formUserName'],
       body: '${msgContent['formUserName']}: $contentStr',
     );
+  }
+
+  void disconnect() {
+    _clearHeartbeat();
+    _channel?.sink.close();
+    _channel = null;
+    isConnected = false;
+  }
+
+  @override
+  void onReady() {
+    connect();
+    super.onReady();
+  }
+
+  @override
+  void dispose() {
+    _clearHeartbeat();
+    _clearTimer();
+    _channel?.sink.close();
+    eventController.close();
+    _instance = null;
+    super.dispose();
   }
 }
