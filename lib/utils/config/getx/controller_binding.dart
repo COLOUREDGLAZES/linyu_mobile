@@ -1,4 +1,5 @@
 import 'package:get/get.dart' show Bindings, Get, Inst;
+import 'package:linyu_mobile/pages/chat_frame/chat_setting/logic.dart';
 import 'package:linyu_mobile/pages/chat_frame/logic.dart';
 import 'package:linyu_mobile/pages/file_details/logic.dart';
 import 'package:linyu_mobile/pages/image_viewer/image_viewer_update/logic.dart';
@@ -39,16 +40,28 @@ import 'package:linyu_mobile/pages/qr_code_scan/qr_login_affirm/logic.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/qr_other_result/logic.dart';
 import 'package:linyu_mobile/pages/re_forward/logic.dart';
 import 'package:linyu_mobile/pages/register/logic.dart';
+import 'package:linyu_mobile/pages/setting/logic.dart';
 import 'package:linyu_mobile/pages/video_chat/logic.dart';
 import 'package:linyu_mobile/utils/config/getx/global_data.dart';
 import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
+import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 
 //依赖注入
 class ControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put<GlobalThemeConfig>(GlobalThemeConfig(), permanent: true);
+    //全局依赖
     Get.put<GlobalData>(GlobalData(), permanent: true);
+    Get.put<GlobalThemeConfig>(GlobalThemeConfig(), permanent: true);
+    Get.put<WebSocketUtil>(WebSocketUtil(), permanent: true);
+    // Get.putAsync<SharedPreferences>(() async {
+    //   final sp = await SharedPreferences.getInstance();
+    //   return sp;
+    // }, permanent: true);
+    // Get.putAsync<SharedPreferences>(
+    //     () async => await SharedPreferences.getInstance(),
+    //     permanent: true);
+    //页面业务逻辑依赖注入
     Get.lazyPut<NavigationLogic>(() => NavigationLogic(), fenix: true);
     Get.lazyPut<LoginPageLogic>(() => LoginPageLogic(), fenix: true);
     Get.lazyPut<RegisterPageLogic>(() => RegisterPageLogic(), fenix: true);
@@ -100,5 +113,7 @@ class ControllerBinding extends Bindings {
     Get.lazyPut<FileDetailsLogic>(() => FileDetailsLogic(), fenix: true);
     Get.lazyPut<VideoChatLogic>(() => VideoChatLogic(), fenix: true);
     Get.lazyPut<ReForwardLogic>(() => ReForwardLogic(), fenix: true);
+    Get.lazyPut<ChatSettingLogic>(() => ChatSettingLogic(), fenix: true);
+    Get.lazyPut<SettingLogic>(() => SettingLogic(), fenix: true);
   }
 }

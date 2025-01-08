@@ -23,9 +23,12 @@ import 'package:linyu_mobile/utils/config/getx/global_data.dart'
 import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart'
     show GlobalThemeConfig;
 import 'package:linyu_mobile/utils/config/getx/route.dart' show AppRoutes;
+import 'package:linyu_mobile/utils/config/network/web_socket.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //路由配置
-List<GetPage> pageRoute = AppRoutes.pageRoute;
+List<GetPage> get pageRoute => AppRoutes.routeConfig[1];
+Map get widgetMap => AppRoutes.routeConfig[0];
 
 //路由监听
 void routingCallback(router) {
@@ -99,21 +102,28 @@ abstract class CustomWidget<T extends GetxController> extends StatelessWidget {
 }
 
 abstract class Logic<V extends Widget> extends GetxController {
-  /// 当前widget
-  /// 不要在controller的[onInit()]中使用，会导致widget为null
-  /// 若需要使用widget中的属性需要在Logic的泛型声明 否则不要轻易使用
-  /// 例如：
-  /// class HomeLogic extends Logic<HomeWidget> {}
-  V? view;
+  /// 当前与controller绑定的view
+  /// 当不传入泛型时，view为null 不能在controller的onInit中使用view
+  /// 若需要在onInit中使用view，则需要传入泛型
+  /// like: class HomeLogic extends Logic<HomeView>{}
+  V? view = widgetMap[V];
+
+  //路由参数
+  dynamic get arguments => Get.arguments;
 
   //主题配置
   GlobalThemeConfig get theme =>
       GetInstance().find<GlobalThemeConfig>(tag: null);
 
+  //全局数据
   GlobalData get globalData => GetInstance().find<GlobalData>(tag: null);
 
-  //路由参数
-  dynamic get arguments => Get.arguments;
+  //websocket管理
+  WebSocketUtil get wsManager => GetInstance().find<WebSocketUtil>(tag: null);
+
+  //数据存储（本地存储）
+  SharedPreferences get sharedPreferences =>
+      GetInstance().find<SharedPreferences>(tag: null);
 }
 
 abstract class CustomView<T extends Logic> extends StatelessWidget {
@@ -143,7 +153,7 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
     if (kDebugMode) print("init>$runtimeType");
     if (!controller.initialized || controller.view != null)
       return; // 提前返回，减少不必要的计算
-    controller.view = this; // 分支内赋值
+    controller.view = this;
   }
 
   /// 依赖发生变化
@@ -175,7 +185,8 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GetBuilder<T>(
         id: key,
-        assignId: true, // 开启控制器随着view的生命周期一起销毁
+        assignId: true,
+        // 开启控制器随着view的生命周期一起销毁
         key: Key("${context.widget.hashCode}_builder"),
         initState: (GetBuilderState<T> state) => this.init(context),
         didChangeDependencies: (GetBuilderState<T> state) =>
@@ -205,5 +216,4 @@ abstract class CustomWidgetObx<T extends GetxController> extends GetView<T> {
 
   @override
   Widget build(BuildContext context) => Obx(() => buildWidget(context));
-  // return  buildWidget();
 }

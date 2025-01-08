@@ -1,4 +1,6 @@
+import 'package:custom_pop_up_menu_fork/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_icon_button/index.dart';
@@ -100,6 +102,37 @@ class ChatGroupInformationPage extends CustomWidget<ChatGroupInformationLogic> {
                             ),
                           ],
                         ),
+                      ),
+                      const SizedBox(height: 1),
+                      QuickPopUpMenu(
+                        showArrow: true,
+                        useGridView: false,
+                        // useGridView: true,
+                        darkMode: true,
+                        pressType: PressType.longPress,
+                        menuItems: [
+                          PopMenuItemModel(
+                            title: '复制',
+                            icon: Icons.content_copy,
+                            callback: (data) {
+                              Clipboard.setData(ClipboardData(
+                                  text: controller
+                                      .chatGroupDetails['chatGroupNumber']));
+                            },
+                          ),
+                        ],
+                        dataObj: CustomLabelValueButton(
+                            onTap: () {},
+                            width: 60,
+                            label: '群号',
+                            value:
+                                controller.chatGroupDetails['chatGroupNumber']),
+                        child: CustomLabelValueButton(
+                            onTap: () {},
+                            width: 60,
+                            label: '群号',
+                            value:
+                                controller.chatGroupDetails['chatGroupNumber']),
                       ),
                       const SizedBox(height: 1),
                       CustomLabelValueButton(

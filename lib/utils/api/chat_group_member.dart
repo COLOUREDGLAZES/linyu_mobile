@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class ChatGroupMemberApi {
-  final Dio _dio = Http().dio;
+  final Dio _dio = Http(url: baseUrl).dio;
 
   static final ChatGroupMemberApi _instance = ChatGroupMemberApi._internal();
 
@@ -21,6 +21,14 @@ class ChatGroupMemberApi {
   Future<Map<String, dynamic>> listPage(String chatGroupId) async {
     final response = await _dio.post('/v1/api/chat-group-member/list/page',
         data: {'chatGroupId': chatGroupId});
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> setChatBackground(FormData formData) async {
+    final response = await _dio.post(
+      '/v1/api/chat-group-member/set-chat-background',
+      data: formData,
+    );
     return response.data;
   }
 }

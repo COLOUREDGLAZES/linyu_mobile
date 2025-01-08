@@ -13,8 +13,7 @@ class AddFriendLogic extends Logic<AddFriendPage> {
 
   void onSearchFriend(String friendInfo) {
     if (friendInfo.trim() == '') {
-      searchList = [];
-      searchList = [];
+      searchList.clear();
       update([const Key("add_friend")]);
       return;
     }

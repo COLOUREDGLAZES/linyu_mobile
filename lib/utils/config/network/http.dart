@@ -1,24 +1,59 @@
 import 'package:dio/dio.dart' show BaseOptions, Dio, InterceptorsWrapper;
-import 'package:flutter/foundation.dart' show kReleaseMode;
-import 'package:pretty_dio_logger/pretty_dio_logger.dart' show PrettyDioLogger;
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
+late String? baseUrl;
+
 class Http {
+  // factory Http() => _instance;
+  factory Http({String? url}) {
+    // String ip = '47.99.61.62';
+    // String ip = '114.96.70.115';
+    String ip = '192.168.101.4';
+    // String port = '19200';
+    String port = '9200';
+    _instance._baseUrl = url ?? 'http://$ip:$port';
+    _instance.dio.options.baseUrl = url ?? 'http://$ip:$port';
+    return _instance;
+  }
+
   static final Http _instance = Http._internal();
 
-  factory Http() => _instance;
+  String _baseUrl = '';
+
+  String get baseUrl => _baseUrl;
 
   late Dio dio;
 
+  set baseUrl(String value) {
+    _baseUrl = value;
+    setBaseUrl(value);
+  }
+
+  void setBaseUrl(String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("httpUrl", value);
+    dio.options.baseUrl = value;
+  }
+
+  void _init() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("httpUrl") != null) {
+      _baseUrl = prefs.getString("httpUrl")!;
+    }
+  }
+
   Http._internal() {
+    _init();
+    debugPrint("ip地址=================>$baseUrl");
     // String ip = '47.99.61.62';
-    String ip = '114.96.70.115';
+    // String ip = '114.96.70.115';
     // String ip = '192.168.101.4';
-    String port = '19200';
+    // String port = '19200';
     // String port = '9200';
     dio = Dio(BaseOptions(
-      baseUrl: 'http://$ip:$port',
+      // baseUrl: 'http://$ip:$port',
       connectTimeout: const Duration(seconds: 20),
       receiveTimeout: const Duration(seconds: 20),
     ));
@@ -28,9 +63,7 @@ class Http {
         // 从本地存储获取token
         SharedPreferences prefs = await SharedPreferences.getInstance();
         final token = prefs.getString('x-token');
-        if (token != null) {
-          options.headers['x-token'] = token;
-        }
+        if (token != null) options.headers['x-token'] = token;
         return handler.next(options);
       },
       onError: (error, handler) {
@@ -40,12 +73,12 @@ class Http {
         return handler.next(error);
       },
     ));
-    if (!kReleaseMode)
-      dio.interceptors.add(PrettyDioLogger(
-        // requestHeader: true,
-        // requestBody: true,
-        // responseHeader: true,
-        responseBody: true,
-      ));
+    // if (!kReleaseMode)
+    //   dio.interceptors.add(PrettyDioLogger(
+    //     // requestHeader: true,
+    //     // requestBody: true,
+    //     // responseHeader: true,
+    //     responseBody: true,
+    //   ));
   }
 }

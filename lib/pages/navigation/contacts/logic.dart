@@ -17,7 +17,9 @@ class ContactsLogic extends GetxController {
   final _chatGroupApi = new ChatGroupApi();
   final _notifyApi = new NotifyApi();
   final _chatListApi = new ChatListApi();
+  final FocusNode focusNode = new FocusNode(skipTraversal: true);
   final GlobalData _globalData = GetInstance().find<GlobalData>();
+  final SharedPreferences _prefs = Get.find<SharedPreferences>();
   List<String> tabs = ['我的群聊', '我的好友', '好友通知'];
   int selectedIndex = 1;
   String currentUserId = '';
@@ -25,9 +27,11 @@ class ContactsLogic extends GetxController {
   List<dynamic> chatGroupList = [];
   List<dynamic> notifyFriendList = [];
   late dynamic currentUserInfo = {};
-  List<dynamic> searchList = [];
+  List<dynamic> friendSearchList = [];
+  late List<dynamic> groupSearchList = [];
   final TextEditingController searchBoxController = new TextEditingController();
-  final _wsManager = new WebSocketUtil();
+  // final _wsManager = new WebSocketUtil();
+  final _wsManager = Get.find<WebSocketUtil>();
   StreamSubscription? _subscription;
 
   GlobalData get globalData => GetInstance().find<GlobalData>();
@@ -35,11 +39,15 @@ class ContactsLogic extends GetxController {
   // 监听消息
   void eventListen() => _subscription = _wsManager.eventStream.listen(
         (event) {
-          if (event['type'] == 'on-receive-notify') init();
+          if (kDebugMode) print("收到事件: $event");
+          if (event['type'] == 'on-receive-msg') {
+            final content = event['content']['msgContent']['content'];
+            if (content == 'friend_delete') init();
+          }
+          if (event['type'] == 'on-receive-notify' &&
+              event['content'] != 'login=>success') init();
         },
-        onError: (error) {
-          CustomFlutterToast.showErrorToast("监听事件流时发生错误: $error");
-        },
+        onError: (error) => CustomFlutterToast.showErrorToast("网络错误: $error"),
         onDone: () {
           if (kDebugMode) print("事件流监听完成");
         },
@@ -52,13 +60,15 @@ class ContactsLogic extends GetxController {
       if (res['code'] == 0) {
         friendList = res['data'];
         update([const Key("contacts")]);
-      } else {
+      } else
         // 处理非成功状态
         CustomFlutterToast.showErrorToast("获取好友列表失败: ${res['msg']}");
-      }
     } catch (e) {
       // 捕获异常并处理
       CustomFlutterToast.showErrorToast("网络错误: $e");
+    } finally {
+      //判断websocket是否连接
+      if (!_wsManager.isConnected) _wsManager.connect();
     }
   }
 
@@ -67,42 +77,36 @@ class ContactsLogic extends GetxController {
       globalData.onGetUserUnreadInfo();
       _chatGroupApi.list().then((res) {
         if (res['code'] == 0) {
+          debugPrint('chatGroupList is: ${res['data'][0].toString()}');
           chatGroupList = res['data'];
           update([const Key("contacts")]);
-        } else {
+        } else
           // 处理非成功状态
           CustomFlutterToast.showErrorToast("获取群聊列表失败: ${res['msg']}");
-        }
-      }).catchError((e) {
         // 捕获异常并处理
-        CustomFlutterToast.showErrorToast("获取群聊列表时发生网络错误: $e");
-      });
+      }).catchError(
+          (e) => CustomFlutterToast.showErrorToast("获取群聊列表时发生网络错误: $e"));
     } catch (e) {
       // 处理其他可能的异常
       CustomFlutterToast.showErrorToast("处理群聊列表时发生错误: $e");
     }
   }
 
-  void onNotifyFriendList() {
-    _notifyApi.friendList().then((res) {
-      if (res['code'] == 0) {
-        notifyFriendList = res['data'];
-        update([const Key("contacts")]);
-      } else {
-        CustomFlutterToast.showErrorToast("获取好友通知列表失败: ${res['msg']}");
-      }
-    }).catchError((e) {
-      CustomFlutterToast.showErrorToast("获取好友通知列表时发生网络错误: $e");
-    });
-  }
+  void onNotifyFriendList() => _notifyApi.friendList().then((res) {
+        if (res['code'] == 0) {
+          notifyFriendList = res['data'];
+          update([const Key("contacts")]);
+        } else
+          CustomFlutterToast.showErrorToast("获取好友通知列表失败: ${res['msg']}");
+      }).catchError(
+          (e) => CustomFlutterToast.showErrorToast("获取好友通知列表时发生网络错误: $e"));
 
   void init() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    currentUserInfo['name'] = prefs.getString('username');
-    currentUserInfo['portrait'] = prefs.getString('portrait');
-    currentUserInfo['account'] = prefs.getString('account');
-    currentUserInfo['sex'] = prefs.getString('sex');
-    currentUserId = prefs.getString('userId') ?? '';
+    currentUserInfo['name'] = _prefs.getString('username');
+    currentUserInfo['portrait'] = _prefs.getString('portrait');
+    currentUserInfo['account'] = _prefs.getString('account');
+    currentUserInfo['sex'] = _prefs.getString('sex');
+    currentUserId = _prefs.getString('userId') ?? '';
     onNotifyFriendList();
     onChatGroupList();
     onFriendList();
@@ -121,13 +125,12 @@ class ContactsLogic extends GetxController {
     if (selectedIndex != index) {
       selectedIndex = index;
       update([const Key("contacts")]);
-      if (index == 2) {
+      if (index == 2)
         try {
           onReadNotify();
         } catch (e) {
           CustomFlutterToast.showErrorToast("读取通知失败: $e");
         }
-      }
     }
   }
 
@@ -151,9 +154,8 @@ class ContactsLogic extends GetxController {
       if (result['code'] == 0) {
         init();
         CustomFlutterToast.showSuccessToast("同意好友请求成功");
-      } else {
+      } else
         CustomFlutterToast.showErrorToast("同意好友请求失败: ${result['msg']}");
-      }
     } catch (e) {
       CustomFlutterToast.showErrorToast("网络错误: $e");
     }
@@ -167,9 +169,8 @@ class ContactsLogic extends GetxController {
       if (result['code'] == 0) {
         init();
         CustomFlutterToast.showSuccessToast("操作成功");
-      } else {
+      } else
         CustomFlutterToast.showErrorToast("拒绝好友请求失败: ${result['msg']}");
-      }
     } catch (e) {
       CustomFlutterToast.showErrorToast("网络错误: $e");
     }
@@ -188,12 +189,10 @@ class ContactsLogic extends GetxController {
   void onSetConcernFriend(dynamic friend) async {
     try {
       Map<String, dynamic> response;
-      if (friend['isConcern']) {
+      if (friend['isConcern'])
         response = await _friendApi.unCareFor(friend['friendId']);
-      } else {
+      else
         response = await _friendApi.careFor(friend['friendId']);
-      }
-
       _setResult(response);
       Get.back();
       init();
@@ -204,32 +203,29 @@ class ContactsLogic extends GetxController {
 
   //特别关心结果
   void _setResult(Map<String, dynamic> response) {
-    if (response['code'] == 0) {
+    if (response['code'] == 0)
       CustomFlutterToast.showSuccessToast('设置成功~');
-    } else {
+    else
       CustomFlutterToast.showErrorToast(response['msg']);
-    }
   }
 
-  void onSearchFriend(String friendInfo) {
-    friendInfo = friendInfo.trim();
-    if (friendInfo.isEmpty) {
-      searchList.clear();
+  void onSearch(String searchInfo) async {
+    searchInfo = searchInfo.trim();
+    if (searchInfo.isEmpty) {
+      friendSearchList.clear();
+      groupSearchList.clear();
       init();
       return;
     }
 
-    _friendApi.search(friendInfo).then((res) {
-      if (res['code'] == 0) {
-        friendList.clear();
-        searchList = res['data'];
-        update([const Key("contacts")]);
-      } else {
-        CustomFlutterToast.showErrorToast("搜索好友失败: ${res['msg']}");
-      }
-    }).catchError((e) {
-      CustomFlutterToast.showErrorToast("网络错误: $e");
-    });
+    final result = await _chatListApi.search(searchInfo);
+    if (result['code'] == 0) {
+      if (kDebugMode) print('搜索好友成功: ${result['data']}');
+      friendList.clear();
+      friendSearchList = result['data']['friend'];
+      groupSearchList = result['data']['group'];
+      update([const Key("contacts")]);
+    }
   }
 
   String getNotifyContentTip(String status, bool isFromCurrentUser) {
@@ -249,11 +245,10 @@ class ContactsLogic extends GetxController {
 
   void onToSendGroupMsg(id) =>
       _chatListApi.create(id, type: 'group').then((res) {
-        if (res['code'] == 0) {
+        if (res['code'] == 0)
           Get.toNamed('/chat_frame', arguments: {
             'chatInfo': res['data'],
           });
-        }
       });
 
   void toChatGroupInfo(dynamic group) {

@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class VideoApi {
-  final Dio _dio = Http().dio;
+  final Dio _dio = Http(url: baseUrl).dio;
 
   static final VideoApi _instance = VideoApi._internal();
 

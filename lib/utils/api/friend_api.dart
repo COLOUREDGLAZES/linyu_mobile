@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class FriendApi {
-  final Dio _dio = Http().dio;
+  final Dio _dio = Http(url: baseUrl).dio;
 
   static final FriendApi _instance = FriendApi._internal();
 
@@ -123,6 +123,14 @@ class FriendApi {
     final response = await _dio.get(
       '/v1/api/friend/is/friend',
       queryParameters: {'targetId': friendId},
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> setChatBackground(FormData formData) async {
+    final response = await _dio.post(
+      '/v1/api/friend/set-chat-background',
+      data: formData,
     );
     return response.data;
   }

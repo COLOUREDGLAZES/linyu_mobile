@@ -1,14 +1,15 @@
-import 'package:chat_bottom_container/panel_container.dart';
+import 'package:chat_bottom_container/panel_container.dart'
+    show ChatBottomPanelContainer, ChatBottomPanelContainerController;
 import 'package:chat_bottom_container/typedef.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter/services.dart' show Clipboard, ClipboardData, Color;
+import 'package:get/get.dart' show Get, GetBuilder, GetNavigation, Obx;
+import 'package:image_picker/image_picker.dart' show ImageSource;
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_icon_button/index.dart';
-import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_text_field/index.dart';
 import 'package:linyu_mobile/components/custom_voice_record_button/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/msg.dart';
@@ -28,25 +29,33 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     with WidgetsBindingObserver {
   ChatFramePage({super.key});
 
-  final panelController = ChatBottomPanelContainerController<PanelType>();
+  final panelController = new ChatBottomPanelContainerController<PanelType>();
 
-  Widget _buildPanelContainer() => ChatBottomPanelContainer<PanelType>(
+  Widget _buildPanelContainer() {
+    // 添加错误处理
+    try {
+      return ChatBottomPanelContainer<PanelType>(
         controller: panelController,
         inputFocusNode: controller.focusNode,
         otherPanelWidget: (type) {
+          // 提前处理type为null的情况，减少代码嵌套
           if (type == null) return const SizedBox.shrink();
-          switch (type) {
-            case PanelType.emoji:
-              return _buildEmoji();
-            case PanelType.tool:
-              return _buildMoreOperation();
-            default:
-              return const SizedBox.shrink();
-          }
+          // 使用Map来简化case的切换
+          final panelBuilder = {
+            PanelType.emoji: _buildEmoji,
+            PanelType.tool: _buildMoreOperation,
+          };
+          return panelBuilder[type]?.call() ?? const SizedBox.shrink();
         },
         panelBgColor: Colors.transparent,
         changeKeyboardPanelHeight: (height) => height,
       );
+    } catch (e) {
+      // 错误处理，可以根据需要进行日志记录或用户友好的提示
+      if (kDebugMode) print('构建面板时发生错误: $e');
+      return const SizedBox.shrink(); // 返回空组件，避免崩溃
+    }
+  }
 
   void hidePanel() {
     if (controller.focusNode.hasFocus) controller.focusNode.unfocus();
@@ -76,23 +85,48 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                 ),
               ),
               alignment: Alignment.center,
-              child: SingleChildScrollView(
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: Emoji.emojis
-                      .map(
-                        (emoji) => GestureDetector(
-                          onTap: () => controller.onEmojiTap(emoji),
-                          child: Text(
-                            emoji,
-                            style: const TextStyle(fontSize: 24),
+              child: Stack(
+                children: [
+                  SingleChildScrollView(
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: Emoji.emojis
+                          .map(
+                            (emoji) => GestureDetector(
+                              onTap: () => controller.onEmojiTap(emoji),
+                              child: Text(
+                                emoji,
+                                style: const TextStyle(fontSize: 24),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  if (controller.msgContentController.text.isNotEmpty)
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Column(
+                        children: [
+                          GestureDetector(
+                            onTap: controller.removeChar,
+                            child: Container(
+                              width: 60,
+                              height: 34,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: Colors.white,
+                              ),
+                              child: const Icon(Icons.backspace),
+                            ),
                           ),
-                        ),
-                      )
-                      .toList(),
-                ),
+                        ],
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
@@ -220,197 +254,337 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
             title: AppBarTitle(
                 StringUtil.isNotNullOrEmpty(controller.chatInfo['remark'])
                     ? controller.chatInfo['remark']
-                    : controller.chatInfo['name']),
+                    : controller.chatInfo['name'] ?? ''),
             backgroundColor: const Color(0xFFF9FBFF),
             actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 15),
-                child: GestureDetector(
-                  onTap: controller.toDetailsPage,
-                  child: CustomPortrait(
-                      url: controller.chatInfo['portrait'], size: 32),
+              if (controller.chatInfo['type'] != 'group')
+                IconButton(
+                  onPressed: () => controller.onInviteVideoChat(true),
+                  icon: Image.asset('assets/images/call.png',
+                      height: 24, width: 24),
                 ),
-              )
+              IconButton(
+                onPressed: controller.toChatSetting,
+                icon: Image.asset(
+                  'assets/images/more.png',
+                  height: 24,
+                  width: 24,
+                ),
+              ),
             ],
           ),
-          body: Column(
+          //先用Container包裹一下，以后添加聊天背景
+          body: Stack(
             children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => hidePanel(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: GetBuilder<ChatFrameLogic>(
-                      id: const Key('chat_frame'),
-                      builder: (controller) => Stack(
-                        children: [
-                          ListView(
-                            cacheExtent: 99999,
-                            controller: controller.scrollController,
-                            children: [
-                              if (!controller.hasMore)
-                                const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Center(
-                                    child: Text(
-                                      '没有更多消息了',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12,
+              Container(
+                //聊天背景
+                decoration: controller.chatBackground.isNotEmpty
+                    ? BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(controller.chatBackground),
+                        ),
+                      )
+                    : null,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => hidePanel(),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: GetBuilder<ChatFrameLogic>(
+                            id: const Key('chat_frame'),
+                            builder: (controller) => Stack(
+                              children: [
+                                ListView(
+                                  cacheExtent: 99999,
+                                  controller: controller.scrollController,
+                                  children: [
+                                    if (!controller.hasMore)
+                                      const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Center(
+                                          child: Text(
+                                            '没有更多消息了',
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ...controller.msgList.map((msg) =>
+                                        ChatMessage(
+                                          key: ValueKey(msg['id']),
+                                          onTapChatPortrait:
+                                              controller.onTapAvatar,
+                                          onTapRepost: (data) =>
+                                              controller.onRepostMsg(msg),
+                                          reEdit: () =>
+                                              controller.reEditMsg(msg),
+                                          onTapMsg: () =>
+                                              controller.onTapMsg(msg),
+                                          onTapVoiceToText: (data) =>
+                                              controller.onVoiceToTxt(msg),
+                                          onTapVoiceHiddenText: (data) =>
+                                              controller.onHideText(msg),
+                                          onTapCopy: (data) =>
+                                              Clipboard.setData(ClipboardData(
+                                                  text: msg['msgContent']
+                                                      ['content'])),
+                                          onTapRetract: (data) =>
+                                              controller.retractMsg(msg),
+                                          msg: msg,
+                                          chatPortrait:
+                                              controller.chatInfo['portrait'],
+                                          chatInfo: controller.chatInfo,
+                                          member:
+                                              controller.members[msg['fromId']],
+                                        )),
+                                  ],
+                                ),
+                                if (controller.isLoading)
+                                  const Positioned(
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    child: Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: CupertinoActivityIndicator(),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ...controller.msgList.map((msg) => ChatMessage(
-                                    key: ValueKey(msg['id']),
-                                    onTapRepost: (data) =>
-                                        controller.onRepostMsg(msg),
-                                    reEdit: () => controller.reEditMsg(msg),
-                                    onTapMsg: () => controller.onTapMsg(msg),
-                                    onTapVoiceToText: (data) =>
-                                        controller.onVoiceToTxt(msg),
-                                    onTapVoiceHiddenText: (data) =>
-                                        controller.onHideText(msg),
-                                    onTapCopy: (data) => Clipboard.setData(
-                                        ClipboardData(
-                                            text: msg['msgContent']
-                                                ['content'])),
-                                    onTapRetract: (data) =>
-                                        controller.retractMsg(data, msg),
-                                    msg: msg,
-                                    chatPortrait:
-                                        controller.chatInfo['portrait'],
-                                    chatInfo: controller.chatInfo,
-                                    member: controller.members[msg['fromId']],
-                                  )),
-                            ],
-                          ),
-                          if (controller.isLoading)
-                            const Positioned(
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: CupertinoActivityIndicator(),
-                                ),
-                              ),
+                              ],
                             ),
-                        ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    controller.chatInfo['name'] == null &&
+                            controller.chatInfo['type'] == 'group'
+                        ? Container(
+                            color: const Color(0xFFEDF2F9),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10),
+                            child: const Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('该群已解散',
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.grey))
+                              ],
+                            ),
+                          )
+                        : !controller.isFriend
+                            ? Container(
+                                color: const Color(0xFFEDF2F9),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0, vertical: 10),
+                                child: const Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Ta已不是好友',
+                                        style: TextStyle(
+                                            fontSize: 14, color: Colors.grey))
+                                  ],
+                                ),
+                              )
+                            : Obx(() => Container(
+                                  color: const Color(0xFFEDF2F9),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0, vertical: 10),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          controller.isRecording.value
+                                              ? _buildIconButton1(
+                                                  const IconData(0xe661,
+                                                      fontFamily: 'IconFont'),
+                                                  () {
+                                                    controller.isRecording
+                                                        .value = false;
+                                                    WidgetsBinding.instance
+                                                        .addPostFrameCallback(
+                                                            (_) => controller
+                                                                .focusNode
+                                                                .requestFocus());
+                                                  },
+                                                )
+                                              : _buildIconButton1(
+                                                  const IconData(0xe7e2,
+                                                      fontFamily: 'IconFont'),
+                                                  () {
+                                                    controller.isRecording
+                                                        .value = true;
+                                                    hidePanel();
+                                                  },
+                                                ),
+                                          const SizedBox(width: 5),
+                                          controller.isRecording.value
+                                              ? Expanded(
+                                                  child:
+                                                      CustomVoiceRecordButton(
+                                                          onFinish: controller
+                                                              .onSendVoiceMsg),
+                                                )
+                                              : Expanded(
+                                                  child: Obx(
+                                                    () => CustomTextField(
+                                                      controller: controller
+                                                          .msgContentController,
+                                                      maxLines: 3,
+                                                      minLines: 1,
+                                                      readOnly: controller
+                                                          .isReadOnly.value,
+                                                      hintTextColor:
+                                                          theme.primaryColor,
+                                                      // hintText: '请输入消息',
+                                                      hintText: controller
+                                                              .lifeStr['data']
+                                                          ['content'],
+                                                      vertical: 8,
+                                                      focusNode:
+                                                          controller.focusNode,
+                                                      fillColor: Colors.white
+                                                          .withOpacity(0.9),
+                                                      onTap: () {
+                                                        controller.isReadOnly
+                                                            .value = false;
+                                                        WidgetsBinding.instance
+                                                            .addPostFrameCallback((_) =>
+                                                                panelController
+                                                                    .updatePanelType(
+                                                                        ChatBottomPanelType
+                                                                            .keyboard));
+                                                        Future.delayed(
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    500),
+                                                            () => controller
+                                                                .scrollBottom());
+                                                      },
+                                                      onChanged: (value) =>
+                                                          controller.isSend
+                                                                  .value =
+                                                              value
+                                                                  .trim()
+                                                                  .isNotEmpty,
+                                                    ),
+                                                  ),
+                                                ),
+                                          const SizedBox(width: 5),
+                                          if (!controller.isRecording.value)
+                                            _buildIconButton1(
+                                              const IconData(0xe632,
+                                                  fontFamily: 'IconFont'),
+                                              () {
+                                                controller.isReadOnly.value =
+                                                    true;
+                                                WidgetsBinding.instance
+                                                    .addPostFrameCallback((_) =>
+                                                        panelController.updatePanelType(
+                                                            ChatBottomPanelType
+                                                                .other,
+                                                            data:
+                                                                PanelType.emoji,
+                                                            forceHandleFocus:
+                                                                ChatBottomHandleFocus
+                                                                    .requestFocus));
+                                                Future.delayed(
+                                                    const Duration(
+                                                        milliseconds: 500),
+                                                    () => controller
+                                                        .scrollBottom());
+                                              },
+                                            ),
+                                          controller.isSend.value
+                                              ? CustomButton(
+                                                  text: '发送',
+                                                  onTap: controller.sendTextMsg,
+                                                  width: 60,
+                                                  textSize: 14,
+                                                  height: 34,
+                                                )
+                                              : _buildIconButton1(
+                                                  const IconData(0xe636,
+                                                      fontFamily: 'IconFont'),
+                                                  () => WidgetsBinding.instance
+                                                      .addPostFrameCallback(
+                                                          (_) {
+                                                    panelController
+                                                        .updatePanelType(
+                                                            ChatBottomPanelType
+                                                                .other,
+                                                            data:
+                                                                PanelType.tool);
+                                                    Future.delayed(
+                                                        const Duration(
+                                                            milliseconds: 500),
+                                                        () => controller
+                                                            .scrollBottom());
+                                                  }),
+                                                ),
+                                        ],
+                                      ),
+                                      _buildPanelContainer(),
+                                    ],
+                                  ),
+                                )),
+                  ],
                 ),
               ),
-              Obx(() => Container(
-                    color: const Color(0xFFEDF2F9),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 10),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            if (controller.isRecording.value)
-                              _buildIconButton1(
-                                const IconData(0xe661, fontFamily: 'IconFont'),
-                                () {
-                                  controller.isRecording.value = false;
-                                  WidgetsBinding.instance.addPostFrameCallback(
-                                      (_) =>
-                                          controller.focusNode.requestFocus());
-                                },
-                              )
-                            else
-                              _buildIconButton1(
-                                const IconData(0xe7e2, fontFamily: 'IconFont'),
-                                () {
-                                  controller.isRecording.value = true;
-                                  hidePanel();
-                                },
+              if (!controller.isLoading && !controller.isFriend)
+                Container(
+                  height: 35,
+                  color: Colors.white,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.block_flipped,
+                                size: 18,
                               ),
-                            const SizedBox(width: 5),
-                            if (controller.isRecording.value)
-                              Expanded(
-                                child: CustomVoiceRecordButton(
-                                    onFinish: controller.onSendVoiceMsg),
-                              )
-                            else
-                              Expanded(
-                                child: Obx(
-                                  () => CustomTextField(
-                                    controller: controller.msgContentController,
-                                    maxLines: 3,
-                                    minLines: 1,
-                                    readOnly: controller.isReadOnly.value,
-                                    hintTextColor: theme.primaryColor,
-                                    hintText: '请输入消息',
-                                    vertical: 8,
-                                    focusNode: controller.focusNode,
-                                    fillColor: Colors.white.withOpacity(0.9),
-                                    onTap: () {
-                                      controller.isReadOnly.value = false;
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback((_) =>
-                                              panelController.updatePanelType(
-                                                  ChatBottomPanelType
-                                                      .keyboard));
-                                      Future.delayed(
-                                          const Duration(milliseconds: 500),
-                                          () => controller.scrollBottom());
-                                    },
-                                    onChanged: (value) => controller
-                                        .isSend.value = value.trim().isNotEmpty,
-                                  ),
-                                ),
-                              ),
-                            const SizedBox(width: 5),
-                            if (!controller.isRecording.value)
-                              _buildIconButton1(
-                                const IconData(0xe632, fontFamily: 'IconFont'),
-                                () {
-                                  controller.isReadOnly.value = true;
-                                  WidgetsBinding.instance.addPostFrameCallback(
-                                      (_) => panelController.updatePanelType(
-                                          ChatBottomPanelType.other,
-                                          data: PanelType.emoji,
-                                          forceHandleFocus:
-                                              ChatBottomHandleFocus
-                                                  .requestFocus));
-                                  Future.delayed(
-                                      const Duration(milliseconds: 500),
-                                      () => controller.scrollBottom());
-                                },
-                              ),
-                            if (controller.isSend.value)
-                              CustomButton(
-                                text: '发送',
-                                onTap: controller.sendTextMsg,
-                                width: 60,
-                                textSize: 14,
-                                height: 34,
-                              )
-                            else
-                              _buildIconButton1(
-                                const IconData(0xe636, fontFamily: 'IconFont'),
-                                () => WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  panelController.updatePanelType(
-                                      ChatBottomPanelType.other,
-                                      data: PanelType.tool);
-                                  Future.delayed(
-                                      const Duration(milliseconds: 500),
-                                      () => controller.scrollBottom());
-                                }),
-                              ),
-                          ],
+                              Text('加入黑名单'),
+                            ],
+                          ),
                         ),
-                        _buildPanelContainer(),
-                      ],
-                    ),
-                  )),
+                      ),
+                      //竖线
+                      const VerticalDivider(
+                        width: 1,
+                        color: Colors.grey,
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: controller.onTapAddFriend,
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.person_add_alt_1_outlined,
+                                size: 18,
+                              ),
+                              Text('添加为好友'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),

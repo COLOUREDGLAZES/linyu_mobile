@@ -1,15 +1,22 @@
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:linyu_mobile/utils/api/msg_api.dart';
+import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/encrypt.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginPageLogic extends GetxController {
+  final SharedPreferences _sharedPreferences = Get.find<SharedPreferences>();
+  final _wsManager = Get.find<WebSocketUtil>();
   final _useApi = UserApi();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-
+  final _msgApi = MsgApi();
+  final DeviceInfoPlugin _deviceInfoPlugin = new DeviceInfoPlugin();
   RxInt accountTextLength = 0.obs;
 
   RxInt passwordTextLength = 0.obs;
@@ -47,6 +54,15 @@ class LoginPageLogic extends GetxController {
   }
 
   void login(context) async {
+    final lifeStr = await _msgApi.getLifeString();
+
+    if (kDebugMode) print('get lifeStr: $lifeStr');
+
+    final deviceInfo = await _deviceInfoPlugin.deviceInfo;
+
+    if (kDebugMode) print('$deviceInfo');
+
+    final deviceName = deviceInfo.data['product'];
     String username = usernameController.text.trim(); // 去除前后空格
     String password = passwordController.text.trim(); // 去除前后空格
     if (username.isEmpty || password.isEmpty) {
@@ -56,19 +72,21 @@ class LoginPageLogic extends GetxController {
 
     try {
       final encryptedPassword = await passwordEncrypt(password);
-      final loginResult = await _useApi.login(username, encryptedPassword);
+
+      final loginResult =
+          await _useApi.login(username, encryptedPassword, deviceName);
 
       if (loginResult['code'] == 0) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
+        // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
         // 使用循环减少冗余代码
         final userData = loginResult['data'];
         await Future.wait([
-          prefs.setString('x-token', userData['token']),
-          prefs.setString('username', userData['username']),
-          prefs.setString('userId', userData['userId']),
-          prefs.setString('account', userData['account']),
-          prefs.setString('portrait', userData['portrait']),
-          prefs.setString('sex', userData['sex'] ?? '男'),
+          _sharedPreferences.setString('x-token', userData['token']),
+          _sharedPreferences.setString('username', userData['username']),
+          _sharedPreferences.setString('userId', userData['userId']),
+          _sharedPreferences.setString('account', userData['account']),
+          _sharedPreferences.setString('portrait', userData['portrait']),
+          _sharedPreferences.setString('sex', userData['sex'] ?? '男'),
         ]);
         Get.offAllNamed('/?sex=${userData['sex'] ?? '男'}');
       } else {
@@ -78,8 +96,7 @@ class LoginPageLogic extends GetxController {
       // 处理异常情况，例如网络错误等
       _dialog("登录过程中出现错误，请稍后再试~", context);
     }
-}
-
+  }
 
   void toRegister() => Get.toNamed('/register');
 
@@ -95,6 +112,11 @@ class LoginPageLogic extends GetxController {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  void toSetting() async {
+    final result = await Get.toNamed('/setting');
+    if (!_wsManager.isConnected) _wsManager.connect();
   }
 
   @override

@@ -94,6 +94,7 @@ class CustomTextField extends StatelessThemeWidget {
                       : null,
                   decoration: InputDecoration(
                     hintText: hintText,
+                    hintMaxLines: 1,
                     suffixIcon: suffixIcon,
                     suffix: suffix,
                     hintStyle: TextStyle(color: hintTextColor, fontSize: 14.0),

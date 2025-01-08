@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
 import 'package:linyu_mobile/utils/api/friend_api.dart';
@@ -202,13 +202,33 @@ class FriendInformationLogic extends Logic {
         }
       });
 
-  void onToSendMsg() => _chatListApi.create(friendId, type: 'user').then((res) {
-        if (res['code'] == 0) {
-          Get.offAndToNamed('/chat_frame', arguments: {
-            'chatInfo': res['data'],
-          });
+  void onToSendMsg() async {
+    try {
+      if (arguments['isFromChatPage'] == true) {
+        Get.back(result: true);
+        return;
+      }
+      if (arguments['isFromChatSetting'] == true) {
+        Get.until((route) => Get.currentRoute == '/chat_frame');
+        return;
+      }
+      final res = await _chatListApi.create(friendId, type: 'user');
+      if (res['code'] == 0) {
+        if (kDebugMode) print('create chat is: ${res['data']}');
+        if (arguments['isFromChatGroupPage'] == true) {
+          if (kDebugMode) print('current page: ${Get.currentRoute}');
+          Get.back(result: res['data']);
+          return;
         }
-      });
+        await Get.offAndToNamed('/chat_frame', arguments: {
+          'chatInfo': res['data'],
+        });
+      }
+    } on Exception catch (e) {
+      if (kDebugMode) print('error: $e');
+      CustomFlutterToast.showErrorToast('发生错误，请稍后再试 :$e');
+    }
+  }
 
   @override
   void onInit() {

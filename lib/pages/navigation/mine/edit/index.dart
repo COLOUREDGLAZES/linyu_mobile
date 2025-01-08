@@ -35,7 +35,8 @@ class EditMinePage extends CustomView<EditMineLogic> {
                 CustomUpdatePortrait(
                     isEdit: controller.isEdit,
                     onTap: () => controller.selectPortrait(),
-                    url: controller.currentUserInfo['portrait'] ?? '',
+                    url: controller.currentUserInfo['portrait'] ??
+                        'http://192.168.101.4:9000/linyu/default-portrait.jpg',
                     size: 80,
                     radius: 50),
                 const SizedBox(height: 16),

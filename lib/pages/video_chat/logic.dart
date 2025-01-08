@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
@@ -14,11 +13,11 @@ import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 
 class VideoChatLogic extends GetxController {
   final _chatListApi = ChatListApi();
-  final _wsManager = WebSocketUtil();
+  final _wsManager = Get.find<WebSocketUtil>();
   final _videoApi = VideoApi();
   final _msgApi = MsgApi();
-  final RTCVideoRenderer localRenderer = RTCVideoRenderer();
-  final RTCVideoRenderer remoteRenderer = RTCVideoRenderer();
+  final webrtc.RTCVideoRenderer localRenderer = webrtc.RTCVideoRenderer();
+  final webrtc.RTCVideoRenderer remoteRenderer = webrtc.RTCVideoRenderer();
   late String userId;
   late bool isOnlyAudio;
   late bool isSender;
@@ -32,8 +31,8 @@ class VideoChatLogic extends GetxController {
   RxBool isAudioEnabled = true.obs;
   late final Rx<Offset> smallWindowOffset;
 
-  late RTCPeerConnection peerConnection;
-  late MediaStream webcamStream;
+  late webrtc.RTCPeerConnection peerConnection;
+  late webrtc.MediaStream webcamStream;
 
   Future<void> onGetChatDetail() async =>
       _chatListApi.detail(userId, 'user').then((res) {
@@ -81,17 +80,19 @@ class VideoChatLogic extends GetxController {
       });
 
   Future<void> handleVideoOfferMsg(data) async {
-    final RTCSessionDescription desc =
-        RTCSessionDescription(data['desc']['sdp'], data['desc']['type']);
+    final webrtc.RTCSessionDescription desc =
+        webrtc.RTCSessionDescription(data['desc']['sdp'], data['desc']['type']);
     await peerConnection.setRemoteDescription(desc);
-    RTCSessionDescription localDesc = await peerConnection.createAnswer();
+    webrtc.RTCSessionDescription localDesc =
+        await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(localDesc);
     _videoApi.answer(userId, {'sdp': localDesc.sdp, 'type': localDesc.type});
   }
 
   Future<void> handleVideoAnswerMsg(data) async {
     try {
-      final RTCSessionDescription remoteDesc = RTCSessionDescription(
+      final webrtc.RTCSessionDescription remoteDesc =
+          webrtc.RTCSessionDescription(
         data['desc']['sdp'],
         data['desc']['type'],
       );
@@ -103,7 +104,7 @@ class VideoChatLogic extends GetxController {
 
   Future<void> handleNewICECandidateMsg(data) async {
     try {
-      final RTCIceCandidate candidate = RTCIceCandidate(
+      final webrtc.RTCIceCandidate candidate = webrtc.RTCIceCandidate(
         data['candidate']['candidate'],
         data['candidate']['sdpMid'],
         data['candidate']['sdpMLineIndex'],
@@ -116,7 +117,7 @@ class VideoChatLogic extends GetxController {
 
   Future<void> onOffer() async {
     try {
-      RTCSessionDescription offer = await peerConnection.createOffer();
+      webrtc.RTCSessionDescription offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
       await _videoApi.offer(userId, {'sdp': offer.sdp, 'type': offer.type});
     } catch (e) {
@@ -163,7 +164,7 @@ class VideoChatLogic extends GetxController {
       ],
     };
     // 创建 PeerConnection
-    peerConnection = await createPeerConnection(iceServer);
+    peerConnection = await webrtc.createPeerConnection(iceServer);
     // 设置 ICE 候选者事件处理
     peerConnection.onIceCandidate = handleICECandidateEvent;
     // 设置 ICE 连接状态更改事件处理
@@ -172,21 +173,23 @@ class VideoChatLogic extends GetxController {
     peerConnection.onTrack = handleTrackEvent;
   }
 
-  Future<void> handleICECandidateEvent(RTCIceCandidate candidate) async =>
+  Future<void> handleICECandidateEvent(
+          webrtc.RTCIceCandidate candidate) async =>
       await _videoApi.candidate(userId, {
         'candidate': candidate.candidate,
         'sdpMid': candidate.sdpMid,
         'sdpMLineIndex': candidate.sdpMLineIndex,
       });
 
-  void handleICEConnectionStateChangeEvent(RTCIceConnectionState? state) {
+  void handleICEConnectionStateChangeEvent(
+      webrtc.RTCIceConnectionState? state) {
     toUserIsReady = true;
     handlerDestroyTime();
     timer = Timer.periodic(
         const Duration(seconds: 1), (Timer t) => time.value = time.value + 1);
   }
 
-  void handleTrackEvent(RTCTrackEvent event) {
+  void handleTrackEvent(webrtc.RTCTrackEvent event) {
     remoteRenderer.srcObject = event.streams[0];
     update([const Key('video_chat')]);
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,6 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
       key: ValueKey(id),
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
-        // extentRatio: chat.isTop ? 0.625 : 0.5,
         children: [
           SlidableAction(
             padding: const EdgeInsets.all(0),
@@ -46,11 +46,7 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
         borderRadius: BorderRadius.circular(12),
         color: Colors.white,
         child: InkWell(
-          onTap: () async {
-            await Get.toNamed('/chat_frame', arguments: {'chatInfo': chat});
-            controller.onGetChatList();
-            controller.focusNode.unfocus();
-          },
+          onTap: () => controller.onTapToChat(chat),
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -67,7 +63,7 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
                 children: [
-                  CustomPortrait(url: chat['portrait']),
+                  CustomPortrait(url: chat['portrait'] ?? ''),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -81,7 +77,7 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                                 Text(
                                   StringUtil.isNotNullOrEmpty(chat['remark'])
                                       ? chat['remark']
-                                      : chat['name'],
+                                      : chat['name'] ?? '',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
@@ -107,8 +103,10 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                           children: [
                             Expanded(
                               child: Text(
-                                LinyuMsgUtil.getMsgContent(
-                                    chat['lastMsgContent']),
+                                chat['name'] == null && chat['type'] == 'group'
+                                    ? '该群已解散'
+                                    : LinyuMsgUtil.getMsgContent(
+                                        chat['lastMsgContent']),
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[500],
@@ -164,12 +162,16 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
     );
   }
 
-  Widget _buildSearchItem(dynamic friend, String id) {
+  Widget _buildSearchItem(dynamic chatObject, String id,
+      {bool isGroup = false}) {
+    if (kDebugMode) print('chatObject is: $chatObject');
     return Material(
       borderRadius: BorderRadius.circular(12),
       color: Colors.white,
       child: InkWell(
-        onTap: () => controller.onTapSearchFriend(friend),
+        onTap: () => !isGroup
+            ? controller.onTapSearchFriend(chatObject)
+            : controller.onTapSearchGroup(chatObject),
         borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -186,7 +188,7 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
-                CustomPortrait(url: friend['portrait']),
+                CustomPortrait(url: chatObject['portrait']),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -195,21 +197,27 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                       Row(
                         children: [
                           Text(
-                            friend['name'],
+                            chatObject['name'],
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          if (friend['remark'] != null &&
-                              friend['remark']?.toString().trim() != '')
+                          if (chatObject[!isGroup ? 'remark' : 'groupRemark'] !=
+                                  null &&
+                              chatObject[!isGroup ? 'remark' : 'groupRemark']
+                                      ?.toString()
+                                      .trim() !=
+                                  '')
                             Text(
-                              '(${friend['remark']})',
+                              '(${chatObject[!isGroup ? 'remark' : 'groupRemark']})',
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
+                          const SizedBox(width: 5),
+                          if (isGroup) const CustomBadge(text: '群'),
                         ],
                       ),
                     ],
@@ -308,9 +316,10 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                   focusNode: controller.focusNode,
                   textEditingController: controller.searchBoxController,
                   isCentered: false,
-                  onChanged: (value) => controller.onSearchFriend(value),
+                  onChanged: (value) => controller.onSearch(value),
                 ),
-                if (controller.searchList.isNotEmpty ||
+                if (controller.groupSearchList.isNotEmpty ||
+                    controller.friendSearchList.isNotEmpty ||
                     controller.otherList.isNotEmpty ||
                     controller.topList.isNotEmpty)
                   Expanded(
@@ -323,7 +332,8 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                       color: theme.primaryColor,
                       child: ListView(
                         children: [
-                          if (controller.searchList.isNotEmpty &&
+                          if ((controller.groupSearchList.isNotEmpty ||
+                                  controller.friendSearchList.isNotEmpty) &&
                               controller.searchBoxController.text
                                   .trim()
                                   .isNotEmpty) ...[
@@ -339,8 +349,16 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                                 ),
                               ),
                             ),
-                            ...controller.searchList.map((friend) =>
+                            ...controller.groupSearchList.map((group) =>
+                                _buildSearchItem(group, group['id'],
+                                    isGroup: true)),
+                            // ...controller.groupSearchList.map((group) =>
+                            //     _buildSearchItem(group, group['friendId'])),
+                            ...controller.friendSearchList.map((friend) =>
                                 _buildSearchItem(friend, friend['friendId'])),
+                            // ...controller.friendSearchList.map((friend) =>
+                            //     _buildSearchItem(friend, friend['id'],
+                            //         isGroup: true)),
                           ],
                           if (controller.topList.isNotEmpty) ...[
                             Padding(
@@ -378,7 +396,8 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                       ),
                     ),
                   ),
-                if (controller.searchList.isEmpty &&
+                if (controller.friendSearchList.isEmpty &&
+                    controller.groupSearchList.isEmpty &&
                     controller.otherList.isEmpty &&
                     controller.topList.isEmpty)
                   Expanded(

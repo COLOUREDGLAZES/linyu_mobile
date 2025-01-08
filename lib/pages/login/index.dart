@@ -37,7 +37,19 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                   MediaQuery.of(context).padding.bottom,
               child: Column(
                 children: [
-                  const SizedBox(height: 40.0),
+                  SizedBox(
+                    height: 40.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                            // onPressed: () => Get.toNamed('/setting'),
+                            onPressed: controller.toSetting,
+                            icon: const Icon(Icons.settings)),
+                      ],
+                    ),
+                  ),
+                  // const SizedBox(height: 40.0),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(

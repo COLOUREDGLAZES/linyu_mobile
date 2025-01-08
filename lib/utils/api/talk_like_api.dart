@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class TalkLikeApi {
-  final Dio _dio = Http().dio;
+  final Dio _dio = Http(url: baseUrl).dio;
 
   static final TalkLikeApi _instance = TalkLikeApi._internal();
 

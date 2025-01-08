@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class UserApi {
-  final Dio _dio = Http().dio;
+  final Dio _dio = Http(url: baseUrl).dio;
   static final UserApi _instance = UserApi._internal();
 
   UserApi._internal();
@@ -13,11 +13,16 @@ class UserApi {
     return _instance;
   }
 
-  Future<Map<String, dynamic>> login(String account, String password) async {
+  Future<Map<String, dynamic>> login(
+      String account, String password, String onlineEquipment) async {
     try {
       final response = await _dio.post(
         '/v1/api/login',
-        data: {'account': account, 'password': password},
+        data: {
+          'account': account,
+          'password': password,
+          'onlineEquipment': onlineEquipment
+        },
       );
       return response.data;
     } on DioException catch (e) {

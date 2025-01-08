@@ -16,7 +16,7 @@ class VideoChatPage extends CustomWidget<VideoChatLogic> {
   VideoChatPage({super.key});
 
   // 构建音频页面的内容
-  Widget buildAudioContent() => Column(
+  Widget _buildAudioContent() => Column(
         children: [
           CustomPortrait(
             url: controller.userInfo['portrait'] ?? '',
@@ -40,9 +40,10 @@ class VideoChatPage extends CustomWidget<VideoChatLogic> {
       );
 
   // 构建视频页面的内容
-  Widget buildVideoContent() => Expanded(
+  Widget _buildVideoContent() => Expanded(
         child: Stack(
           children: [
+            // RTCVideoView
             // 全屏视图
             Obx(
               () => RTCVideoView(
@@ -81,7 +82,7 @@ class VideoChatPage extends CustomWidget<VideoChatLogic> {
       );
 
   // 构建操作按钮
-  Widget buildActionButtons() => Column(
+  Widget _buildActionButtons() => Column(
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -196,9 +197,9 @@ class VideoChatPage extends CustomWidget<VideoChatLogic> {
                       // 根据条件渲染内容
                       if (!controller.toUserIsReady ||
                           (controller.isOnlyAudio && controller.toUserIsReady))
-                        buildAudioContent(),
+                        _buildAudioContent(),
                       if (controller.toUserIsReady && !controller.isOnlyAudio)
-                        buildVideoContent(),
+                        _buildVideoContent(),
                     ],
                   ),
                 ),
@@ -209,7 +210,7 @@ class VideoChatPage extends CustomWidget<VideoChatLogic> {
                   right: 0,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: buildActionButtons(),
+                    child: _buildActionButtons(),
                   ),
                 ),
               ],

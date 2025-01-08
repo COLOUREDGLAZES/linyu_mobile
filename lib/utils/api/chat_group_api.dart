@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class ChatGroupApi {
-  final Dio _dio = Http().dio;
+  final Dio _dio = Http(url: baseUrl).dio;
 
   static final ChatGroupApi _instance = ChatGroupApi._internal();
 
@@ -244,13 +244,13 @@ class ChatGroupApi {
       final response = await _dio.post('/v1/api/chat-group/dissolve', data: {
         'groupId': groupId,
       });
-      return response.data as Map<String, dynamic>; // 确保返回类型为 Map<String, dynamic>
+      return response.data
+          as Map<String, dynamic>; // 确保返回类型为 Map<String, dynamic>
     } catch (e) {
       if (kDebugMode) {
         print('解散聊天组失败: $e');
       }
       return {'error': '解散聊天组失败'}; // 返回错误信息
     }
-}
-
+  }
 }

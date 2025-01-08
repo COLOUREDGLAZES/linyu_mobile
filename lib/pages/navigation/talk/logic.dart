@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/talk_api.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
+import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TalkLogic extends GetxController {
@@ -11,8 +13,11 @@ class TalkLogic extends GetxController {
   String currentUserId = '';
   String targetUserId = '';
   String title = '说说';
+  bool isNotShowLeading = false;
   late dynamic currentUserInfo = {};
   List<dynamic> talkList = [];
+  // final _wsManager = new WebSocketUtil();
+  final _wsManager = Get.find<WebSocketUtil>();
   int index = 0;
   bool hasMore = true;
   bool isLoading = false;
@@ -33,6 +38,7 @@ class TalkLogic extends GetxController {
     if (Get.arguments != null) {
       targetUserId = Get.arguments['userId'] ?? '';
       title = Get.arguments['title'] ?? '说说';
+      isNotShowLeading = Get.arguments['isNotShowLeading'] ?? false;
     }
     refreshData();
     scrollController.addListener(scrollListener);
@@ -79,22 +85,41 @@ class TalkLogic extends GetxController {
   }
 
   Future<void> refreshData() async {
-    talkList.clear();
-    index = 0;
-    hasMore = true;
-    update([const Key("talk")]);
-    onTalkList();
-  }
-
-  void updateTalkLikeOrCommentCount(String key, int num, String talkId) {
-    for (var talk in talkList) {
-      if (talk['talkId'] == talkId) {
-        talk[key] = num;
-        update([const Key("talk")]);
-        return;
-      }
+    try {
+      talkList.clear();
+      index = 0;
+      hasMore = true;
+      update([const Key("talk")]);
+      onTalkList();
+    } catch (e) {
+      if (kDebugMode) print('刷新数据时出错: $e');
+    } finally {
+      //判断websocket是否连接
+      if (!_wsManager.isConnected) _wsManager.connect();
     }
   }
+
+  // Future<void> refreshData() async {
+  //   talkList.clear();
+  //   index = 0;
+  //   hasMore = true;
+  //   update([const Key("talk")]);
+  //   onTalkList();
+  // }
+
+  void updateTalkLikeOrCommentCount(String key, int num, String talkId) =>
+      talkList.forEach((talk) {
+        if (talk['talkId'] == talkId) {
+          update([const Key("talk")]);
+          return;
+        }
+      });
+  // for (var talk in talkList)
+  //   if (talk['talkId'] == talkId) {
+  //     talk[key] = num;
+  //     update([const Key("talk")]);
+  //     return;
+  //   }
 
   void onDeleteTalk(talkId) {
     _talkApi.delete(talkId).then((res) {

@@ -15,7 +15,7 @@ class GlobalData extends GetxController {
   //     'http://192.168.101.4:9000/linyu/default-portrait.jpg';
   late String? currentAvatarUrl =
       'http://114.96.70.115:19000/linyu/default-portrait.jpg';
-  late String? currentToken;
+  String? currentToken;
 
   Future<void> init() async {
     try {
@@ -45,15 +45,12 @@ class GlobalData extends GetxController {
         // 优化：仅在有未读消息时更新角标
         int chatCount = getUnreadCount('chat');
         int notifyCount = getUnreadCount('notify');
-        if (chatCount > 0 || notifyCount > 0) {
+        if (chatCount > 0 || notifyCount > 0)
           AppBadger.setCount(chatCount, notifyCount);
-        }
       }
     } catch (e) {
       // 增加错误处理
-      if (kDebugMode) {
-        print('获取未读信息失败: $e');
-      }
+      if (kDebugMode) print('获取未读信息失败: $e');
       // 这里可以根据需求添加其他处理逻辑，比如记录日志等
     }
   }

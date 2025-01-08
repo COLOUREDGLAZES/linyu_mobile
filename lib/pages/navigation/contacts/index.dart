@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
+import 'package:linyu_mobile/components/custom_badge/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_search_box/index.dart';
 import 'package:linyu_mobile/components/custom_text_button/index.dart';
@@ -263,6 +264,8 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
+                            const SizedBox(width: 5),
+                            const CustomBadge(text: '群'),
                           ],
                         ),
                       ],
@@ -281,24 +284,21 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
         ),
-        builder: (BuildContext context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: CustomTextButton(
-                    friend['isConcern'] ? '取消特别关心' : '设置特别关心',
-                    onTap: () => controller.onSetConcernFriend(friend),
-                    textColor: theme.primaryColor,
-                    padding: const EdgeInsets.only(top: 20, bottom: 20),
-                    fontSize: 16),
-              ),
-            ],
-          );
-        },
+        builder: (context) => Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: CustomTextButton(friend['isConcern'] ? '取消特别关心' : '设置特别关心',
+                  onTap: () => controller.onSetConcernFriend(friend),
+                  textColor: theme.primaryColor,
+                  padding: const EdgeInsets.only(top: 20, bottom: 20),
+                  fontSize: 16),
+            ),
+          ],
+        ),
       );
 
   Widget _buildFriendItem(dynamic friend) => Material(
@@ -450,9 +450,10 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
               CustomSearchBox(
                 textEditingController: controller.searchBoxController,
                 isCentered: false,
-                onChanged: (value) => controller.onSearchFriend(value),
+                onChanged: (value) => controller.onSearch(value),
               ),
-              if (controller.searchList.isNotEmpty) ...[
+              if (controller.friendSearchList.isNotEmpty ||
+                  controller.groupSearchList.isNotEmpty) ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
@@ -467,14 +468,17 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
                 Expanded(
                   child: ListView(
                     children: [
-                      ...controller.searchList
+                      ...controller.friendSearchList
                           .map((friend) => _buildFriendItem(friend)),
+                      ...controller.groupSearchList
+                          .map((group) => _buildChatGroupItem(group)),
                     ],
                   ),
                 )
               ],
               const SizedBox(height: 5),
-              if (controller.searchList.isEmpty)
+              if (controller.friendSearchList.isEmpty &&
+                  controller.groupSearchList.isEmpty)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(controller.tabs.length, (index) {
@@ -542,8 +546,11 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
                     );
                   }),
                 ),
-              if (controller.searchList.isEmpty) const SizedBox(height: 5),
-              if (controller.searchList.isEmpty)
+              if (controller.friendSearchList.isEmpty &&
+                  controller.groupSearchList.isEmpty)
+                const SizedBox(height: 5),
+              if (controller.friendSearchList.isEmpty &&
+                  controller.groupSearchList.isEmpty)
                 Expanded(
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),

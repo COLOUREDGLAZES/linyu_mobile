@@ -13,13 +13,20 @@ class GlobalThemeConfig extends GetxController {
 
   //主题色
   Color get primaryColor {
-    switch (themeMode.value) {
-      case 'blue':
-        return const Color(0xFF4C9BFF);
-      case 'pink':
-        return const Color(0xFFFFA0CF);
-      default:
-        return const Color(0xFF4C9BFF);
+    const Map<String, Color> colorMap = {
+      'blue': Color(0xFF4C9BFF),
+      'pink': Color(0xFFFFA0CF),
+    };
+    try {
+      if (colorMap.containsKey(themeMode.value)) {
+        return colorMap[themeMode.value]!;
+      } else {
+        // 如果没有匹配的主题模式，抛出异常
+        throw Exception('未知的主题模式: ${themeMode.value}');
+      }
+    } catch (e) {
+      // 在捕获异常时，返回默认颜色
+      return const Color(0xFF4C9BFF);
     }
   }
 

@@ -65,7 +65,8 @@ class FriendRequestLogic extends Logic<FriendRequestPage> {
     );
     if (result['code'] == 0) {
       CustomFlutterToast.showSuccessToast("申请成功，等待对方验证~");
-      Future.delayed(const Duration(milliseconds: 2300), () => Get.back());
+      Future.delayed(
+          const Duration(milliseconds: 2300), () => Get.back(result: true));
     } else
       CustomFlutterToast.showErrorToast(result['msg']);
   }

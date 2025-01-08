@@ -52,17 +52,15 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
       final fromForwardMsgId = widget.value['fromForwardMsgId'];
       dynamic res;
       // 是否为转发消息，则尝试使用 fromForwardMsgId 获取媒体
-      if (fromForwardMsgId != null) {
+      if (fromForwardMsgId != null)
         res = await _msgApi.getMedia(fromForwardMsgId);
-      }
+
       // 如果没有获取到结果，则尝试使用 id 获取媒体
-      if (res == null || res['code'] != 0) {
+      if (res == null || res['code'] != 0)
         res = await _msgApi.getMedia(widget.value['id']);
-      }
+
       // 检查获取的结果
-      if (res['code'] == 0) {
-        return res['data'] ?? '';
-      }
+      if (res['code'] == 0) return res['data'] ?? '';
     } catch (e) {
       if (kDebugMode) print('Error fetching voice: $e');
     }

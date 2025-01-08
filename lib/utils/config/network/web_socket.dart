@@ -1,21 +1,36 @@
-import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:get/get_instance/src/get_instance.dart';
+import 'dart:async' show Future, Stream, StreamController, Timer;
+import 'dart:convert' show jsonDecode;
+import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:get/get.dart' show GetInstance, GetxController;
 import 'package:linyu_mobile/utils/config/getx/global_data.dart';
 import 'package:linyu_mobile/utils/linyu_msg.dart';
 import 'package:linyu_mobile/utils/notification.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart'
+    show WebSocketChannel;
 
-class WebSocketUtil {
+// 全局websocket实例
+late String? websocketUrl;
+
+class WebSocketUtil extends GetxController {
+  final SharedPreferences _preferences =
+      GetInstance().find<SharedPreferences>();
   static WebSocketUtil? _instance;
   WebSocketChannel? _channel;
   Timer? _heartbeatTimer;
   Timer? _reconnectTimer;
   bool _lockReconnect = false;
-  bool _isConnected = false;
+  bool isConnected = false;
   final int _reconnectCountMax = 200;
   int _reconnectCount = 0;
+
+  String _websocketIp = '';
+  String get websocketIp => _websocketIp;
+  set websocketIp(String value) {
+    _websocketIp = value;
+    _preferences.setString('websocket_ip', value);
+    isConnected = false;
+  }
 
   final GlobalData _globalData = GetInstance().find<GlobalData>();
 
@@ -25,7 +40,17 @@ class WebSocketUtil {
 
   Stream<Map<String, dynamic>> get eventStream => eventController.stream;
 
-  WebSocketUtil._internal();
+  WebSocketUtil._internal() {
+    //使用的内网穿透
+    String wsIp = '192.168.101.4';
+    // String wsIp = '114.96.70.115';
+    // String wsIp = '47.99.61.62';
+    String port = '9100';
+    // String port = '19100';
+    // _websocketIp =
+    //     _preferences.getString('websocket_ip') ?? 'ws://$wsIp:$port';
+    _websocketIp = websocketUrl ?? 'ws://$wsIp:$port';
+  }
 
   factory WebSocketUtil() {
     _instance ??= WebSocketUtil._internal();
@@ -33,27 +58,29 @@ class WebSocketUtil {
   }
 
   Future<void> connect() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // String? token = prefs.getString('x-token');
-    // if (token == null || _isConnected) return;
     String? token = _globalData.currentToken;
-    if (token == null || _isConnected) return;
+    if (token == null || isConnected) return;
+
     try {
       if (kDebugMode) print('WebSocket connecting...');
-      //使用的内网穿透
-      String wsIp = '114.96.70.115:19100';
-      // String wsIp = '192.168.101.4:9100';
-      // String wsIp = '114.96.70.115:9100';
-      // String wsIp = '47.99.61.62:9100';
+      // //使用的内网穿透
+      // // String wsIp = '192.168.101.4';
+      // String wsIp = '114.96.70.115';
+      // // String wsIp = '47.99.61.62';
+      // // String port = '9100';
+      // String port = '19100';
+      // _websocketIp =
+      //     _preferences.getString('websocket_ip') ?? 'ws://$wsIp:$port';
       _channel = WebSocketChannel.connect(
-        Uri.parse('ws://$wsIp/ws?x-token=$token'),
+        // Uri.parse('ws://$wsIp:$port/ws?x-token=$token'),
+        Uri.parse('$_websocketIp/ws?x-token=$token'),
       );
       _channel!.stream.listen(
         _handleMessage,
         onDone: _handleClose,
         onError: _handleError,
       );
-      _isConnected = true;
+      isConnected = true;
       _clearTimer();
       _startHeartbeat();
     } catch (e) {
@@ -62,6 +89,7 @@ class WebSocketUtil {
   }
 
   void _handleMessage(dynamic message) {
+    if (kDebugMode) print('WebSocket receive message: $message');
     if (message == null) return _handleClose();
     try {
       Map<String, dynamic> wsContent = jsonDecode(message);
@@ -95,7 +123,7 @@ class WebSocketUtil {
     _clearHeartbeat();
     _channel?.sink.close();
     _channel = null;
-    _isConnected = false;
+    isConnected = false;
     _reconnect();
   }
 
@@ -124,14 +152,6 @@ class WebSocketUtil {
     _reconnectTimer = null;
   }
 
-  void dispose() {
-    _clearHeartbeat();
-    _clearTimer();
-    _channel?.sink.close();
-    eventController.close();
-    _instance = null;
-  }
-
   void sendNotification(dynamic msg) {
     if (kDebugMode) print('发送通知 $msg');
     dynamic msgContent = msg['msgContent'];
@@ -141,5 +161,28 @@ class WebSocketUtil {
       title: msgContent['formUserName'],
       body: '${msgContent['formUserName']}: $contentStr',
     );
+  }
+
+  void disconnect() {
+    _clearHeartbeat();
+    _channel?.sink.close();
+    _channel = null;
+    isConnected = false;
+  }
+
+  @override
+  void onReady() {
+    connect();
+    super.onReady();
+  }
+
+  @override
+  void dispose() {
+    _clearHeartbeat();
+    _clearTimer();
+    _channel?.sink.close();
+    eventController.close();
+    _instance = null;
+    super.dispose();
   }
 }

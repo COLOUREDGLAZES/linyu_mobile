@@ -23,6 +23,7 @@ class ChatGroupInformationLogic extends GetxController {
   late bool isOwner = false;
   late dynamic chatGroupDetails = {
     'id': '',
+    'chatGroupNumber': '',
     'userId': '',
     'ownerUserId': '',
     'portrait': '',
@@ -54,6 +55,7 @@ class ChatGroupInformationLogic extends GetxController {
     try {
       final res = await _chatGroupApi.details(_chatGroupId);
       if (res['code'] == 0) {
+        debugPrint("chatGroupDetails is: ${res['data'].toString()}");
         chatGroupDetails = res['data'];
         final prefs = await SharedPreferences.getInstance();
         _currentUserId = prefs.getString('userId');
@@ -257,6 +259,15 @@ class ChatGroupInformationLogic extends GetxController {
       );
 
   void onToSendGroupMsg() {
+    if (Get.arguments['isFromChatPage'] == true) {
+      Get.back(result: true);
+      return;
+    }
+    if (Get.arguments['isFromChatSetting'] == true) {
+      // Get.back(result: true);
+      Get.until((route) => Get.currentRoute == '/chat_frame');
+      return;
+    }
     _chatListApi.create(_chatGroupId, type: 'group').then((res) {
       if (res['code'] == 0) {
         Get.offAndToNamed('/chat_frame', arguments: {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/global_data.dart';
 import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
@@ -12,10 +13,13 @@ import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 
 class NavigationLogic extends GetxController {
   late RxInt currentIndex = 0.obs;
-  final _wsManager = WebSocketUtil();
+  final _wsManager = Get.find<WebSocketUtil>();
+
   final List<GetPage> pages = pageRoute[0].children;
+
   StreamSubscription? _subscription;
   GlobalData get globalData => GetInstance().find<GlobalData>();
+
   final List<String> selectedIcons = [
     'chat',
     'user',
@@ -32,6 +36,10 @@ class NavigationLogic extends GetxController {
     '说说',
   ];
 
+  int lastExitTime = 0;
+
+  bool isOpenDrawer = false;
+
   Future<void> _initThemeData() async {
     late String sex = Get.parameters['sex'] ?? "男";
     GlobalThemeConfig theme = GetInstance().find<GlobalThemeConfig>();
@@ -43,26 +51,56 @@ class NavigationLogic extends GetxController {
     await NotificationUtil.initialize();
     await NotificationUtil.createNotificationChannel();
     await PermissionHandler.permissionRequest();
-    await _connectWebSocket();
+    await _wsManager.connect();
     _eventListen();
   }
 
   // 监听消息
   void _eventListen() => _subscription = _wsManager.eventStream.listen((event) {
-        globalData.onGetUserUnreadInfo();
         if (event['type'] == 'on-receive-video') {
           var data = event['content'];
-          if (data['type'] == "invite") {
+          if (data['type'] == "invite")
             Get.toNamed('/video_chat', arguments: {
               'userId': data['fromId'],
               'isSender': false,
               'isOnlyAudio': data['isOnlyAudio'],
             });
-          }
+          return;
         }
+        // if (event['type'] == 'on-receive-notify') {
+        //   var data = event['content'];
+        //   if (kDebugMode) print('event notify data: $data');
+        //   if (data == 'login=>success') {
+        //     CustomFlutterToast.showErrorToast('您的账号已在其他设备登录，请重新登录~');
+        //     _sharedPreferences.clear();
+        //     _wsManager.disconnect();
+        //     globalData.currentToken = null;
+        //     Get.offAllNamed('/login');
+        //     return;
+        //   }
+        // }
+        globalData.onGetUserUnreadInfo();
       });
 
-  Future<void> _connectWebSocket() async => _wsManager.connect();
+  Future<bool> onBackPressed() async {
+    try {
+      if (!isOpenDrawer) {
+        int nowExitTime = DateTime.now().millisecondsSinceEpoch;
+        if (nowExitTime - lastExitTime > 2000) {
+          lastExitTime = nowExitTime;
+          CustomFlutterToast.showErrorToast('再按一次退出应用');
+          return false;
+        }
+        return true;
+      }
+      Get.back();
+      return false;
+    } catch (e) {
+      // 错误处理，例如记录日志
+      if (kDebugMode) print('处理返回按键时发生错误: $e');
+      return false;
+    }
+  }
 
   @override
   void onInit() {

@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class ChatListApi {
-  final Dio _dio = Http().dio;
+  final Dio _dio = Http(url: baseUrl).dio;
 
   static final ChatListApi _instance = ChatListApi._internal();
 
@@ -66,9 +66,17 @@ class ChatListApi {
     final response = await _dio.post(
       '/v1/api/chat-list/create',
       data: {
-        'userId': toId,
+        'toId': toId,
         'type': type,
       },
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> search(String searchInfo) async {
+    final response = await _dio.post(
+      '/v1/api/chat-list/search',
+      data: {'searchInfo': searchInfo},
     );
     return response.data;
   }

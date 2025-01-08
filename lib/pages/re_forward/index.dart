@@ -16,11 +16,15 @@ import 'logic.dart';
 class ReForwardPage extends CustomView<ReForwardLogic> {
   ReForwardPage({super.key});
 
-  Widget _buildSearchItem(dynamic friend, String id) => Material(
+  Widget _buildFriendSearchItem(dynamic chatObject, String id,
+          {bool isFriend = true}) =>
+      Material(
         borderRadius: BorderRadius.circular(12),
         color: Colors.white,
         child: InkWell(
-          onTap: () => controller.onTapSearchFriend(friend),
+          onTap: () => isFriend
+              ? controller.onTapSearchFriend(chatObject)
+              : controller.onTapSearchGroup(chatObject),
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -37,7 +41,7 @@ class ReForwardPage extends CustomView<ReForwardLogic> {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
                 children: [
-                  CustomPortrait(url: friend['portrait']),
+                  CustomPortrait(url: chatObject['portrait']),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -46,21 +50,27 @@ class ReForwardPage extends CustomView<ReForwardLogic> {
                         Row(
                           children: [
                             Text(
-                              friend['name'],
+                              chatObject['name'],
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            if (friend['remark'] != null &&
-                                friend['remark']?.toString().trim() != '')
+                            if (chatObject[
+                                        isFriend ? 'remark' : 'groupRemark'] !=
+                                    null &&
+                                chatObject[isFriend ? 'remark' : 'groupRemark']
+                                        ?.toString()
+                                        .trim() !=
+                                    '')
                               Text(
-                                '(${friend['remark']})',
+                                '(${chatObject[isFriend ? 'remark' : 'groupRemark']})',
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
+                            if (!isFriend) const CustomBadge(text: '群'),
                           ],
                         ),
                       ],
@@ -96,7 +106,7 @@ class ReForwardPage extends CustomView<ReForwardLogic> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
                   children: [
-                    CustomPortrait(url: chat['portrait']),
+                    CustomPortrait(url: chat['portrait'] ?? ''),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -110,7 +120,7 @@ class ReForwardPage extends CustomView<ReForwardLogic> {
                                   Text(
                                     StringUtil.isNotNullOrEmpty(chat['remark'])
                                         ? chat['remark']
-                                        : chat['name'],
+                                        : chat['name'] ?? '',
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
@@ -203,7 +213,7 @@ class ReForwardPage extends CustomView<ReForwardLogic> {
                   isCentered: false,
                   onChanged: (value) => controller.onSearchFriend(value),
                 ),
-                if (controller.searchList.isNotEmpty ||
+                if (controller.friendSearchList.isNotEmpty ||
                     controller.otherList.isNotEmpty)
                   Expanded(
                     child: RefreshIndicator(
@@ -215,7 +225,8 @@ class ReForwardPage extends CustomView<ReForwardLogic> {
                       color: theme.primaryColor,
                       child: ListView(
                         children: [
-                          if (controller.searchList.isNotEmpty &&
+                          if ((controller.friendSearchList.isNotEmpty ||
+                                  controller.groupSearchList.isNotEmpty) &&
                               controller.searchBoxController.text
                                   .trim()
                                   .isNotEmpty) ...[
@@ -231,8 +242,12 @@ class ReForwardPage extends CustomView<ReForwardLogic> {
                                 ),
                               ),
                             ),
-                            ...controller.searchList.map((friend) =>
-                                _buildSearchItem(friend, friend['friendId'])),
+                            ...controller.friendSearchList.map((friend) =>
+                                _buildFriendSearchItem(
+                                    friend, friend['friendId'])),
+                            ...controller.groupSearchList.map((group) =>
+                                _buildFriendSearchItem(group, group['id'],
+                                    isFriend: false)),
                           ],
                           if (controller.otherList.isNotEmpty) ...[
                             Padding(
@@ -247,14 +262,16 @@ class ReForwardPage extends CustomView<ReForwardLogic> {
                                 ),
                               ),
                             ),
-                            ...controller.otherList.map(
-                                (chat) => _buildChatItem(chat, chat['id'])),
+                            ...controller.otherList.map((chat) =>
+                                chat['name'] == null
+                                    ? Container()
+                                    : _buildChatItem(chat, chat['id'] ?? '')),
                           ],
                         ],
                       ),
                     ),
                   ),
-                if (controller.searchList.isEmpty &&
+                if (controller.friendSearchList.isEmpty &&
                     controller.otherList.isEmpty)
                   Expanded(
                     child: Center(

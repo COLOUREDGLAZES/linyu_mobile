@@ -1,11 +1,10 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart' show Key, kDebugMode;
+import 'package:flutter/foundation.dart' show Key, debugPrint, kDebugMode;
 import 'package:flutter/material.dart' show FocusNode, TextEditingController;
 import 'package:get/get.dart' show Get, GetNavigation;
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart' show ChatListApi;
-import 'package:linyu_mobile/utils/api/friend_api.dart';
 import 'package:linyu_mobile/utils/api/msg_api.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
 import 'package:shared_preferences/shared_preferences.dart'
@@ -15,7 +14,6 @@ import 'index.dart';
 
 class ReForwardLogic extends Logic<ReForwardPage> {
   final _chatListApi = new ChatListApi();
-  final _friendApi = new FriendApi();
   final _msgApi = new MsgApi();
   final FocusNode focusNode = new FocusNode(skipTraversal: true);
   final TextEditingController searchBoxController = new TextEditingController();
@@ -24,25 +22,34 @@ class ReForwardLogic extends Logic<ReForwardPage> {
   // 要发送的对象列表
   List<String> toIdList = [];
   // 好友列表
-  late List<dynamic> searchList = [];
+  late List<dynamic> friendSearchList = [];
+  // 群聊列表
+  late List<dynamic> groupSearchList = [];
   // 其他用户列表
   late List<dynamic> otherList = [];
   //当前用户信息
   late dynamic currentUserInfo = {};
 
   // 搜索好友
-  void onSearchFriend(String friendInfo) {
+  void onSearchFriend(String friendInfo) async {
     if (friendInfo.trim() == '') {
-      searchList = [];
+      friendSearchList = [];
       update([const Key("repost")]);
       return;
     }
-    _friendApi.search(friendInfo).then((res) {
-      if (res['code'] == 0) {
-        searchList = res['data'];
-        update([const Key("repost")]);
-      }
-    });
+    // _friendApi.search(friendInfo).then((res) {
+    //   if (res['code'] == 0) {
+    //     searchList = res['data'];
+    //     update([const Key("repost")]);
+    //   }
+    // });
+    final res = await _chatListApi.search(friendInfo);
+    if (res['code'] == 0) {
+      debugPrint('searchList is: ${res['data']}');
+      friendSearchList = res['data']['friend'];
+      groupSearchList = res['data']['group'];
+      update([const Key("repost")]);
+    }
   }
 
   // 获取聊天列表
@@ -69,43 +76,6 @@ class ReForwardLogic extends Logic<ReForwardPage> {
       if (kDebugMode) print('发生错误: $e');
     }
   }
-
-  // 点击搜索好友
-  void onTapSearchFriend(dynamic friend) async {
-    if (kDebugMode) print('tap search friend: $friend');
-    // try {
-    //   final result =
-    //       await _chatListApi.create(friend['friendId'], type: 'user');
-    //   if (result['code'] == 0) {
-    //     if (kDebugMode) print('创建聊天成功: ${result['data']}');
-    //     await Get.toNamed('/chat_frame', arguments: {
-    //       'chatInfo': result['data'],
-    //     });
-    //   } else {
-    //     // 处理错误情况，提示用户
-    //     if (kDebugMode) print('创建聊天失败: ${result['message']}');
-    //   }
-    // } catch (e) {
-    //   // 捕获和处理异常
-    //   if (kDebugMode) print('发生错误: $e');
-    // }
-  }
-
-  // void onTopStatus(String id, bool isTop) {
-  //   _chatListApi.top(id, !isTop).then((res) {
-  //     if (res['code'] == 0) {
-  //       onGetChatList();
-  //     }
-  //   });
-  // }
-  //
-  // void onDeleteChatList(String id) {
-  //   _chatListApi.delete(id).then((res) {
-  //     if (res['code'] == 0) {
-  //       onGetChatList();
-  //     }
-  //   });
-  // }
 
   // 发送消息
   void onToSendMsg(String toId) async {
@@ -167,13 +137,13 @@ class ReForwardLogic extends Logic<ReForwardPage> {
     };
   }
 
-  void onOk(dynamic chatUser) async {
+  void onOk(dynamic chatObject) async {
     // 是否已经转发过
     final fromForwardMsgId = sendMsg['fromForwardMsgId'];
     try {
       Map<String, dynamic> msg = {
         'toUserId': sendMsg['toUserId'],
-        'source': chatUser['type'],
+        'source': chatObject['type'] ?? 'user',
         'isForward': true,
         //还未转发的消息用原消息的id，转发过的消息用转发的消息的id
         'fromMsgId': fromForwardMsgId ?? sendMsg['id'],
@@ -191,6 +161,30 @@ class ReForwardLogic extends Logic<ReForwardPage> {
       // 捕获和处理异常
       if (kDebugMode) print('请求失败: $e');
       CustomFlutterToast.showErrorToast('发送失败: $e');
+    }
+  }
+
+  // 点击搜索好友
+  void onTapSearchFriend(dynamic friend) async {
+    if (kDebugMode) print('tap search friend: $friend');
+    final toUserId = friend['friendId'];
+    sendMsg['toUserId'] = toUserId;
+    final res = await _chatListApi.create(toUserId, type: 'user');
+    if (res['code'] == 0)
+      CustomDialog.showTipDialog(Get.context!,
+          text: '确定要发送给 ${friend['name']} 吗？', onOk: () => onOk(friend));
+  }
+
+  // 点击搜索群聊
+  void onTapSearchGroup(dynamic group) async {
+    if (kDebugMode) print('tap search group: $group');
+    final toUserId = group['id'];
+    sendMsg['toUserId'] = toUserId;
+    final res = await _chatListApi.create(toUserId, type: 'group');
+    if (res['code'] == 0) {
+      group['type'] = 'group';
+      CustomDialog.showTipDialog(Get.context!,
+          text: '确定要发送给 ${group['name']} 吗？', onOk: () => onOk(group));
     }
   }
 

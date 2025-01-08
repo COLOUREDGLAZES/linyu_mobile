@@ -57,7 +57,8 @@ class SystemNotifyPage extends CustomWidget<SystemNotifyLogic> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomImage(
-                url: notify['content']['img'],
+                url: notify['content']['img'] ??
+                    'http://192.168.101.4:9000/linyu/default-portrait.jpg',
               ),
               const SizedBox(height: 5),
               Text(

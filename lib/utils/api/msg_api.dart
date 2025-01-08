@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class MsgApi {
-  final Dio _dio = Http().dio;
+  final Dio _dio = Http(url: baseUrl).dio;
 
   static final MsgApi _instance = MsgApi._internal();
 
@@ -106,7 +106,6 @@ class MsgApi {
       return response.data ?? {}; // 增加空值处理
     } on DioException catch (e) {
       if (kDebugMode) print('请求失败: ${e.message}');
-
       return {'error': e.message}; // 返回错误信息
     } catch (e) {
       if (kDebugMode) print('发生未知错误: $e');
@@ -115,19 +114,34 @@ class MsgApi {
     }
   }
 
-  Future<Map<String, dynamic>> voiceToText(String msgId) async {
+  Future<Map<String, dynamic>> voiceToText(String msgId,
+      {bool? isChatGroupMessage}) async {
     if (msgId.isEmpty) return {'error': 'msgId 不能为空'};
     try {
-      final response = await _dio.get('/v1/api/message/voice/to/text',
-          queryParameters: {'msgId': msgId});
+      final response = await _dio.get('/v1/api/message/voice/to/text/from',
+          queryParameters: {
+            'msgId': msgId,
+            'isChatGroupMessage': isChatGroupMessage
+          });
       return response.data ?? {}; // 增加空值处理
     } on DioException catch (e) {
       if (kDebugMode) print('请求失败: ${e.message}');
-
       return {'error': e.message}; // 返回错误信息
     } catch (e) {
       if (kDebugMode) print('发生未知错误: $e');
+      return {'error': '发生未知错误'};
+    }
+  }
 
+  Future<Map<String, dynamic>> getLifeString() async {
+    try {
+      final response = await _dio.get('https://api.xygeng.cn/one');
+      return response.data ?? {}; // 增加空值处理
+    } on DioException catch (e) {
+      if (kDebugMode) print('请求失败: ${e.message}');
+      return {'error': e.message}; // 返回错误信息
+    } catch (e) {
+      if (kDebugMode) print('发生未知错误: $e');
       return {'error': '发生未知错误'};
     }
   }

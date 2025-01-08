@@ -115,12 +115,6 @@ class MinePage extends CustomWidget<MineLogic> {
       );
 
   @override
-  void init(BuildContext context) {
-    super.init(context);
-    controller.init();
-  }
-
-  @override
   Widget buildWidget(BuildContext context) => Drawer(
         backgroundColor: const Color(0xFFF9FBFF),
         child: SingleChildScrollView(
@@ -201,6 +195,7 @@ class MinePage extends CustomWidget<MineLogic> {
                         '我的说说',
                         'mine-talk-${theme.themeMode.value}.png',
                         () => Get.toNamed('/talk', arguments: {
+                          'isNotShowLeading': true,
                           'userId': globalData.currentUserId,
                           'title': '我的说说'
                         }),
@@ -221,7 +216,8 @@ class MinePage extends CustomWidget<MineLogic> {
                         onDoubleTap: () => Get.dialog(_aboutMe()),
                       ),
                       const SizedBox(height: 2),
-                      _minorSelectButton('设置', 'mine-set.png', () {}),
+                      _minorSelectButton(
+                          '设置', 'mine-set.png', controller.toSetting),
                       const SizedBox(height: 30),
                       _leastSelectButton('切换账号', () {}),
                       const SizedBox(height: 2),
