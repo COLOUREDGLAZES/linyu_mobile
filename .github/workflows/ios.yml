@@ -1,0 +1,39 @@
+name: Build iOS App
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev_1.0  # 或者你的主分支名
+  pull_request:
+    branches:
+      - dev_1.0
+
+jobs:
+  ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: 代码迁出
+        uses: actions/checkout@v4
+
+      - name: 安装Flutter
+        if: steps.cache-flutter.outputs.cache-hit != 'true'
+        uses: subosito/flutter-action@v2.10.0
+        with:
+          cache: true
+          flutter-version: 3.24.0
+
+      - name: flutter build ipa
+        run: |
+          flutter build ios --release --no-codesign
+          cd build/ios/iphoneos
+          xcrun -sdk iphoneos PackageApplication -v "${PWD}/Runner.app" -o "${PWD}/app.ipa"
+          mv app.ipa ../../app.ipa
+
+      - name: 上传 Artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Release
+          path: build/app.ipa
