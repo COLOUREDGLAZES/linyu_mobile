@@ -47,9 +47,10 @@ jobs:
       - name: flutter build ipa
         run: |
           flutter build ios --release --no-codesign
-          sudo chmod -R +x /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
-          sudo xcrun -sdk iphoneos  "${{ env.PACKAGE_APPLICATION_PATH }}" -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
-          # xcrun -sdk iphoneos PackageApplication -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
+#          sudo chmod -R +x /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+#          sudo xcrun -sdk iphoneos  "${{ env.PACKAGE_APPLICATION_PATH }}" -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
+          sudo xcrun -sdk iphoneos  /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
+#          xcrun -sdk iphoneos PackageApplication -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
 
       - name: 上传 Artifact
         if: always()
