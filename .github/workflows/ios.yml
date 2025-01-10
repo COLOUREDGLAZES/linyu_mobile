@@ -26,6 +26,9 @@ jobs:
 
       - name: flutter build ipa
         run: |
+          pod repo remove master
+          pod setup
+          pod install
           flutter build ios --release --no-codesign
           cd build/ios/iphoneos
           xcrun -sdk iphoneos PackageApplication -v "${PWD}/Runner.app" -o "${PWD}/app.ipa"
