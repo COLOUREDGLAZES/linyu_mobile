@@ -46,7 +46,7 @@ jobs:
       - name: flutter build ipa
         run: |
           flutter build ios --release --no-codesign
-          xcrun -sdk iphoneos  "${{ env.PACKAGE_APPLICATION_PATH }}" -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
+          sudo xcrun -sdk iphoneos  "${{ env.PACKAGE_APPLICATION_PATH }}" -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
           # xcrun -sdk iphoneos PackageApplication -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
 
       - name: 上传 Artifact
