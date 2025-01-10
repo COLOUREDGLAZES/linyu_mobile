@@ -41,12 +41,13 @@ jobs:
           PACKAGE_APPLICATION_PATH=$(find /Applications/Xcode*.app -name PackageApplication)
           echo "PackageApplication Path: $PACKAGE_APPLICATION_PATH"
           echo "PACKAGE_APPLICATION_PATH=$PACKAGE_APPLICATION_PATH" >> $GITHUB_ENV
-          sudo chmod -R 777 /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+          
 
       # 4. 构建 IPA
       - name: flutter build ipa
         run: |
           flutter build ios --release --no-codesign
+          sudo chmod -R +x /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
           sudo xcrun -sdk iphoneos  "${{ env.PACKAGE_APPLICATION_PATH }}" -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
           # xcrun -sdk iphoneos PackageApplication -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
 
