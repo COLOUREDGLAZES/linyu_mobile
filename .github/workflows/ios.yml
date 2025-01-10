@@ -46,6 +46,7 @@ jobs:
       - name: flutter build ipa
         run: |
           flutter build ios --release --no-codesign
+          sudo chmod -R 777 /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
           sudo xcrun -sdk iphoneos  "${{ env.PACKAGE_APPLICATION_PATH }}" -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
           # xcrun -sdk iphoneos PackageApplication -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
 
