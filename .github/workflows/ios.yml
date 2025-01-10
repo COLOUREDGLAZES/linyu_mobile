@@ -28,8 +28,8 @@ jobs:
         run: flutter pub get
 
       # 1. 显式指定 Xcode 版本
-      - name: 指定 Xcode 版本
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+#      - name: 指定 Xcode 版本
+#        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
 
       # 2. 检查 Xcode 路径
       - name: 检查 Xcode 路径
@@ -42,9 +42,9 @@ jobs:
           echo "PackageApplication Path: $PACKAGE_APPLICATION_PATH"
 
       # 4.  赋予 Xcode 工具链 下二进制文件 可执行权限
-      - name: chmod 赋予可执行权限
-        run: |
-          find /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin -type f -exec sudo chmod +x {} \;
+#      - name: chmod 赋予可执行权限
+#        run: |
+#          find /Applications/Xcode_15.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin -type f -exec sudo chmod +x {} \;
 
 
       # 5. 构建 IPA
