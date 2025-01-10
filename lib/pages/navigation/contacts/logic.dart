@@ -12,7 +12,8 @@ import 'package:linyu_mobile/utils/config/getx/global_data.dart';
 import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ContactsLogic extends GetxController {
+class ContactsLogic extends GetxController
+    with GetSingleTickerProviderStateMixin {
   final _friendApi = new FriendApi();
   final _chatGroupApi = new ChatGroupApi();
   final _notifyApi = new NotifyApi();
@@ -35,6 +36,8 @@ class ContactsLogic extends GetxController {
   StreamSubscription? _subscription;
 
   GlobalData get globalData => GetInstance().find<GlobalData>();
+
+  late TabController tabController;
 
   // 监听消息
   void eventListen() => _subscription = _wsManager.eventStream.listen(
@@ -101,7 +104,7 @@ class ContactsLogic extends GetxController {
       }).catchError(
           (e) => CustomFlutterToast.showErrorToast("获取好友通知列表时发生网络错误: $e"));
 
-  void init() async {
+  Future<void> init() async {
     currentUserInfo['name'] = _prefs.getString('username');
     currentUserInfo['portrait'] = _prefs.getString('portrait');
     currentUserInfo['account'] = _prefs.getString('account');
@@ -125,12 +128,12 @@ class ContactsLogic extends GetxController {
     if (selectedIndex != index) {
       selectedIndex = index;
       update([const Key("contacts")]);
-      if (index == 2)
-        try {
-          onReadNotify();
-        } catch (e) {
-          CustomFlutterToast.showErrorToast("读取通知失败: $e");
-        }
+      // if (index == 2)
+      //   try {
+      //     onReadNotify();
+      //   } catch (e) {
+      //     CustomFlutterToast.showErrorToast("读取通知失败: $e");
+      //   }
     }
   }
 
@@ -265,8 +268,13 @@ class ContactsLogic extends GetxController {
 
   @override
   void onInit() {
-    super.onInit();
     eventListen();
+    tabController = TabController(
+      initialIndex: 1,
+      length: tabs.length,
+      vsync: this,
+    );
+    super.onInit();
   }
 
   @override

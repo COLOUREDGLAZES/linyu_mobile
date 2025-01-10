@@ -222,13 +222,12 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
 
   @override
   void init(BuildContext context) {
-    super.init(context);
     WidgetsBinding.instance.addObserver(this);
+    super.init(context);
   }
 
   @override
   void didChangeMetrics() {
-    super.didChangeMetrics();
     final keyboardHeight = MediaQuery.of(Get.context!).viewInsets.bottom;
     if (keyboardHeight > 0)
       Future.delayed(
@@ -241,6 +240,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                     curve: Curves.fastOutSlowIn,
                   );
               }));
+    super.didChangeMetrics();
   }
 
   @override
@@ -592,7 +592,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
 
   @override
   void close(BuildContext context) {
-    super.close(context);
     WidgetsBinding.instance.removeObserver(this);
+    super.close(context);
   }
 }

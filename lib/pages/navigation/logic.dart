@@ -93,7 +93,7 @@ class NavigationLogic extends GetxController {
         }
         return true;
       }
-      Get.back();
+      Get.back(result: true);
       return false;
     } catch (e) {
       // 错误处理，例如记录日志

@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:linyu_mobile/components/CustomDialog/index.dart';
+import 'package:linyu_mobile/pages/navigation/mine/my_talk/index.dart';
 import 'package:linyu_mobile/utils/api/talk_api.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
-import 'package:linyu_mobile/components/CustomDialog/index.dart';
-import 'package:linyu_mobile/utils/config/network/web_socket.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
-class TalkLogic extends GetxController {
+class MyTalkLogic extends Logic<MyTalkPage> {
   final _talkApi = TalkApi();
   final _userApi = UserApi();
   String currentUserId = '';
@@ -16,19 +16,16 @@ class TalkLogic extends GetxController {
   bool isNotShowLeading = false;
   late dynamic currentUserInfo = {};
   List<dynamic> talkList = [];
-  // final _wsManager = new WebSocketUtil();
-  final _wsManager = Get.find<WebSocketUtil>();
   int index = 0;
   bool hasMore = true;
   bool isLoading = false;
   final ScrollController scrollController = ScrollController();
 
   void init() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    currentUserInfo['name'] = prefs.getString('username');
-    currentUserInfo['portrait'] = prefs.getString('portrait');
-    currentUserInfo['account'] = prefs.getString('account');
-    currentUserInfo['sex'] = prefs.getString('sex');
+    currentUserInfo['name'] = sharedPreferences.getString('username');
+    currentUserInfo['portrait'] = sharedPreferences.getString('portrait');
+    currentUserInfo['account'] = sharedPreferences.getString('account');
+    currentUserInfo['sex'] = sharedPreferences.getString('sex');
     if (Get.arguments != null) {
       targetUserId = Get.arguments['userId'] ?? '';
       title = Get.arguments['title'] ?? '说说';
@@ -36,7 +33,7 @@ class TalkLogic extends GetxController {
     }
     refreshData();
     scrollController.addListener(scrollListener);
-    currentUserId = prefs.getString('userId') ?? '';
+    currentUserId = sharedPreferences.getString('userId') ?? '';
   }
 
   void scrollListener() {
@@ -49,7 +46,7 @@ class TalkLogic extends GetxController {
   void onTalkList() {
     if (!hasMore || isLoading) return;
     isLoading = true;
-    update([const Key("talk")]);
+    update([const Key("my_talk_page")]);
     _talkApi
         .list(index, 10, targetUserId)
         .then((res) {
@@ -68,7 +65,7 @@ class TalkLogic extends GetxController {
         })
         .catchError(() => isLoading = false)
         .whenComplete(() {
-          update([const Key("talk")]);
+          update([const Key("my_talk_page")]);
         });
   }
 
@@ -77,37 +74,23 @@ class TalkLogic extends GetxController {
       talkList.clear();
       index = 0;
       hasMore = true;
-      update([const Key("talk")]);
+      update([const Key("my_talk_page")]);
       onTalkList();
     } catch (e) {
       if (kDebugMode) print('刷新数据时出错: $e');
     } finally {
       //判断websocket是否连接
-      if (!_wsManager.isConnected) _wsManager.connect();
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
-
-  // Future<void> refreshData() async {
-  //   talkList.clear();
-  //   index = 0;
-  //   hasMore = true;
-  //   update([const Key("talk")]);
-  //   onTalkList();
-  // }
 
   void updateTalkLikeOrCommentCount(String key, int num, String talkId) =>
       talkList.forEach((talk) {
         if (talk['talkId'] == talkId) {
-          update([const Key("talk")]);
+          update([const Key("my_talk_page")]);
           return;
         }
       });
-  // for (var talk in talkList)
-  //   if (talk['talkId'] == talkId) {
-  //     talk[key] = num;
-  //     update([const Key("talk")]);
-  //     return;
-  //   }
 
   void onDeleteTalk(talkId) {
     _talkApi.delete(talkId).then((res) {
@@ -115,7 +98,7 @@ class TalkLogic extends GetxController {
         for (var talk in talkList) {
           if (talk['talkId'] == talkId) {
             talkList.remove(talk);
-            update([const Key("talk")]);
+            update([const Key("my_talk_page")]);
             return;
           }
         }
@@ -138,6 +121,12 @@ class TalkLogic extends GetxController {
       return res['data'];
     }
     return '';
+  }
+
+  void toTalkCreate() async {
+    final result = await Get.toNamed('/talk_create');
+    if (result != null && result['msg'] == '发表成功' && result['refresh'] == true)
+      refreshData();
   }
 
   @override

@@ -85,7 +85,8 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                                 ),
                                 const SizedBox(width: 5),
                                 if (chat['type'] == 'group')
-                                  const CustomBadge(text: '群'),
+                                  CustomBadge(
+                                      text: '群', color: theme.primaryColor),
                               ],
                             ),
                             Text(

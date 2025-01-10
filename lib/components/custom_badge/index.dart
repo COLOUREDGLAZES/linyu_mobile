@@ -4,11 +4,13 @@ import 'package:linyu_mobile/utils/config/getx/config.dart';
 class CustomBadge extends StatelessThemeWidget {
   final String text;
   final String type;
+  final Color? color;
 
   const CustomBadge({
     super.key,
     required this.text,
     this.type = 'primary',
+    this.color,
   });
 
   Color _getColor(String type) {
@@ -29,12 +31,12 @@ class CustomBadge extends StatelessThemeWidget {
       decoration: BoxDecoration(
         color: _getColor(type).withOpacity(0.1),
         borderRadius: const BorderRadius.all(Radius.circular(4)),
-        border: Border.all(color: _getColor(type), width: 1),
+        border: Border.all(color: color ?? _getColor(type), width: 1),
       ),
       child: Center(
         child: Text(
           text,
-          style: TextStyle(fontSize: 10, color: _getColor(type)),
+          style: TextStyle(fontSize: 10, color: color ?? _getColor(type)),
         ),
       ),
     );

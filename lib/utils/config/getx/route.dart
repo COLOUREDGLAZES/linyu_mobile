@@ -29,6 +29,7 @@ import 'package:linyu_mobile/pages/navigation/mine/about/index.dart';
 import 'package:linyu_mobile/pages/navigation/mine/edit/index.dart';
 import 'package:linyu_mobile/pages/navigation/mine/index.dart';
 import 'package:linyu_mobile/pages/navigation/mine/mine_qr_code/index.dart';
+import 'package:linyu_mobile/pages/navigation/mine/my_talk/index.dart';
 import 'package:linyu_mobile/pages/navigation/mine/system_notify/index.dart';
 import 'package:linyu_mobile/pages/navigation/talk/index.dart';
 import 'package:linyu_mobile/pages/navigation/talk/talk_create/index.dart';
@@ -276,6 +277,11 @@ class AppRoutes {
       GetPage(
         name: '/setting',
         page: () => SettingPage(key: const Key('setting')),
+        binding: ControllerBinding(),
+      ),
+      GetPage(
+        name: '/my_talk_page',
+        page: () => MyTalkPage(key: const Key('my_talk_page')),
         binding: ControllerBinding(),
       ),
     ];

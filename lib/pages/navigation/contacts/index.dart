@@ -479,85 +479,150 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
               const SizedBox(height: 5),
               if (controller.friendSearchList.isEmpty &&
                   controller.groupSearchList.isEmpty)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(controller.tabs.length, (index) {
-                    return Expanded(
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          AnimatedAlign(
-                            duration: const Duration(milliseconds: 300),
-                            alignment: Alignment.center,
-                            child: GestureDetector(
-                              onTap: () => controller.handlerTabTapped(index),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
-                                padding: const EdgeInsets.all(5),
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: index == controller.selectedIndex
-                                      ? 4.0
-                                      : 0.0,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(1),
-                                  color: Colors.transparent,
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: index == controller.selectedIndex
-                                          ? theme.primaryColor
-                                          : Colors.transparent,
-                                      width: 2,
-                                    ),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: AnimatedDefaultTextStyle(
-                                    duration: const Duration(milliseconds: 300),
-                                    style: TextStyle(
-                                      color: index == controller.selectedIndex
-                                          ? theme.primaryColor
-                                          : Colors.black,
-                                      fontSize: 16,
-                                    ),
-                                    child: GestureDetector(
+                SizedBox(
+                  height: 34,
+                  child: TabBar(
+                    controller: controller.tabController,
+                    onTap: (index) => controller.handlerTabTapped(index),
+                    tabs: List.generate(
+                        controller.tabs.length,
+                        (index) => SizedBox(
+                              width: 96,
+                              child: Stack(
+                                children: [
+                                  Align(
+                                    child: Tab(
+                                        child: GestureDetector(
                                       onLongPress: index == 1
                                           ? controller.onLongPressGroup
                                           : () {},
-                                      child: Text(controller.tabs[index]),
-                                    ),
+                                      child: Text(
+                                        controller.tabs[index],
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    )),
                                   ),
-                                ),
+                                  if (index == 2)
+                                    Obx(() => globalData.getUnreadCount(
+                                                'friendNotify') >
+                                            0
+                                        ? CustomTip(
+                                            globalData
+                                                .getUnreadCount('friendNotify'),
+                                            right: 0,
+                                            top: 0)
+                                        : const SizedBox.shrink()),
+                                ],
                               ),
-                            ),
-                          ),
-                          if (index == 2)
-                            Obx(() => globalData
-                                        .getUnreadCount('friendNotify') >
-                                    0
-                                ? CustomTip(
-                                    globalData.getUnreadCount('friendNotify'),
-                                    right: 7,
-                                    top: -2)
-                                : const SizedBox.shrink()),
-                        ],
-                      ),
-                    );
-                  }),
+                            )),
+                    indicatorColor: theme.primaryColor,
+                    labelColor: theme.primaryColor,
+                    // unselectedLabelColor: Colors.grey[600],
+                    dividerHeight: 0,
+                    indicatorPadding: EdgeInsets.zero,
+                    labelPadding: EdgeInsets.zero,
+                  ),
                 ),
-              if (controller.friendSearchList.isEmpty &&
-                  controller.groupSearchList.isEmpty)
-                const SizedBox(height: 5),
+              // const SizedBox(height: 5),
               if (controller.friendSearchList.isEmpty &&
                   controller.groupSearchList.isEmpty)
                 Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child:
-                        _getContent(controller.tabs[controller.selectedIndex]),
+                  child: TabBarView(
+                    controller: controller.tabController,
+                    children: List.generate(controller.tabs.length,
+                        (index) => _getContent(controller.tabs[index])),
                   ),
                 ),
+              // if (controller.friendSearchList.isEmpty &&
+              //     controller.groupSearchList.isEmpty)
+              //   Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: List.generate(
+              //         controller.tabs.length,
+              //         (index) => Expanded(
+              //               child: Stack(
+              //                 clipBehavior: Clip.none,
+              //                 children: [
+              //                   AnimatedAlign(
+              //                     duration: const Duration(milliseconds: 300),
+              //                     alignment: Alignment.center,
+              //                     child: GestureDetector(
+              //                       onTap: () =>
+              //                           controller.handlerTabTapped(index),
+              //                       child: AnimatedContainer(
+              //                         duration:
+              //                             const Duration(milliseconds: 300),
+              //                         curve: Curves.easeInOut,
+              //                         padding: const EdgeInsets.all(5),
+              //                         margin: EdgeInsets.symmetric(
+              //                           horizontal:
+              //                               index == controller.selectedIndex
+              //                                   ? 4.0
+              //                                   : 0.0,
+              //                         ),
+              //                         decoration: BoxDecoration(
+              //                           borderRadius: BorderRadius.circular(1),
+              //                           color: Colors.transparent,
+              //                           border: Border(
+              //                             bottom: BorderSide(
+              //                               color: index ==
+              //                                       controller.selectedIndex
+              //                                   ? theme.primaryColor
+              //                                   : Colors.transparent,
+              //                               width: 2,
+              //                             ),
+              //                           ),
+              //                         ),
+              //                         child: Center(
+              //                           child: AnimatedDefaultTextStyle(
+              //                             duration:
+              //                                 const Duration(milliseconds: 300),
+              //                             style: TextStyle(
+              //                               color: index ==
+              //                                       controller.selectedIndex
+              //                                   ? theme.primaryColor
+              //                                   : Colors.black,
+              //                               fontSize: 16,
+              //                             ),
+              //                             child: GestureDetector(
+              //                               onLongPress: index == 1
+              //                                   ? controller.onLongPressGroup
+              //                                   : () {},
+              //                               child: Text(controller.tabs[index]),
+              //                             ),
+              //                           ),
+              //                         ),
+              //                       ),
+              //                     ),
+              //                   ),
+              //                   if (index == 2)
+              //                     Obx(() => globalData
+              //                                 .getUnreadCount('friendNotify') >
+              //                             0
+              //                         ? CustomTip(
+              //                             globalData
+              //                                 .getUnreadCount('friendNotify'),
+              //                             right: 7,
+              //                             top: -2)
+              //                         : const SizedBox.shrink()),
+              //                 ],
+              //               ),
+              //             )),
+              //   ),
+              // if (controller.friendSearchList.isEmpty &&
+              //     controller.groupSearchList.isEmpty)
+              //   const SizedBox(height: 5),
+              // if (controller.friendSearchList.isEmpty &&
+              //     controller.groupSearchList.isEmpty)
+              //   Expanded(
+              //     child: AnimatedSwitcher(
+              //       duration: const Duration(milliseconds: 300),
+              //       child:
+              //           _getContent(controller.tabs[controller.selectedIndex]),
+              //     ),
+              //   ),
             ],
           ),
         ),

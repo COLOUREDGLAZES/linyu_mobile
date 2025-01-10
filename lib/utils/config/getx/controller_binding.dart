@@ -28,6 +28,7 @@ import 'package:linyu_mobile/pages/navigation/mine/about/logic.dart';
 import 'package:linyu_mobile/pages/navigation/mine/edit/logic.dart';
 import 'package:linyu_mobile/pages/navigation/mine/logic.dart';
 import 'package:linyu_mobile/pages/navigation/mine/mine_qr_code/logic.dart';
+import 'package:linyu_mobile/pages/navigation/mine/my_talk/logic.dart';
 import 'package:linyu_mobile/pages/navigation/mine/system_notify/logic.dart';
 import 'package:linyu_mobile/pages/navigation/talk/logic.dart';
 import 'package:linyu_mobile/pages/navigation/talk/talk_create/logic.dart';
@@ -115,5 +116,6 @@ class ControllerBinding extends Bindings {
     Get.lazyPut<ReForwardLogic>(() => ReForwardLogic(), fenix: true);
     Get.lazyPut<ChatSettingLogic>(() => ChatSettingLogic(), fenix: true);
     Get.lazyPut<SettingLogic>(() => SettingLogic(), fenix: true);
+    Get.lazyPut<MyTalkLogic>(() => MyTalkLogic(), fenix: true);
   }
 }

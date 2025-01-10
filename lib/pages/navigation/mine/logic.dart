@@ -1,17 +1,18 @@
 import 'package:flutter/foundation.dart' show Key, kDebugMode;
-import 'package:get/get.dart' show Get, GetNavigation, GetxController, Inst;
+import 'package:get/get.dart' show Get, GetNavigation, Inst;
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/config/getx/global_data.dart';
 import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
-class MineLogic extends GetxController {
+class MineLogic extends Logic {
   late dynamic currentUserInfo = {};
   final _wsManager = Get.find<WebSocketUtil>();
   final _globalData = Get.find<GlobalData>();
   final SharedPreferences _prefs = Get.find<SharedPreferences>();
 
-  void init() async {
+  Future<void> init() async {
     currentUserInfo['name'] = _prefs.getString('username');
     currentUserInfo['portrait'] = _prefs.getString('portrait');
     currentUserInfo['account'] = _prefs.getString('account');
@@ -35,10 +36,25 @@ class MineLogic extends GetxController {
     }
   }
 
+  void toEditMien() async {
+    try {
+      final result = await Get.toNamed('/edit_mine');
+      if (result != null && result == true) {
+        init().then((_) => theme.changeThemeMode(
+            sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
+      }
+    } catch (e) {
+      if (kDebugMode) print(e);
+    } finally {
+      if (!_wsManager.isConnected) _wsManager.connect();
+    }
+  }
+
   @override
   void onInit() {
-    init();
-    if (kDebugMode) print('currentToken: ${_globalData.currentToken}');
+    init().then((_) {
+      if (kDebugMode) print('currentToken: ${_globalData.currentToken}');
+    });
     super.onInit();
   }
 }

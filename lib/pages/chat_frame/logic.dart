@@ -1,7 +1,6 @@
 import 'dart:async' show Future, StreamSubscription;
 import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:io' show File;
-import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart' show FilePicker, FilePickerResult;
 import 'package:flutter/cupertino.dart'
     show
@@ -43,7 +42,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // 后端接口
   final _msgApi = MsgApi();
   final _chatListApi = ChatListApi();
-  // final _wsManager = WebSocketUtil();
   final _videoApi = VideoApi();
   final _chatGroupMemberApi = ChatGroupMemberApi();
   final _friendApi = new FriendApi();
@@ -107,10 +105,13 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   Future<void> _onRead(String? targetId) async {
     try {
       if (kDebugMode) print('onRead:$_targetId');
-      await _chatListApi.read(targetId ?? _targetId);
+      targetId ??= _targetId;
+      // if (StringUtil.isNullOrEmpty(targetId)) return;
+      await _chatListApi.read(targetId);
       await globalData.onGetUserUnreadInfo();
     } catch (e) {
-      CustomFlutterToast.showErrorToast('标记为已读时发生错误: $e');
+      if (kDebugMode) print('onRead error: $e');
+      // CustomFlutterToast.showErrorToast('标记为已读时发生错误: $e');
       Get.delete<ChatFrameLogic>();
     }
   }
@@ -685,10 +686,10 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   @override
   void onClose() {
-    super.onClose();
     msgContentController.dispose();
     scrollController.dispose();
     _subscription?.cancel();
     focusNode.dispose();
+    super.onClose();
   }
 }

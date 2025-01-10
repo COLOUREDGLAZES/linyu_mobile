@@ -46,6 +46,16 @@ class FriendRequestLogic extends Logic<FriendRequestPage> {
     update([const Key('friend_request')]);
   }
 
+  //是否允许返回上一页
+  bool _enableBack = true;
+
+  bool get enableBack => _enableBack;
+
+  set enableBack(bool value) {
+    _enableBack = value;
+    update([const Key('friend_request')]);
+  }
+
   void initData() {
     friendPortrait = _friendInfo['portrait'];
     friendName = _friendInfo['name'];
@@ -64,9 +74,11 @@ class FriendRequestLogic extends Logic<FriendRequestPage> {
       applyFriendController.text,
     );
     if (result['code'] == 0) {
+      enableBack = false;
       CustomFlutterToast.showSuccessToast("申请成功，等待对方验证~");
-      Future.delayed(
-          const Duration(milliseconds: 2300), () => Get.back(result: true));
+      if (initialized)
+        Future.delayed(
+            const Duration(milliseconds: 1000), () => Get.back(result: true));
     } else
       CustomFlutterToast.showErrorToast(result['msg']);
   }

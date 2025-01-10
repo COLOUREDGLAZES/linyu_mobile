@@ -21,13 +21,6 @@ import 'index.dart';
 
 //个人资料编辑页面逻辑
 class EditMineLogic extends Logic<EditMinePage> {
-  //上个页面控制器
-  final MineLogic _mineLogic = getx.Get.find<MineLogic>();
-
-  final ChatListLogic _chatListLogic = getx.Get.find<ChatListLogic>();
-
-  final ContactsLogic _contactsLogic = getx.Get.find<ContactsLogic>();
-
   //用户API
   final _useApi = UserApi();
 
@@ -135,27 +128,59 @@ class EditMineLogic extends Logic<EditMinePage> {
 
   //上传头像
   Future<void> _uploadPicture(File picture) async {
-    Map<String, dynamic> map = {};
-    final file = await MultipartFile.fromFile(picture.path,
-        filename: picture.path.split('/').last);
-    map['type'] = 'image/jpeg';
-    map['name'] = picture.path.split('/').last;
-    map['size'] = picture.lengthSync();
-    map["file"] = file;
-    FormData formData = FormData.fromMap(map);
-    final result = await _useApi.upload(formData);
-    if (result['code'] == 0) {
-      CustomFlutterToast.showSuccessToast('头像修改成功');
-      currentUserInfo['portrait'] = result['data'];
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-      sharedPreferences.setString('portrait', currentUserInfo['portrait']);
-      globalData.currentAvatarUrl = currentUserInfo['portrait'];
-      update([const Key("edit_mine")]);
-    } else {
-      CustomFlutterToast.showErrorToast(result['msg']);
+    try {
+      final fileName = picture.path.split('/').last;
+      final file =
+          await MultipartFile.fromFile(picture.path, filename: fileName);
+
+      final formData = FormData.fromMap({
+        'type': 'image/jpeg',
+        'name': fileName,
+        'size': picture.lengthSync(),
+        'file': file,
+      });
+
+      final result = await _useApi.upload(formData);
+
+      if (result['code'] == 0) {
+        currentUserInfo['portrait'] = result['data'];
+        final sharedPreferences = await SharedPreferences.getInstance();
+        await sharedPreferences.setString(
+            'portrait', currentUserInfo['portrait']);
+        globalData.currentAvatarUrl = currentUserInfo['portrait'];
+        update([const Key("edit_mine")]);
+        CustomFlutterToast.showSuccessToast('头像修改成功');
+      } else
+        CustomFlutterToast.showErrorToast(result['msg']);
+    } catch (e) {
+      if (kDebugMode) print('头像上传失败: $e');
+      CustomFlutterToast.showErrorToast('头像上传失败: $e');
     }
   }
+
+  //上传头像
+  // Future<void> _uploadPicture(File picture) async {
+  //   Map<String, dynamic> map = {};
+  //   final file = await MultipartFile.fromFile(picture.path,
+  //       filename: picture.path.split('/').last);
+  //   map['type'] = 'image/jpeg';
+  //   map['name'] = picture.path.split('/').last;
+  //   map['size'] = picture.lengthSync();
+  //   map["file"] = file;
+  //   FormData formData = FormData.fromMap(map);
+  //   final result = await _useApi.upload(formData);
+  //   if (result['code'] == 0) {
+  //     CustomFlutterToast.showSuccessToast('头像修改成功');
+  //     currentUserInfo['portrait'] = result['data'];
+  //     SharedPreferences sharedPreferences =
+  //         await SharedPreferences.getInstance();
+  //     sharedPreferences.setString('portrait', currentUserInfo['portrait']);
+  //     globalData.currentAvatarUrl = currentUserInfo['portrait'];
+  //     update([const Key("edit_mine")]);
+  //   } else {
+  //     CustomFlutterToast.showErrorToast(result['msg']);
+  //   }
+  // }
 
   //点击头像按钮弹出底部选择框
   void selectPortrait() {
@@ -277,23 +302,6 @@ class EditMineLogic extends Logic<EditMinePage> {
     }
   }
 
-  void _whenClose() async {
-    try {
-      theme.changeThemeMode(
-          sharedPreferences.getString('sex') == "女" ? "pink" : "blue");
-    } catch (e) {
-      if (kDebugMode) print('error when close EditMinePage:$e');
-    } finally {
-      nameController.dispose();
-      signatureController.dispose();
-      birthdayController.dispose();
-      //以及返回上一页时更新页面
-      if (_mineLogic.initialized) _mineLogic.init();
-      if (_chatListLogic.initialized) _chatListLogic.onGetChatList();
-      if (_contactsLogic.initialized) _contactsLogic.init();
-    }
-  }
-
   //初始化
   @override
   void onInit() async {
@@ -320,7 +328,9 @@ class EditMineLogic extends Logic<EditMinePage> {
   //当页面返回时，销毁控制器
   @override
   void onClose() {
-    _whenClose();
+    nameController.dispose();
+    signatureController.dispose();
+    birthdayController.dispose();
     super.onClose();
   }
 }

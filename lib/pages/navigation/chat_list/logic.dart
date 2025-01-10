@@ -22,7 +22,7 @@ class ChatListLogic extends GetxController {
 
   GlobalData get globalData => GetInstance().find<GlobalData>();
 
-  void onGetChatList() async {
+  Future<void> onGetChatList() async {
     try {
       final res = await _chatListApi.list();
       if (res['code'] == 0) {

@@ -137,7 +137,8 @@ class MinePage extends CustomWidget<MineLogic> {
                 child: Row(
                   children: [
                     GestureDetector(
-                      onTap: () => Get.toNamed('/edit_mine'),
+                      // onTap: () => Get.toNamed('/edit_mine'),
+                      onTap: controller.toEditMien,
                       child: Container(
                         width: 70,
                         height: 70,
@@ -194,7 +195,7 @@ class MinePage extends CustomWidget<MineLogic> {
                       _primarySelectButton(
                         '我的说说',
                         'mine-talk-${theme.themeMode.value}.png',
-                        () => Get.toNamed('/talk', arguments: {
+                        () => Get.toNamed('/my_talk_page', arguments: {
                           'isNotShowLeading': true,
                           'userId': globalData.currentUserId,
                           'title': '我的说说'
