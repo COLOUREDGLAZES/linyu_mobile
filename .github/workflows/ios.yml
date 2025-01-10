@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - dev_1.0  # 或者你的主分支名
+      - dev_1.0
   pull_request:
     branches:
       - dev_1.0
@@ -23,16 +23,14 @@ jobs:
         with:
           cache: true
           flutter-version: 3.24.0
-          
+
       - name: Restore packages
         run: flutter pub get
 
       - name: flutter build ipa
         run: |
           flutter build ios --release --no-codesign
-          cd build/ios/iphoneos
-          xcrun -sdk iphoneos PackageApplication -v "${PWD}/Runner.app" -o "${PWD}/app.ipa"
-          mv app.ipa ../../app.ipa
+          xcrun -sdk iphoneos PackageApplication -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
 
       - name: 上传 Artifact
         if: always()
