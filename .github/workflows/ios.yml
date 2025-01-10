@@ -27,10 +27,27 @@ jobs:
       - name: Restore packages
         run: flutter pub get
 
+      # 1. 显式指定 Xcode 版本
+      - name: 指定 Xcode 版本
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+
+        # 2. 检查 Xcode 路径
+      - name: 检查 Xcode 路径
+        run: xcode-select -p
+
+      #  3. 查找 PackageApplication 路径
+      - name: 查找 PackageApplication 路径
+        run: |
+          PACKAGE_APPLICATION_PATH=$(find /Applications/Xcode*.app -name PackageApplication)
+          echo "PackageApplication Path: $PACKAGE_APPLICATION_PATH"
+          echo "PACKAGE_APPLICATION_PATH=$PACKAGE_APPLICATION_PATH" >> $GITHUB_ENV
+
+      # 4. 构建 IPA
       - name: flutter build ipa
         run: |
           flutter build ios --release --no-codesign
-          xcrun -sdk iphoneos PackageApplication -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
+          xcrun -sdk iphoneos  "${{ env.PACKAGE_APPLICATION_PATH }}" -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
+          # xcrun -sdk iphoneos PackageApplication -v  build/ios/iphoneos/Runner.app  -o build/app.ipa
 
       - name: 上传 Artifact
         if: always()
