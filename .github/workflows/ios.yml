@@ -23,6 +23,9 @@ jobs:
         with:
           cache: true
           flutter-version: 3.24.0
+          
+      - name: Restore packages
+        run: flutter pub get
 
       - name: flutter build ipa
         run: |
