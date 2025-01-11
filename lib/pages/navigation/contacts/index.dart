@@ -383,6 +383,7 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
               size: 40,
               radius: 20,
               onTap: () => Scaffold.of(context).openDrawer(),
+              onLongPress: controller.onLongPressPortrait,
             ),
           ),
           centerTitle: true,

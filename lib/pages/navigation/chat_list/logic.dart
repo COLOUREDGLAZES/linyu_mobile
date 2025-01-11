@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart'
-    show Get, GetInstance, GetNavigation, GetxController, Inst;
+import 'package:get/get.dart' show Get, GetNavigation, Inst;
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
-import 'package:linyu_mobile/utils/config/getx/global_data.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 
-class ChatListLogic extends GetxController {
+// class ChatListLogic extends GetxController {
+class ChatListLogic extends Logic {
   final _chatListApi = ChatListApi();
   final FocusNode focusNode = new FocusNode(skipTraversal: true);
   late List<dynamic> topList = [];
@@ -20,7 +20,7 @@ class ChatListLogic extends GetxController {
   StreamSubscription? _subscription;
   final TextEditingController searchBoxController = new TextEditingController();
 
-  GlobalData get globalData => GetInstance().find<GlobalData>();
+  // GlobalData get globalData => GetInstance().find<GlobalData>();
 
   Future<void> onGetChatList() async {
     try {
@@ -92,6 +92,9 @@ class ChatListLogic extends GetxController {
     } catch (e) {
       // 捕获和处理异常
       if (kDebugMode) print('发生错误: $e');
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -110,6 +113,9 @@ class ChatListLogic extends GetxController {
     } catch (e) {
       // 捕获和处理异常
       if (kDebugMode) print('发生错误: $e');
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -127,6 +133,13 @@ class ChatListLogic extends GetxController {
       // 判断websocket是否连接
       if (!_wsManager.isConnected) _wsManager.connect();
     }
+  }
+
+  void onLongPressPortrait() async {
+    final result = await Get.toNamed('/edit_mine');
+    if (result != null)
+      onGetChatList().then((_) => theme.changeThemeMode(
+          sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
   }
 
   @override

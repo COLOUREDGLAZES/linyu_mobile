@@ -10,11 +10,11 @@ class Http {
   factory Http({String? url}) {
     // String ip = '47.99.61.62';
     // String ip = '114.96.70.115';
-    String ip = '192.168.101.4';
+    String defaultIp = '192.168.101.4';
     // String port = '19200';
-    String port = '9200';
-    _instance._baseUrl = url ?? 'http://$ip:$port';
-    _instance.dio.options.baseUrl = url ?? 'http://$ip:$port';
+    String defaultPort = '9200';
+    _instance._baseUrl = url ?? 'http://$defaultIp:$defaultPort';
+    _instance.dio.options.baseUrl = url ?? 'http://$defaultIp:$defaultPort';
     return _instance;
   }
 

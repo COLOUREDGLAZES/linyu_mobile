@@ -156,6 +156,7 @@ class TalkPage extends CustomWidget<TalkLogic> {
                     size: 40,
                     radius: 20,
                     onTap: () => Scaffold.of(context).openDrawer(),
+                    onLongPress: controller.onLongPressPortrait,
                   ),
                 )
               : null,

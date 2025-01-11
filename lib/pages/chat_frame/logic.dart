@@ -113,6 +113,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       if (kDebugMode) print('onRead error: $e');
       // CustomFlutterToast.showErrorToast('标记为已读时发生错误: $e');
       Get.delete<ChatFrameLogic>();
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -367,6 +370,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       return;
     }
     try {
+      // 上传语音文件
       MultipartFile file =
           await MultipartFile.fromFile(filePath, filename: 'voice.wav');
       dynamic msg = {
@@ -394,7 +398,10 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       }
     } catch (e) {
       if (kDebugMode) print('发送语音消息时发生错误: $e');
-      CustomFlutterToast.showErrorToast('发送语音消息时发生错误: $e');
+      // CustomFlutterToast.showErrorToast('发送语音消息时发生错误: $e');
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -410,7 +417,11 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         if (msgContent['type'] == 'call')
           onInviteVideoChat(content['type'] != 'video');
       } catch (e) {
-        CustomFlutterToast.showErrorToast('解析消息内容时发生错误: $e');
+        if (kDebugMode) print('解析消息内容时发生错误: $e');
+        // CustomFlutterToast.showErrorToast('解析消息内容时发生错误: $e');
+      } finally {
+        //判断websocket是否连接
+        if (!wsManager.isConnected) wsManager.connect();
       }
   }
 
@@ -425,10 +436,13 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         CustomFlutterToast.showErrorToast(
             '撤回失败: ${result['message'] ?? '未知错误'}');
     } catch (e) {
-      CustomFlutterToast.showErrorToast('撤回失败: $e');
+      if (kDebugMode) print('撤回消息时发生错误: $e');
+      CustomFlutterToast.showErrorToast('撤回失败~');
     } finally {
       isLoading = false;
       update([const Key('chat_frame')]);
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -448,6 +462,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
             '重新编辑消息失败: ${result['message'] ?? '未知错误'}');
     } catch (e) {
       CustomFlutterToast.showErrorToast('编辑消息时发生错误: $e');
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -503,6 +520,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       content['text'] = '识别失败!';
       _updateMessageList(
           msg, msg..['msgContent']['content'] = jsonEncode(content));
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -519,7 +539,11 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         update([const Key('chat_frame')]);
       }
     } catch (e) {
-      CustomFlutterToast.showErrorToast('隐藏文字时发生错误: $e');
+      if (kDebugMode) print('隐藏文字时发生错误: $e');
+      // CustomFlutterToast.showErrorToast('隐藏文字时发生错误: $e');
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -544,6 +568,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       isSend.value = true;
     } catch (e) {
       CustomFlutterToast.showErrorToast('添加表情时发生错误: $e');
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -554,8 +581,11 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       if (kDebugMode) print('result: $resultMsg');
       await _onGetMsgRecode(index: 0);
     } on Exception catch (e) {
-      CustomFlutterToast.showErrorToast('转发消息时发生错误: $e');
+      CustomFlutterToast.showErrorToast('转发消息失败~');
       if (kDebugMode) print('转发消息时发生错误: $e');
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -572,7 +602,11 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
           arguments: {'friendInfo': friend});
       if (result != null && result) await _onGetMsgRecode(index: 0);
     } catch (e) {
-      CustomFlutterToast.showErrorToast('添加好友时发生错误: $e');
+      if (kDebugMode) print('添加好友失败: $e');
+      CustomFlutterToast.showErrorToast('添加好友失败~');
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -628,8 +662,11 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         }
       }
     } on Exception catch (e) {
-      if (kDebugMode) print('onTapAvatar error: $e');
-      CustomFlutterToast.showErrorToast('查看用户详情时发生错误: $e');
+      if (kDebugMode) print('查看用户详情时发生错误: $e');
+      CustomFlutterToast.showErrorToast('查看用户详情失败~');
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 

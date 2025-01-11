@@ -4,10 +4,10 @@ import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/talk_api.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
-import 'package:linyu_mobile/utils/config/network/web_socket.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
-class TalkLogic extends GetxController {
+// class TalkLogic extends GetxController {
+class TalkLogic extends Logic {
   final _talkApi = TalkApi();
   final _userApi = UserApi();
   String currentUserId = '';
@@ -17,26 +17,26 @@ class TalkLogic extends GetxController {
   late dynamic currentUserInfo = {};
   List<dynamic> talkList = [];
   // final _wsManager = new WebSocketUtil();
-  final _wsManager = Get.find<WebSocketUtil>();
+  // final wsManager = Get.find<WebSocketUtil>();
   int index = 0;
   bool hasMore = true;
   bool isLoading = false;
   final ScrollController scrollController = ScrollController();
 
-  void init() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    currentUserInfo['name'] = prefs.getString('username');
-    currentUserInfo['portrait'] = prefs.getString('portrait');
-    currentUserInfo['account'] = prefs.getString('account');
-    currentUserInfo['sex'] = prefs.getString('sex');
+  Future<void> init() async {
+    // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    currentUserInfo['name'] = sharedPreferences.getString('username');
+    currentUserInfo['portrait'] = sharedPreferences.getString('portrait');
+    currentUserInfo['account'] = sharedPreferences.getString('account');
+    currentUserInfo['sex'] = sharedPreferences.getString('sex');
     if (Get.arguments != null) {
       targetUserId = Get.arguments['userId'] ?? '';
       title = Get.arguments['title'] ?? '说说';
       isNotShowLeading = Get.arguments['isNotShowLeading'] ?? false;
     }
-    refreshData();
+    await refreshData();
     scrollController.addListener(scrollListener);
-    currentUserId = prefs.getString('userId') ?? '';
+    currentUserId = sharedPreferences.getString('userId') ?? '';
   }
 
   void scrollListener() {
@@ -55,21 +55,18 @@ class TalkLogic extends GetxController {
         .then((res) {
           if (res['code'] == 0) {
             final List<dynamic> newTalks = res['data'];
-            if (newTalks.isEmpty) {
+            if (newTalks.isEmpty)
               hasMore = false;
-            } else {
+            else {
               talkList.addAll(newTalks);
               index += newTalks.length;
             }
             isLoading = false;
-          } else {
+          } else
             isLoading = false;
-          }
         })
         .catchError(() => isLoading = false)
-        .whenComplete(() {
-          update([const Key("talk")]);
-        });
+        .whenComplete(() => update([const Key("talk")]));
   }
 
   Future<void> refreshData() async {
@@ -83,7 +80,7 @@ class TalkLogic extends GetxController {
       if (kDebugMode) print('刷新数据时出错: $e');
     } finally {
       //判断websocket是否连接
-      if (!_wsManager.isConnected) _wsManager.connect();
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -109,28 +106,25 @@ class TalkLogic extends GetxController {
   //     return;
   //   }
 
-  void onDeleteTalk(talkId) {
-    _talkApi.delete(talkId).then((res) {
-      if (res['code'] == 0) {
-        for (var talk in talkList) {
-          if (talk['talkId'] == talkId) {
-            talkList.remove(talk);
-            update([const Key("talk")]);
-            return;
+  void onDeleteTalk(talkId) => _talkApi.delete(talkId).then((res) {
+        if (res['code'] == 0) {
+          for (var talk in talkList) {
+            if (talk['talkId'] == talkId) {
+              talkList.remove(talk);
+              update([const Key("talk")]);
+              return;
+            }
           }
         }
-      }
-    });
-  }
+      });
 
-  void handlerDeleteTalkTip(BuildContext context, String talkId) {
-    CustomDialog.showTipDialog(
-      context,
-      text: '确认删除该条说说?',
-      onOk: () => onDeleteTalk(talkId),
-      onCancel: () {},
-    );
-  }
+  void handlerDeleteTalkTip(BuildContext context, String talkId) =>
+      CustomDialog.showTipDialog(
+        context,
+        text: '确认删除该条说说?',
+        onOk: () => onDeleteTalk(talkId),
+        onCancel: () {},
+      );
 
   Future<String> onGetImg(String fileName, String userId) async {
     dynamic res = await _userApi.getImg(fileName, userId);
@@ -138,6 +132,13 @@ class TalkLogic extends GetxController {
       return res['data'];
     }
     return '';
+  }
+
+  void onLongPressPortrait() async {
+    final result = await Get.toNamed('/edit_mine');
+    if (result != null)
+      init().then((_) => theme.changeThemeMode(
+          sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
   }
 
   @override

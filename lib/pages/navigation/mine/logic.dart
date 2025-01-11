@@ -39,10 +39,9 @@ class MineLogic extends Logic {
   void toEditMien() async {
     try {
       final result = await Get.toNamed('/edit_mine');
-      if (result != null && result == true) {
+      if (result != null && result == true)
         init().then((_) => theme.changeThemeMode(
             sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
-      }
     } catch (e) {
       if (kDebugMode) print(e);
     } finally {

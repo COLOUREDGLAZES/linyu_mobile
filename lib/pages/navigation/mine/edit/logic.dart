@@ -10,9 +10,6 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/pages/navigation/chat_list/logic.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/logic.dart';
-import 'package:linyu_mobile/pages/navigation/mine/logic.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
@@ -157,30 +154,6 @@ class EditMineLogic extends Logic<EditMinePage> {
       CustomFlutterToast.showErrorToast('头像上传失败: $e');
     }
   }
-
-  //上传头像
-  // Future<void> _uploadPicture(File picture) async {
-  //   Map<String, dynamic> map = {};
-  //   final file = await MultipartFile.fromFile(picture.path,
-  //       filename: picture.path.split('/').last);
-  //   map['type'] = 'image/jpeg';
-  //   map['name'] = picture.path.split('/').last;
-  //   map['size'] = picture.lengthSync();
-  //   map["file"] = file;
-  //   FormData formData = FormData.fromMap(map);
-  //   final result = await _useApi.upload(formData);
-  //   if (result['code'] == 0) {
-  //     CustomFlutterToast.showSuccessToast('头像修改成功');
-  //     currentUserInfo['portrait'] = result['data'];
-  //     SharedPreferences sharedPreferences =
-  //         await SharedPreferences.getInstance();
-  //     sharedPreferences.setString('portrait', currentUserInfo['portrait']);
-  //     globalData.currentAvatarUrl = currentUserInfo['portrait'];
-  //     update([const Key("edit_mine")]);
-  //   } else {
-  //     CustomFlutterToast.showErrorToast(result['msg']);
-  //   }
-  // }
 
   //点击头像按钮弹出底部选择框
   void selectPortrait() {

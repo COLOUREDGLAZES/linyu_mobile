@@ -59,22 +59,19 @@ class WebSocketUtil extends GetxController {
 
   Future<void> connect() async {
     String? token = _globalData.currentToken;
-    if (token == null || isConnected) return;
-
+    if (token == null || isConnected) {
+      if (isConnected) if (kDebugMode) print('WebSocket has connected');
+      return;
+    }
     try {
       if (kDebugMode) print('WebSocket connecting...');
-      // //使用的内网穿透
-      // // String wsIp = '192.168.101.4';
-      // String wsIp = '114.96.70.115';
-      // // String wsIp = '47.99.61.62';
-      // // String port = '9100';
-      // String port = '19100';
-      // _websocketIp =
-      //     _preferences.getString('websocket_ip') ?? 'ws://$wsIp:$port';
       _channel = WebSocketChannel.connect(
-        // Uri.parse('ws://$wsIp:$port/ws?x-token=$token'),
         Uri.parse('$_websocketIp/ws?x-token=$token'),
       );
+      if (_channel == null) {
+        isConnected = false;
+        return;
+      }
       _channel!.stream.listen(
         _handleMessage,
         onDone: _handleClose,
@@ -172,7 +169,7 @@ class WebSocketUtil extends GetxController {
 
   @override
   void onReady() {
-    connect();
+    if (!isConnected) connect();
     super.onReady();
   }
 

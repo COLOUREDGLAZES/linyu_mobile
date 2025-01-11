@@ -8,19 +8,17 @@ import 'package:linyu_mobile/utils/api/chat_list_api.dart';
 import 'package:linyu_mobile/utils/api/friend_api.dart';
 import 'package:linyu_mobile/utils/api/notify_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/getx/global_data.dart';
-import 'package:linyu_mobile/utils/config/network/web_socket.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart';
 
-class ContactsLogic extends GetxController
-    with GetSingleTickerProviderStateMixin {
+// class ContactsLogic extends GetxController
+class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
   final _friendApi = new FriendApi();
   final _chatGroupApi = new ChatGroupApi();
   final _notifyApi = new NotifyApi();
   final _chatListApi = new ChatListApi();
   final FocusNode focusNode = new FocusNode(skipTraversal: true);
-  final GlobalData _globalData = GetInstance().find<GlobalData>();
-  final SharedPreferences _prefs = Get.find<SharedPreferences>();
+  // final GlobalData globalData = GetInstance().find<GlobalData>();
+  // final SharedPreferences sharedPreferences = Get.find<SharedPreferences>();
   List<String> tabs = ['我的群聊', '我的好友', '好友通知'];
   int selectedIndex = 1;
   String currentUserId = '';
@@ -32,15 +30,15 @@ class ContactsLogic extends GetxController
   late List<dynamic> groupSearchList = [];
   final TextEditingController searchBoxController = new TextEditingController();
   // final _wsManager = new WebSocketUtil();
-  final _wsManager = Get.find<WebSocketUtil>();
+  // final wsManager = Get.find<WebSocketUtil>();
   StreamSubscription? _subscription;
 
-  GlobalData get globalData => GetInstance().find<GlobalData>();
+  // GlobalData get globalData => GetInstance().find<GlobalData>();
 
   late TabController tabController;
 
   // 监听消息
-  void eventListen() => _subscription = _wsManager.eventStream.listen(
+  void eventListen() => _subscription = wsManager.eventStream.listen(
         (event) {
           if (kDebugMode) print("收到事件: $event");
           if (event['type'] == 'on-receive-msg') {
@@ -57,7 +55,7 @@ class ContactsLogic extends GetxController
         cancelOnError: true, // 如果发生错误，取消订阅
       );
 
-  void onFriendList() async {
+  Future<void> onFriendList() async {
     try {
       final res = await _friendApi.list();
       if (res['code'] == 0) {
@@ -71,16 +69,16 @@ class ContactsLogic extends GetxController
       CustomFlutterToast.showErrorToast("网络错误: $e");
     } finally {
       //判断websocket是否连接
-      if (!_wsManager.isConnected) _wsManager.connect();
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
-  void onChatGroupList() {
+  Future<void> onChatGroupList() async {
     try {
       globalData.onGetUserUnreadInfo();
       _chatGroupApi.list().then((res) {
         if (res['code'] == 0) {
-          debugPrint('chatGroupList is: ${res['data'][0].toString()}');
+          debugPrint('获取群聊列表 : ${res['data'][0].toString()}');
           chatGroupList = res['data'];
           update([const Key("contacts")]);
         } else
@@ -92,10 +90,13 @@ class ContactsLogic extends GetxController
     } catch (e) {
       // 处理其他可能的异常
       CustomFlutterToast.showErrorToast("处理群聊列表时发生错误: $e");
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
-  void onNotifyFriendList() => _notifyApi.friendList().then((res) {
+  Future<void> onNotifyFriendList() => _notifyApi.friendList().then((res) {
         if (res['code'] == 0) {
           notifyFriendList = res['data'];
           update([const Key("contacts")]);
@@ -105,22 +106,51 @@ class ContactsLogic extends GetxController
           (e) => CustomFlutterToast.showErrorToast("获取好友通知列表时发生网络错误: $e"));
 
   Future<void> init() async {
-    currentUserInfo['name'] = _prefs.getString('username');
-    currentUserInfo['portrait'] = _prefs.getString('portrait');
-    currentUserInfo['account'] = _prefs.getString('account');
-    currentUserInfo['sex'] = _prefs.getString('sex');
-    currentUserId = _prefs.getString('userId') ?? '';
-    onNotifyFriendList();
-    onChatGroupList();
-    onFriendList();
+    try {
+      currentUserId = sharedPreferences.getString('userId') ?? '';
+      // 批量获取用户信息
+      currentUserInfo = {
+        'name': sharedPreferences.getString('username'),
+        'portrait': sharedPreferences.getString('portrait'),
+        'account': sharedPreferences.getString('account'),
+        'sex': sharedPreferences.getString('sex'),
+      };
+      // 并行执行网络请求
+      await Future.wait([
+        onNotifyFriendList(),
+        onChatGroupList(),
+        onFriendList(),
+      ]);
+    } catch (e) {
+      if (kDebugMode) print("初始化过程中发生错误: $e");
+      CustomFlutterToast.showErrorToast("网络错误~");
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
+    }
   }
+
+  // Future<void> init() async {
+  //   currentUserInfo['name'] = sharedPreferences.getString('username');
+  //   currentUserInfo['portrait'] = sharedPreferences.getString('portrait');
+  //   currentUserInfo['account'] = sharedPreferences.getString('account');
+  //   currentUserInfo['sex'] = sharedPreferences.getString('sex');
+  //   currentUserId = sharedPreferences.getString('userId') ?? '';
+  //   onNotifyFriendList();
+  //   onChatGroupList();
+  //   onFriendList();
+  // }
 
   void onReadNotify() async {
     try {
       await _notifyApi.read('friend');
-      await _globalData.onGetUserUnreadInfo();
+      await globalData.onGetUserUnreadInfo();
     } catch (e) {
-      CustomFlutterToast.showErrorToast("读取通知失败: $e");
+      if (kDebugMode) print("读取通知失败: $e");
+      // CustomFlutterToast.showErrorToast("读取通知失败: $e");
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -146,6 +176,9 @@ class ContactsLogic extends GetxController
       Get.toNamed('/friend_info', arguments: {'friendId': friend['friendId']});
     } catch (e) {
       CustomFlutterToast.showErrorToast("导航到好友信息页面失败: $e");
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -161,6 +194,9 @@ class ContactsLogic extends GetxController
         CustomFlutterToast.showErrorToast("同意好友请求失败: ${result['msg']}");
     } catch (e) {
       CustomFlutterToast.showErrorToast("网络错误: $e");
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -176,6 +212,9 @@ class ContactsLogic extends GetxController
         CustomFlutterToast.showErrorToast("拒绝好友请求失败: ${result['msg']}");
     } catch (e) {
       CustomFlutterToast.showErrorToast("网络错误: $e");
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -185,6 +224,9 @@ class ContactsLogic extends GetxController
       Get.toNamed("/set_group", arguments: {'groupName': '0', 'friendId': '0'});
     } catch (e) {
       CustomFlutterToast.showErrorToast("导航到群组设置页面失败: $e");
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -201,6 +243,9 @@ class ContactsLogic extends GetxController
       init();
     } catch (e) {
       CustomFlutterToast.showErrorToast("操作失败: $e");
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -263,7 +308,17 @@ class ContactsLogic extends GetxController
       Get.toNamed('/chat_group_info', arguments: {'chatGroupId': group['id']});
     } catch (e) {
       CustomFlutterToast.showErrorToast("导航到群组信息页面失败: $e");
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
+  }
+
+  void onLongPressPortrait() async {
+    final result = await Get.toNamed('/edit_mine');
+    if (result != null)
+      init().then((_) => theme.changeThemeMode(
+          sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
   }
 
   @override
