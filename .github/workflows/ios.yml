@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main  # 或者你的主分支名
+      - dev_1.0  # 或者你的主分支名
   pull_request:
     branches:
-      - main
+      - dev_1.0
 
 jobs:
   ios:
@@ -29,11 +29,11 @@ jobs:
           flutter build ios --release --no-codesign
           cd build/ios/iphoneos
           xcrun -sdk iphoneos PackageApplication -v "${PWD}/Runner.app" -o "${PWD}/app.ipa"
-          mv app.ipa ../../../build/app.ipa  
+          mv app.ipa ../../app.ipa
 
       - name: 上传 Artifact
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: Release
-          path:  build/app.ipa
+          path: build/ios/app.ipa
