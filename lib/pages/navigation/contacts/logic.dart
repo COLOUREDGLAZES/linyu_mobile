@@ -85,8 +85,10 @@ class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
           // 处理非成功状态
           CustomFlutterToast.showErrorToast("获取群聊列表失败: ${res['msg']}");
         // 捕获异常并处理
-      }).catchError(
-          (e) => CustomFlutterToast.showErrorToast("获取群聊列表时发生网络错误: $e"));
+      }).catchError((e) {
+        if (kDebugMode) print("获取群聊列表失败: $e");
+        // CustomFlutterToast.showErrorToast("获取群聊列表时发生网络错误: $e");
+      });
     } catch (e) {
       // 处理其他可能的异常
       CustomFlutterToast.showErrorToast("处理群聊列表时发生错误: $e");

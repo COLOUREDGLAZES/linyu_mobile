@@ -38,7 +38,7 @@ class AboutPage extends CustomWidget<AboutLogic> {
           padding: const EdgeInsets.only(
               left: 16.0, right: 16.0, top: 0, bottom: 40),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Column(
                 children: [
@@ -63,9 +63,27 @@ class AboutPage extends CustomWidget<AboutLogic> {
                       label: '开源地址',
                       value: "https://github.com/DWHengr/linyu_mobile",
                       width: 80),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 60),
                 ],
               ),
+              const SizedBox(height: 30),
+              SelectionArea(
+                child: GestureDetector(
+                  onTap: controller.init,
+                  child: SizedBox(
+                      height: 40,
+                      child: Text(
+                        '${controller.lifeStr['data']['content']}——${controller.lifeStr['data']['origin']}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 5,
+                        overflow: TextOverflow.ellipsis,
+                      )),
+                ),
+              ),
+              const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -84,7 +102,7 @@ class AboutPage extends CustomWidget<AboutLogic> {
                     style: TextStyle(color: Colors.black54),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

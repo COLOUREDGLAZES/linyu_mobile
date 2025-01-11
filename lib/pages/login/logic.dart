@@ -75,7 +75,6 @@ class LoginPageLogic extends GetxController {
 
       final loginResult =
           await _useApi.login(username, encryptedPassword, deviceName);
-
       if (loginResult['code'] == 0) {
         // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
         // 使用循环减少冗余代码
@@ -94,7 +93,7 @@ class LoginPageLogic extends GetxController {
       }
     } catch (e) {
       // 处理异常情况，例如网络错误等
-      _dialog("登录过程中出现错误，请稍后再试~", context);
+      _dialog("登录过程中出现$e错误，请稍后再试~", context);
     }
   }
 
