@@ -51,9 +51,9 @@ jobs:
       - name: flutter build ipa
         run: |
           flutter build ios --release --no-codesign
-          # 使用查找的路径，并使用 sudo 执行
-          PACKAGE_APPLICATION_PATH=$(find /Applications/Xcode*.app -name PackageApplication)
-          sudo xcrun -sdk iphoneos "$PACKAGE_APPLICATION_PATH" -v build/ios/iphoneos/Runner.app -o build/app.ipa
+#           使用查找的路径，并使用 sudo 执行
+#          PACKAGE_APPLICATION_PATH=$(find /Applications/Xcode*.app -name PackageApplication)
+#          sudo xcrun -sdk iphoneos "$PACKAGE_APPLICATION_PATH" -v build/ios/iphoneos/Runner.app -o build/app.ipa
 
 
       - name: 上传 Artifact
