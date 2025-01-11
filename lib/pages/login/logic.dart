@@ -69,28 +69,26 @@ class LoginPageLogic extends GetxController {
       _dialog("用户名或密码不能为空~", context);
       return;
     }
-
     try {
       final encryptedPassword = await passwordEncrypt(password);
-
-      final loginResult =
-          await _useApi.login(username, encryptedPassword, deviceName);
-      if (loginResult['code'] == 0) {
-        // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-        // 使用循环减少冗余代码
-        final userData = loginResult['data'];
-        await Future.wait([
-          _sharedPreferences.setString('x-token', userData['token']),
-          _sharedPreferences.setString('username', userData['username']),
-          _sharedPreferences.setString('userId', userData['userId']),
-          _sharedPreferences.setString('account', userData['account']),
-          _sharedPreferences.setString('portrait', userData['portrait']),
-          _sharedPreferences.setString('sex', userData['sex'] ?? '男'),
-        ]);
-        Get.offAllNamed('/?sex=${userData['sex'] ?? '男'}');
-      } else {
+      if (encryptedPassword.isNotEmpty) {
+        final loginResult =
+            await _useApi.login(username, encryptedPassword, deviceName ?? '');
+        if (loginResult['code'] == 0) {
+          // 使用循环减少冗余代码
+          final userData = loginResult['data'];
+          await Future.wait([
+            _sharedPreferences.setString('x-token', userData['token']),
+            _sharedPreferences.setString('username', userData['username']),
+            _sharedPreferences.setString('userId', userData['userId']),
+            _sharedPreferences.setString('account', userData['account']),
+            _sharedPreferences.setString('portrait', userData['portrait']),
+            _sharedPreferences.setString('sex', userData['sex'] ?? '男'),
+          ]);
+          Get.offAllNamed('/?sex=${userData['sex'] ?? '男'}');
+        }
+      } else
         _dialog("用户名或密码错误，请重试尝试~", context);
-      }
     } catch (e) {
       // 处理异常情况，例如网络错误等
       _dialog("登录过程中出现$e错误，请稍后再试~", context);
