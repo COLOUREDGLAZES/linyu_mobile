@@ -34,7 +34,9 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
 
   void startRecording() async {
     var status = await Permission.microphone.request();
-    if (!status.isGranted) {
+    // status.isLimited
+    // if (!status.isGranted) {
+    if (!await _record.hasPermission()) {
       CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
     }
     if (await Vibration.hasVibrator() ?? false) {
@@ -42,12 +44,14 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
     }
     final directory = await getTemporaryDirectory();
     _filePath = '${directory.path}/voice.wav';
-    await _record.start(
-      path: _filePath,
-      encoder: AudioEncoder.wav,
-      bitRate: 128000,
-      samplingRate: 44100,
-    );
+    if (await _record.hasPermission()) {
+      await _record.start(
+        path: _filePath,
+        encoder: AudioEncoder.wav,
+        bitRate: 128000,
+        samplingRate: 44100,
+      );
+    }
     _startTimer();
     _updateAmplitude();
   }
