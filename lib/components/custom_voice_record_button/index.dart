@@ -44,9 +44,9 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
       if (kDebugMode) print("麦克风权限已授予");
     } else if (status.isDenied) {
       if (kDebugMode) print("麦克风权限被拒绝");
-      CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
     } else if (status.isPermanentlyDenied) {
       // 如果权限永久被拒绝，跳转到系统设置页面
+      CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
       openAppSettings();
     }
 

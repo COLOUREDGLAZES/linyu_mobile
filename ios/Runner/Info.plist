@@ -84,7 +84,7 @@
  <key>NSLocalNetworkUsageDescription</key>
  <string>App不会连接到您所用网络上的设备，只会检测与您本地网关的连通性。用户也可以在 iOS 设备的设置-隐私-本地网络界面修改此App的权限设置。</string>
  <key>NSMicrophoneUsageDescription</key>
- <string>APP需要您的同意，才能使用麦克风，以便于视频录制、语音识别、语音聊天</string>
+ <string>APP需要您的同意，才能使用麦克风，以便于视频录制、语音识别、语音聊天、以及发送语音消息</string>
  <key>NSSpeechRecognitionUsageDescription</key>
  <string>APP需要您的同意，才能进行语音识别，以便于获取更好的使用体验</string>
  <key>NSCameraUsageDescription</key>
@@ -111,6 +111,8 @@
  <string>APP需要您的同意，才能获取媒体库权限权限</string>
  <key>NSVideoSubscriberAccountUsageDescription</key>
  <string>APP需要您的同意， 才能获取AppleTV使用权限</string>
+ <key>PermissionGroupNotification</key>
+    <string>App需要您的同意，才能获取通知权限,包括推送通知、日历提醒、来电提醒等</string>
 
 <key>UIBackgroundModes</key>
 <array>
