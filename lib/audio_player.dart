@@ -65,24 +65,20 @@ class AudioPlayerState extends State<AudioPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            _buildControl(),
-            _buildSlider(constraints.maxWidth),
-            IconButton(
-              icon: const Icon(Icons.delete,
-                  color: Color(0xFF73748D), size: _deleteBtnSize),
-              onPressed: () {
-                stop().then((value) => widget.onDelete());
-              },
-            ),
-          ],
-        );
-      },
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        _buildControl(),
+        _buildSlider(280),
+        IconButton(
+          icon: const Icon(Icons.delete,
+              color: Color(0xFF73748D), size: _deleteBtnSize),
+          onPressed: () {
+            stop().then((value) => widget.onDelete());
+          },
+        ),
+      ],
     );
   }
 
