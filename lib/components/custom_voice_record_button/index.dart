@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 import 'package:vibration/vibration.dart';
 
@@ -34,28 +33,30 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
 
   Future<void> startRecording() async {
     // 请求麦克风权限
-    var status = await Permission.microphone.request();
-    if (!status.isGranted) {
-      CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
-      return; // 直接返回，避免后续操作
-    }
+    // var status = await Permission.microphone.request();
+    // if (!status.isGranted) {
+    //   CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+    //   return; // 直接返回，避免后续操作
+    // }
 
     if (await Vibration.hasVibrator() ?? false) Vibration.vibrate(duration: 50);
 
     try {
-      final directory = await getTemporaryDirectory();
-      _filePath = '${directory.path}/voice.wav';
+      if (await _record.hasPermission()) {
+        final directory = await getTemporaryDirectory();
+        _filePath = '${directory.path}/voice.wav';
 
-      // 开始录音
-      await _record.start(
-        path: _filePath,
-        encoder: AudioEncoder.wav,
-        bitRate: 128000,
-        samplingRate: 44100,
-      );
+        // 开始录音
+        await _record.start(
+          path: _filePath,
+          encoder: AudioEncoder.wav,
+          bitRate: 128000,
+          samplingRate: 44100,
+        );
 
-      _startTimer();
-      _updateAmplitude();
+        _startTimer();
+        _updateAmplitude();
+      }
     } catch (e) {
       // 捕捉异常并处理
       if (kDebugMode) print("录音失败: $e");
@@ -88,6 +89,7 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
   // }
 
   void _startTimer() {
+    _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_recordingSeconds >= 60) {
         _stopRecording(autoStop: true);
