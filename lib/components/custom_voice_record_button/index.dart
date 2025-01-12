@@ -32,29 +32,60 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
 
   GlobalThemeConfig theme = Get.find<GlobalThemeConfig>();
 
-  void startRecording() async {
+  Future<void> startRecording() async {
+    // 请求麦克风权限
     var status = await Permission.microphone.request();
-    // status.isLimited
-    // if (!status.isGranted) {
-    if (!await _record.hasPermission()) {
+    if (!status.isGranted) {
       CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+      return; // 直接返回，避免后续操作
     }
-    if (await Vibration.hasVibrator() ?? false) {
-      Vibration.vibrate(duration: 50);
-    }
-    final directory = await getTemporaryDirectory();
-    _filePath = '${directory.path}/voice.wav';
-    if (await _record.hasPermission()) {
+
+    if (await Vibration.hasVibrator() ?? false) Vibration.vibrate(duration: 50);
+
+    try {
+      final directory = await getTemporaryDirectory();
+      _filePath = '${directory.path}/voice.wav';
+
+      // 开始录音
       await _record.start(
         path: _filePath,
         encoder: AudioEncoder.wav,
         bitRate: 128000,
         samplingRate: 44100,
       );
+
+      _startTimer();
+      _updateAmplitude();
+    } catch (e) {
+      // 捕捉异常并处理
+      if (kDebugMode) print("录音失败: $e");
+      CustomFlutterToast.showErrorToast("录音失败: $e");
     }
-    _startTimer();
-    _updateAmplitude();
   }
+
+  // void startRecording() async {
+  //   var status = await Permission.microphone.request();
+  //   // status.isLimited
+  //   // if (!status.isGranted) {
+  //   if (!await _record.hasPermission()) {
+  //     CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+  //   }
+  //   if (await Vibration.hasVibrator() ?? false) {
+  //     Vibration.vibrate(duration: 50);
+  //   }
+  //   final directory = await getTemporaryDirectory();
+  //   _filePath = '${directory.path}/voice.wav';
+  //   if (await _record.hasPermission()) {
+  //     await _record.start(
+  //       path: _filePath,
+  //       encoder: AudioEncoder.wav,
+  //       bitRate: 128000,
+  //       samplingRate: 44100,
+  //     );
+  //   }
+  //   _startTimer();
+  //   _updateAmplitude();
+  // }
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -111,58 +142,6 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
       _recordingSeconds = 0;
       _amplitudes = List.filled(20, 0.0);
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onLongPressStart: (details) {
-        startRecording();
-        setState(() {
-          _isRecording = true;
-          _isCanceled = false;
-          _startPosition = details.globalPosition;
-          _currentPosition = _startPosition;
-        });
-        _showRecordDialog(context);
-      },
-      onLongPressMoveUpdate: (details) {
-        setState(() {
-          _currentPosition = details.globalPosition;
-          if (_currentPosition.dy < _startPosition.dy - 50) {
-            if (!_isCanceled) {
-              _isCanceled = true;
-              Vibration.vibrate(duration: 50);
-            }
-          } else {
-            if (_isCanceled) {
-              _isCanceled = false;
-            }
-          }
-        });
-        _overlayEntry.markNeedsBuild();
-      },
-      onLongPressEnd: (details) {
-        _stopRecording();
-      },
-      child: Container(
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: Text(
-            "按住 说话",
-            style: TextStyle(
-              fontSize: 14,
-              color: theme.primaryColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   void _showRecordDialog(BuildContext context) {
@@ -239,5 +218,57 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
       ),
     );
     Overlay.of(context).insert(_overlayEntry);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onLongPressStart: (details) {
+        _showRecordDialog(context);
+        setState(() {
+          _isRecording = true;
+          _isCanceled = false;
+          _startPosition = details.globalPosition;
+          _currentPosition = _startPosition;
+        });
+        startRecording();
+      },
+      onLongPressMoveUpdate: (details) {
+        setState(() {
+          _currentPosition = details.globalPosition;
+          if (_currentPosition.dy < _startPosition.dy - 50) {
+            if (!_isCanceled) {
+              _isCanceled = true;
+              Vibration.vibrate(duration: 50);
+            }
+          } else {
+            if (_isCanceled) {
+              _isCanceled = false;
+            }
+          }
+        });
+        _overlayEntry.markNeedsBuild();
+      },
+      onLongPressEnd: (details) {
+        _stopRecording();
+      },
+      child: Container(
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Text(
+            "按住 说话",
+            style: TextStyle(
+              fontSize: 14,
+              color: theme.primaryColor,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

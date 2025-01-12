@@ -87,40 +87,40 @@ jobs:
           name: linyu_mobile-ios-Release
           path: build/app.ipa
 
-  upload:
-    runs-on: ubuntu-latest
-
-    needs:
-      - android
-      - iOS
-    steps:
-      - name: 下载 Android 制品
-        uses: actions/download-artifact@v3
-        with:
-          name: linyu_mobile-android-release
-          path: ./linyu_mobile-android-release.zip    # 下载到 android-release 文件夹
-
-      - name: 下载 iOS 制品
-        uses: actions/download-artifact@v3
-        with:
-          name: linyu_mobile-ios-Release
-          path: ./linyu_mobile-ios-Release.zip   # 下载到 Pilipala-Release 文件夹
-      - name: Install dependencies
-        run: sudo apt-get install tree -y
-
-      - name: Get version
-        id: version
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >>$GITHUB_OUTPUT
-
-      - name: Upload Release
-        uses: ncipollo/release-action@v1
-        with:
-          name: v${{ steps.version.outputs.version }}
-          token: ${{ secrets.GIT_TOKEN }}
-          omitBodyDuringUpdate: true
-          omitNameDuringUpdate: true
-          omitPrereleaseDuringUpdate: true
-          allowUpdates: true
-          artifacts: |
-            android-release/*
-            Pilipala-Release/*   # 上传两个文件夹下的所有文件
+#  upload:
+#    runs-on: ubuntu-latest
+#
+#    needs:
+#      - android
+#      - iOS
+#    steps:
+#      - name: 下载 Android 制品
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: linyu_mobile-android-release
+#          path: ./linyu_mobile-android-release.zip    # 下载到 android-release 文件夹
+#
+#      - name: 下载 iOS 制品
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: linyu_mobile-ios-Release
+#          path: ./linyu_mobile-ios-Release.zip   # 下载到 Pilipala-Release 文件夹
+#      - name: Install dependencies
+#        run: sudo apt-get install tree -y
+#
+#      - name: Get version
+#        id: version
+#        run: echo "version=${GITHUB_REF#refs/tags/v}" >>$GITHUB_OUTPUT
+#
+#      - name: Upload Release
+#        uses: ncipollo/release-action@v1
+#        with:
+#          name: v${{ steps.version.outputs.version }}
+#          token: ${{ secrets.GIT_TOKEN }}
+#          omitBodyDuringUpdate: true
+#          omitNameDuringUpdate: true
+#          omitPrereleaseDuringUpdate: true
+#          allowUpdates: true
+#          artifacts: |
+#            android-release/*
+#            Pilipala-Release/*   # 上传两个文件夹下的所有文件

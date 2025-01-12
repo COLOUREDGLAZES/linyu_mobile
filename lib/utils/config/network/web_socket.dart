@@ -42,11 +42,11 @@ class WebSocketUtil extends GetxController {
 
   WebSocketUtil._internal() {
     //使用的内网穿透
-    // String wsIp = '192.168.101.4';
-    String wsIp = '114.96.70.115';
+    String wsIp = '192.168.101.4';
+    // String wsIp = '114.96.70.115';
     // String wsIp = '47.99.61.62';
-    // String port = '9100';
-    String port = '19100';
+    String port = '9100';
+    // String port = '19100';
     // _websocketIp =
     //     _preferences.getString('websocket_ip') ?? 'ws://$wsIp:$port';
     _websocketIp = websocketUrl ?? 'ws://$wsIp:$port';

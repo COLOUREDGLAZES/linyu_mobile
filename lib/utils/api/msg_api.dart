@@ -71,9 +71,9 @@ class MsgApi {
           await _dio.post('/v1/api/message/send/file/form', data: formData);
       return response.data ?? {}; // 增加空值处理
     } on DioException catch (e) {
-      if (kDebugMode) print('请求失败: ${e.message}');
+      if (kDebugMode) print('请求失败: $e');
       // 错误处理
-      return {'error': e.message}; // 返回错误信息
+      return {'error': e}; // 返回错误信息
     } catch (e) {
       if (kDebugMode) print('发生未知错误: $e');
       // 错误处理
