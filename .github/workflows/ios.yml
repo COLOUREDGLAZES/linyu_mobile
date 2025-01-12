@@ -98,13 +98,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: linyu_mobile-android-release
-          path: ./linyu_mobile-android-release    # 下载到 android-release 文件夹
+          path: ./linyu_mobile-android-release.zip    # 下载到 android-release 文件夹
 
       - name: 下载 iOS 制品
         uses: actions/download-artifact@v3
         with:
           name: linyu_mobile-ios-Release
-          path: ./linyu_mobile-ios-Release   # 下载到 Pilipala-Release 文件夹
+          path: ./linyu_mobile-ios-Release.zip   # 下载到 Pilipala-Release 文件夹
       - name: Install dependencies
         run: sudo apt-get install tree -y
 
