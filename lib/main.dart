@@ -1,17 +1,18 @@
+import 'package:flutter/foundation.dart' show Key, UniqueKey, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart'
     show Get, GetMaterialApp, GetNavigation, Inst, SmartManagement, Transition;
-// import 'package:linyu_mobile/components/CustomDialog/index.dart';
-// import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
+import 'package:linyu_mobile/components/CustomDialog/index.dart';
+import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/controller_binding.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:linyu_mobile/utils/config/network/http.dart' as http;
 import 'package:linyu_mobile/utils/config/network/web_socket.dart' as websocket;
 
-// import 'audio_player.dart';
-// import 'components/custom_voice_record_button/index.dart';
+import 'audio_player.dart';
+import 'components/custom_voice_record_button/index.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,7 +58,6 @@ class MyApp extends StatelessWidget {
         getPages: pageRoute,
         //路由从右侧向左滑入（对GetX有效）
         defaultTransition: Transition.rightToLeft,
-        initialRoute: initialRoute,
         //路由监听
         routingCallback: routingCallback,
         theme: ThemeData(
@@ -72,28 +72,29 @@ class MyApp extends StatelessWidget {
           highlightColor: const Color(0x80EAEAEA),
           useMaterial3: true,
         ),
-        home: initialPage,
-        // home: CustomVoiceRecordButton(
-        //   onFinish: (path, time) {
-        //     CustomFlutterToast.showSuccessToast('录音已保存至$path');
-        //     if (kDebugMode) print('录音已保存至$path');
-        //     CustomDialog.showTipDialog(Get.context!, text: '录音已保存至$path',
-        //         onOk: () {
-        //       CustomFlutterToast.showSuccessToast('录音已保存至$path');
-        //     },
-        //         child: Container(
-        //           height: 100,
-        //           width: 100,
-        //           color: Colors.white,
-        //           child: AudioPlayer(
-        //             source: path,
-        //             onDelete: () {
-        //               Get.back();
-        //             },
-        //           ),
-        //         ));
-        //   },
-        // ),
+        // home: initialPage,
+        // initialRoute: initialRoute,
+        home: CustomVoiceRecordButton(
+          onFinish: (path, time) {
+            CustomFlutterToast.showSuccessToast('录音已保存至$path');
+            if (kDebugMode) print('录音已保存至$path');
+            CustomDialog.showTipDialog(Get.context!, text: '录音已保存至$path',
+                onOk: () {
+              CustomFlutterToast.showSuccessToast('录音已保存至$path');
+            },
+                child: Container(
+                  height: 100,
+                  width: 100,
+                  color: Colors.white,
+                  child: AudioPlayer(
+                    source: path,
+                    onDelete: () {
+                      Get.back();
+                    },
+                  ),
+                ));
+          },
+        ),
       );
 }
 
