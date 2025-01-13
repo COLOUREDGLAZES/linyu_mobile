@@ -19,7 +19,7 @@ class CustomVoiceRecordButton extends StatefulWidget {
 }
 
 class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
-  final Record _record = Record();
+  final AudioRecorder _record = AudioRecorder();
   bool _isRecording = false;
   bool _isCanceled = false;
   Offset _startPosition = Offset.zero;
@@ -50,7 +50,7 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
     //   openAppSettings();
     // }
 
-    if (await Vibration.hasVibrator() ?? false) Vibration.vibrate(duration: 50);
+    // if (await Vibration.hasVibrator() ?? false) Vibration.vibrate(duration: 50);
 
     try {
       if (!await _record.hasPermission()) {
@@ -62,10 +62,13 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
 
       // 开始录音
       await _record.start(
-        path: _filePath,
-        encoder: AudioEncoder.wav,
-        bitRate: 128000,
-        samplingRate: 44100,
+        const RecordConfig(
+          encoder: AudioEncoder.wav,
+        ),
+        path: _filePath!,
+        // encoder: AudioEncoder.wav,
+        // bitRate: 128000,
+        // samplingRate: 44100,
       );
 
       _startTimer();
@@ -245,7 +248,6 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
         //   CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
         //   return; // 直接返回，避免后续操作
         // }
-
         if (status.isGranted) {
           if (kDebugMode) print("麦克风权限已授予");
         } else if (status.isDenied) {
