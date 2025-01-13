@@ -250,43 +250,43 @@ class _AudioRecorderState extends State<AudioRecorder> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GestureDetector(
-              // onTapDown: (details) async {
-              //   var status = await Permission.microphone.request();
-              //   // if (!status.isGranted) {
-              //   //   CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
-              //   //   return; // 直接返回，避免后续操作
-              //   // }
-              //
-              //   if (status.isGranted) {
-              //     if (kDebugMode) print("麦克风权限已授予");
-              //   } else if (status.isDenied) {
-              //     if (kDebugMode) print("麦克风权限被拒绝");
-              //   } else if (status.isPermanentlyDenied) {
-              //     // 如果权限永久被拒绝，跳转到系统设置页面
-              //     CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
-              //     openAppSettings();
-              //   }
-              // },
-              onTap: () {
-                (_recordState != RecordState.stop) ? _stop() : _start();
-              },
-              // onLongPressStart: (details) {
-              //   _start();
-              // },
-              // onLongPressEnd: (details) {
-              //   _stop();
-              // },
-              child: const Text('按住 说话'),
-            ),
-            const Row(
+            // GestureDetector(
+            //   // onTapDown: (details) async {
+            //   //   var status = await Permission.microphone.request();
+            //   //   // if (!status.isGranted) {
+            //   //   //   CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+            //   //   //   return; // 直接返回，避免后续操作
+            //   //   // }
+            //   //
+            //   //   if (status.isGranted) {
+            //   //     if (kDebugMode) print("麦克风权限已授予");
+            //   //   } else if (status.isDenied) {
+            //   //     if (kDebugMode) print("麦克风权限被拒绝");
+            //   //   } else if (status.isPermanentlyDenied) {
+            //   //     // 如果权限永久被拒绝，跳转到系统设置页面
+            //   //     CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+            //   //     openAppSettings();
+            //   //   }
+            //   // },
+            //   onTap: () {
+            //     (_recordState != RecordState.stop) ? _stop() : _start();
+            //   },
+            //   // onLongPressStart: (details) {
+            //   //   _start();
+            //   // },
+            //   // onLongPressEnd: (details) {
+            //   //   _stop();
+            //   // },
+            //   child: const Text('按住 说话'),
+            // ),
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // _buildRecordStopControl(),
-                // const SizedBox(width: 20),
-                // _buildPauseResumeControl(),
-                // const SizedBox(width: 20),
-                // _buildText(),
+                _buildRecordStopControl(),
+                const SizedBox(width: 20),
+                _buildPauseResumeControl(),
+                const SizedBox(width: 20),
+                _buildText(),
               ],
             ),
             if (_amplitude != null) ...[
