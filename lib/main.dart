@@ -102,6 +102,9 @@ class MyApp extends StatelessWidget {
 //
 // import 'package:flutter/foundation.dart';
 // import 'package:flutter/material.dart';
+// import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
+// import 'package:path_provider/path_provider.dart';
+// import 'package:permission_handler/permission_handler.dart';
 // import 'package:record/record.dart';
 //
 // import 'audio_player.dart';
@@ -200,8 +203,14 @@ class MyApp extends StatelessWidget {
 //
 //         // final devs = await _audioRecorder.listInputDevices();
 //         // final isRecording = await _audioRecorder.isRecording();
-//
-//         await _audioRecorder.start();
+//         final directory = await getTemporaryDirectory();
+//         final filePath = '${directory.path}/voice.wav';
+//         await _audioRecorder.start(
+//           path: filePath,
+//           encoder: AudioEncoder.wav,
+//           bitRate: 128000,
+//           samplingRate: 44100,
+//         );
 //         _recordDuration = 0;
 //
 //         _startTimer();
@@ -241,14 +250,40 @@ class MyApp extends StatelessWidget {
 //         body: Column(
 //           mainAxisAlignment: MainAxisAlignment.center,
 //           children: [
-//             Row(
+//             GestureDetector(
+//               onTapDown: (details) async {
+//                 var status = await Permission.microphone.request();
+//                 // if (!status.isGranted) {
+//                 //   CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+//                 //   return; // 直接返回，避免后续操作
+//                 // }
+//
+//                 if (status.isGranted) {
+//                   if (kDebugMode) print("麦克风权限已授予");
+//                 } else if (status.isDenied) {
+//                   if (kDebugMode) print("麦克风权限被拒绝");
+//                 } else if (status.isPermanentlyDenied) {
+//                   // 如果权限永久被拒绝，跳转到系统设置页面
+//                   CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+//                   openAppSettings();
+//                 }
+//               },
+//               onLongPressStart: (details) {
+//                 _start();
+//               },
+//               onLongPressEnd: (details) {
+//                 _stop();
+//               },
+//               child: const Text('按住 说话'),
+//             ),
+//             const Row(
 //               mainAxisAlignment: MainAxisAlignment.center,
 //               children: <Widget>[
-//                 _buildRecordStopControl(),
-//                 const SizedBox(width: 20),
-//                 _buildPauseResumeControl(),
-//                 const SizedBox(width: 20),
-//                 _buildText(),
+//                 // _buildRecordStopControl(),
+//                 // const SizedBox(width: 20),
+//                 // _buildPauseResumeControl(),
+//                 // const SizedBox(width: 20),
+//                 // _buildText(),
 //               ],
 //             ),
 //             if (_amplitude != null) ...[

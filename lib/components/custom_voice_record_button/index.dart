@@ -33,26 +33,30 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
   GlobalThemeConfig theme = Get.find<GlobalThemeConfig>();
 
   Future<void> startRecording() async {
-    // 请求麦克风权限
-    var status = await Permission.microphone.request();
-    // if (!status.isGranted) {
+    // // 请求麦克风权限
+    // var status = await Permission.microphone.request();
+    // // if (!status.isGranted) {
+    // //   CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+    // //   return; // 直接返回，避免后续操作
+    // // }
+    //
+    // if (status.isGranted) {
+    //   if (kDebugMode) print("麦克风权限已授予");
+    // } else if (status.isDenied) {
+    //   if (kDebugMode) print("麦克风权限被拒绝");
+    // } else if (status.isPermanentlyDenied) {
+    //   // 如果权限永久被拒绝，跳转到系统设置页面
     //   CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
-    //   return; // 直接返回，避免后续操作
+    //   openAppSettings();
     // }
-
-    if (status.isGranted) {
-      if (kDebugMode) print("麦克风权限已授予");
-    } else if (status.isDenied) {
-      if (kDebugMode) print("麦克风权限被拒绝");
-    } else if (status.isPermanentlyDenied) {
-      // 如果权限永久被拒绝，跳转到系统设置页面
-      CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
-      openAppSettings();
-    }
 
     if (await Vibration.hasVibrator() ?? false) Vibration.vibrate(duration: 50);
 
     try {
+      if (!await _record.hasPermission()) {
+        CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+        return;
+      }
       final directory = await getTemporaryDirectory();
       _filePath = '${directory.path}/voice.wav';
 
@@ -234,6 +238,24 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTapDown: (details) async {
+        // 请求麦克风权限
+        var status = await Permission.microphone.request();
+        // if (!status.isGranted) {
+        //   CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+        //   return; // 直接返回，避免后续操作
+        // }
+
+        if (status.isGranted) {
+          if (kDebugMode) print("麦克风权限已授予");
+        } else if (status.isDenied) {
+          if (kDebugMode) print("麦克风权限被拒绝");
+        } else if (status.isPermanentlyDenied) {
+          // 如果权限永久被拒绝，跳转到系统设置页面
+          CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+          openAppSettings();
+        }
+      },
       onLongPressStart: (details) {
         startRecording();
         setState(() {
