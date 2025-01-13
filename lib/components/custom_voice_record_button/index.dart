@@ -235,14 +235,14 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onLongPressStart: (details) {
-        _showRecordDialog(context);
+        startRecording();
         setState(() {
           _isRecording = true;
           _isCanceled = false;
           _startPosition = details.globalPosition;
           _currentPosition = _startPosition;
         });
-        startRecording();
+        _showRecordDialog(context);
       },
       onLongPressMoveUpdate: (details) {
         setState(() {
