@@ -17,7 +17,7 @@ project 'Runner', {
 
 target 'Runner' do
   use_frameworks!
-    flutter_install_all_ios_pods()
+    # flutter_install_all_ios_pods()
   pod 'AppCenter', '~> 5.0.0'
   pod 'AppCenterAnalytics', '~> 5.0.0'
   pod 'AppCenterCrashes', '~> 5.0.0'
