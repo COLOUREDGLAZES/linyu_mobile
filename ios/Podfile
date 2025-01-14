@@ -13,7 +13,7 @@ project 'Runner', {
   'Release' => :release,
 }
 
-flutter_ios_podfile_setup()
+# flutter_ios_podfile_setup()
 
 target 'Runner' do
   use_frameworks!
