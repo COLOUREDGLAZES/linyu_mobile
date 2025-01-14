@@ -2,7 +2,7 @@
 platform :ios, '15.5.0'
 
 # 添加 workspace 配置
-workspace 'Runner.xcworkspace'
+workspace 'ios/Runner.xcworkspace/'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
