@@ -110,6 +110,9 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                           Obx(
                             () => CustomTextField(
                               hintText: '请输入账号',
+                              focusNode: controller.accountFocusNode,
+                              onEditingComplete: () => FocusScope.of(context)
+                                  .requestFocus(controller.passwordFocusNode),
                               iconData: const IconData(0xe60d,
                                   fontFamily: 'IconFont'),
                               controller: controller.usernameController,
@@ -123,6 +126,7 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                           Obx(
                             () => CustomTextField(
                               hintText: '请输入密码',
+                              focusNode: controller.passwordFocusNode,
                               iconData: const IconData(0xe620,
                                   fontFamily: 'IconFont'),
                               controller: controller.passwordController,

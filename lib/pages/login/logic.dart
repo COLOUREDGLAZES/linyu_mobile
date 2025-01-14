@@ -21,6 +21,10 @@ class LoginPageLogic extends GetxController {
 
   RxInt passwordTextLength = 0.obs;
 
+  final FocusNode accountFocusNode = new FocusNode();
+
+  final FocusNode passwordFocusNode = new FocusNode();
+
   //用户账号输入长度
   void onAccountTextChanged(String value) {
     accountTextLength.value = value.length;
@@ -114,6 +118,11 @@ class LoginPageLogic extends GetxController {
   void toSetting() async {
     final result = await Get.toNamed('/setting');
     if (!_wsManager.isConnected) _wsManager.connect();
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
   }
 
   @override

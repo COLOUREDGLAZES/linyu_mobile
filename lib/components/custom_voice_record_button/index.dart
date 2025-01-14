@@ -242,19 +242,16 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (details) async {
-        // 请求麦克风权限
+        // Request microphone permission
         var status = await Permission.microphone.request();
-        // if (!status.isGranted) {
-        //   CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
-        //   return; // 直接返回，避免后续操作
-        // }
         if (status.isGranted) {
-          if (kDebugMode) print("麦克风权限已授予");
+          if (kDebugMode) print("Microphone permission granted.");
         } else if (status.isDenied) {
-          if (kDebugMode) print("麦克风权限被拒绝");
+          if (kDebugMode) print("Microphone permission denied.");
         } else if (status.isPermanentlyDenied) {
-          // 如果权限永久被拒绝，跳转到系统设置页面
-          CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+          // If the permission is permanently denied, jump to the system settings page.
+          CustomFlutterToast.showErrorToast(
+              "Permission application failed. Please manually turn on microphone permission in settings.");
           openAppSettings();
         }
       },
