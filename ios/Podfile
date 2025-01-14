@@ -9,7 +9,7 @@ use_frameworks!
 # 添加 workspace 配置
 workspace 'ios/Runner.xcworkspace/'
 
-flutter_ios_podfile_setup()
+# flutter_ios_podfile_setup()
 
 target 'Runner' do
   use_frameworks!
