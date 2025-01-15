@@ -37,6 +37,8 @@ void cropPicture(ImageSource? type, UploadPictureCallback uploadPicture,
       ),
       iosUiSettings: const IOSUiSettings(
         title: '剪切',
+        cancelButtonTitle: '取消',
+        doneButtonTitle: '完成',
       ),
     );
 
