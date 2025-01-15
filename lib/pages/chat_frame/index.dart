@@ -285,7 +285,9 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                           image: NetworkImage(controller.chatBackground),
                         ),
                       )
-                    : null,
+                    : const BoxDecoration(
+                        color: Color(0xFFF9FBFF),
+                      ),
                 child: Column(
                   children: [
                     Expanded(
