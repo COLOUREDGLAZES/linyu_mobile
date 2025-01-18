@@ -41,23 +41,23 @@ class LoginPageLogic extends GetxController {
     String content,
     BuildContext context, [
     String title = '登录失败',
-  ]) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(content),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("确定"),
-          ),
-        ],
-      ),
-    );
-  }
+  ]) =>
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("确定"),
+            ),
+          ],
+        ),
+      );
 
   void login(context) async {
+    if (passwordFocusNode.hasFocus) passwordFocusNode.unfocus();
     final lifeStr = await _msgApi.getLifeString();
 
     if (kDebugMode) print('get lifeStr: $lifeStr');
@@ -81,7 +81,8 @@ class LoginPageLogic extends GetxController {
         if (loginResult['code'] == 0) {
           // 使用循环减少冗余代码
           final userData = loginResult['data'];
-          await Future.wait([
+          if (kDebugMode) print('userData: $userData');
+          final List<bool> setSharedPreferencesResult = await Future.wait([
             _sharedPreferences.setString('x-token', userData['token']),
             _sharedPreferences.setString('username', userData['username']),
             _sharedPreferences.setString('userId', userData['userId']),
@@ -89,6 +90,11 @@ class LoginPageLogic extends GetxController {
             _sharedPreferences.setString('portrait', userData['portrait']),
             _sharedPreferences.setString('sex', userData['sex'] ?? '男'),
           ]);
+          for (bool result in setSharedPreferencesResult)
+            if (!result) {
+              _dialog("登录失败，请稍后再试~", context);
+              return;
+            }
           Get.offAllNamed('/?sex=${userData['sex'] ?? '男'}');
         }
       } else
@@ -105,30 +111,40 @@ class LoginPageLogic extends GetxController {
 
   Future<void> launchURL(String url) async {
     final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-    } else {
-      throw 'Could not launch $url';
+    try {
+      if (await canLaunchUrl(uri))
+        await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+      else
+        _dialog("无法打开链接: $url", Get.context!);
+    } catch (e) {
+      _dialog("打开链接时发生错误: $e", Get.context!);
     }
   }
 
   void toSetting() async {
-    final result = await Get.toNamed('/setting');
-    if (!_wsManager.isConnected) _wsManager.connect();
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
+    try {
+      final result = await Get.toNamed('/setting');
+      if (!_wsManager.isConnected) _wsManager.connect();
+    } catch (e) {
+      // 处理导航到设置页面时可能出现的错误
+      _dialog("导航到设置页面时出现错误：$e，请稍后再试~", Get.context!);
+    }
   }
 
   @override
   void onClose() {
-    super.onClose();
-    usernameController.dispose();
-    passwordController.dispose();
+    try {
+      usernameController.dispose();
+      passwordController.dispose();
+      accountFocusNode.dispose();
+      passwordFocusNode.dispose();
+    } catch (e) {
+      if (kDebugMode) print('onClose error: $e');
+    } finally {
+      super.onClose();
+    }
   }
 }

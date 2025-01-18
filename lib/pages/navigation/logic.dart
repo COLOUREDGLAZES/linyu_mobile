@@ -38,7 +38,12 @@ class NavigationLogic extends GetxController {
 
   int lastExitTime = 0;
 
-  bool isOpenDrawer = false;
+  bool _isOpenDrawer = false;
+  bool get isOpenDrawer => _isOpenDrawer;
+  set isOpenDrawer(bool value) {
+    _isOpenDrawer = value;
+    update([const Key('main')]);
+  }
 
   Future<void> _initThemeData() async {
     late String sex = Get.parameters['sex'] ?? "男";

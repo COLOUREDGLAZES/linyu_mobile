@@ -27,7 +27,7 @@ class EditMineLogic extends Logic<EditMinePage> {
   //签名输入框控制器
   final TextEditingController signatureController = new TextEditingController();
 
-  //签名输入框控制器
+  //生日输入框控制器
   final TextEditingController birthdayController = new TextEditingController();
 
   //当前用户信息

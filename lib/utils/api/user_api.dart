@@ -74,12 +74,13 @@ class UserApi {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> register(String username, String account,
-      String password, String email, String code) async {
+  Future<Map<String, dynamic>> register(String username, String birthday,
+      String account, String password, String email, String code) async {
     final response = await _dio.post(
       '/v1/api/user/register',
       data: {
         'username': username,
+        'birthday': birthday,
         'account': account,
         'password': password,
         'email': email,

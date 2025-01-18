@@ -16,8 +16,8 @@ pluginManagement {
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         gradlePluginPortal()
         google()
-//        jcenter()
         mavenCentral()
+//        jcenter()
 //        google()
 //        mavenCentral()
 //        gradlePluginPortal()

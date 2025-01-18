@@ -32,7 +32,7 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
 
   GlobalThemeConfig theme = Get.find<GlobalThemeConfig>();
 
-  Future<void> startRecording() async {
+  Future<void> _startRecording() async {
     // // 请求麦克风权限
     // var status = await Permission.microphone.request();
     // // if (!status.isGranted) {
@@ -238,25 +238,26 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
     Overlay.of(context).insert(_overlayEntry);
   }
 
+  void _permissionRequest() async {
+    // 请求麦克风权限
+    var status = await Permission.microphone.request();
+    if (status.isGranted) {
+      if (kDebugMode) print("麦克风权限已授予");
+    } else if (status.isDenied) {
+      if (kDebugMode) print("麦克风权限被拒绝");
+    } else if (status.isPermanentlyDenied) {
+      // 如果权限永久被拒绝，跳转到系统设置页面
+      CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+      openAppSettings();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (details) async {
-        // Request microphone permission
-        var status = await Permission.microphone.request();
-        if (status.isGranted) {
-          if (kDebugMode) print("Microphone permission granted.");
-        } else if (status.isDenied) {
-          if (kDebugMode) print("Microphone permission denied.");
-        } else if (status.isPermanentlyDenied) {
-          // If the permission is permanently denied, jump to the system settings page.
-          CustomFlutterToast.showErrorToast(
-              "Permission application failed. Please manually turn on microphone permission in settings.");
-          openAppSettings();
-        }
-      },
+      onTapDown: (details) async => _permissionRequest(),
       onLongPressStart: (details) {
-        startRecording();
+        _startRecording();
         setState(() {
           _isRecording = true;
           _isCanceled = false;

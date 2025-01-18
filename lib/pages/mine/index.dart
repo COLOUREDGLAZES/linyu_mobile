@@ -220,7 +220,7 @@ class MinePage extends CustomWidget<MineLogic> {
                       _minorSelectButton(
                           '设置', 'mine-set.png', controller.toSetting),
                       const SizedBox(height: 30),
-                      _leastSelectButton('切换账号', () {}),
+                      _leastSelectButton('切换账号', controller.toChangeAccount),
                       const SizedBox(height: 2),
                       _leastSelectButton('退出', controller.handlerLogout,
                           color: theme.errorColor),

@@ -49,6 +49,10 @@ class MineLogic extends Logic {
     }
   }
 
+  void toChangeAccount() async {
+    final result = await Get.toNamed('/change_accounts');
+  }
+
   @override
   void onInit() {
     init().then((_) {

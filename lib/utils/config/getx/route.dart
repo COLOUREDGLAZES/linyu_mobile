@@ -1,7 +1,23 @@
 import 'package:flutter/widgets.dart' show Key, Widget, debugPrint;
 import 'package:get/get.dart' show GetPage, Transition;
+import 'package:linyu_mobile/pages/change_accounts/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_setting/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/index.dart';
+import 'package:linyu_mobile/pages/chat_list/index.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_member/index.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_notice/add_chat_group_notice/index.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/chat_group_notice/index.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/index.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/set_group_name/index.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/set_group_nickname/index.dart';
+import 'package:linyu_mobile/pages/contacts/chat_group_information/set_group_remark/index.dart';
+import 'package:linyu_mobile/pages/contacts/create_chat_group/index.dart';
+import 'package:linyu_mobile/pages/contacts/create_chat_group/select_user/index.dart';
+import 'package:linyu_mobile/pages/contacts/friend_information/index.dart';
+import 'package:linyu_mobile/pages/contacts/friend_information/set_group/index.dart';
+import 'package:linyu_mobile/pages/contacts/friend_information/set_remark/index.dart';
+import 'package:linyu_mobile/pages/contacts/index.dart';
+import 'package:linyu_mobile/pages/contacts/user_select/index.dart';
 import 'package:linyu_mobile/pages/file_details/index.dart';
 import 'package:linyu_mobile/pages/image_viewer/image_viewer_update/index.dart';
 import 'package:linyu_mobile/pages/image_viewer/index.dart';
@@ -9,31 +25,13 @@ import 'package:linyu_mobile/pages/add_friend/friend_info/index.dart';
 import 'package:linyu_mobile/pages/add_friend/friend_request/index.dart';
 import 'package:linyu_mobile/pages/add_friend/index.dart';
 import 'package:linyu_mobile/pages/login/index.dart';
-import 'package:linyu_mobile/pages/navigation/chat_list/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/chat_group_information/chat_group_member/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/chat_group_information/chat_group_notice/add_chat_group_notice/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/chat_group_information/chat_group_notice/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/chat_group_information/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/chat_group_information/set_group_name/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/chat_group_information/set_group_nickname/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/chat_group_information/set_group_remark/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/create_chat_group/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/create_chat_group/select_user/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/friend_information/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/friend_information/set_group/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/friend_information/set_remark/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/index.dart';
-import 'package:linyu_mobile/pages/navigation/contacts/user_select/index.dart';
+import 'package:linyu_mobile/pages/mine/about/index.dart';
+import 'package:linyu_mobile/pages/mine/edit/index.dart';
+import 'package:linyu_mobile/pages/mine/index.dart';
+import 'package:linyu_mobile/pages/mine/mine_qr_code/index.dart';
+import 'package:linyu_mobile/pages/mine/my_talk/index.dart';
+import 'package:linyu_mobile/pages/mine/system_notify/index.dart';
 import 'package:linyu_mobile/pages/navigation/index.dart';
-import 'package:linyu_mobile/pages/navigation/mine/about/index.dart';
-import 'package:linyu_mobile/pages/navigation/mine/edit/index.dart';
-import 'package:linyu_mobile/pages/navigation/mine/index.dart';
-import 'package:linyu_mobile/pages/navigation/mine/mine_qr_code/index.dart';
-import 'package:linyu_mobile/pages/navigation/mine/my_talk/index.dart';
-import 'package:linyu_mobile/pages/navigation/mine/system_notify/index.dart';
-import 'package:linyu_mobile/pages/navigation/talk/index.dart';
-import 'package:linyu_mobile/pages/navigation/talk/talk_create/index.dart';
-import 'package:linyu_mobile/pages/navigation/talk/talk_details/index.dart';
 import 'package:linyu_mobile/pages/password/retrieve/index.dart';
 import 'package:linyu_mobile/pages/password/update/index.dart';
 import 'package:linyu_mobile/pages/qr_code_scan/index.dart';
@@ -43,6 +41,9 @@ import 'package:linyu_mobile/pages/qr_code_scan/qr_other_result/index.dart';
 import 'package:linyu_mobile/pages/re_forward/index.dart';
 import 'package:linyu_mobile/pages/register/index.dart';
 import 'package:linyu_mobile/pages/setting/index.dart';
+import 'package:linyu_mobile/pages/talk/index.dart';
+import 'package:linyu_mobile/pages/talk/talk_create/index.dart';
+import 'package:linyu_mobile/pages/talk/talk_details/index.dart';
 import 'package:linyu_mobile/pages/video_chat/index.dart';
 import 'controller_binding.dart';
 
@@ -283,6 +284,12 @@ class AppRoutes {
         name: '/my_talk_page',
         page: () => MyTalkPage(key: const Key('my_talk_page')),
         binding: ControllerBinding(),
+      ),
+      GetPage(
+        name: '/change_accounts',
+        page: () => ChangeAccountsPage(key: const Key('change_accounts')),
+        binding: ControllerBinding(),
+        transition: Transition.downToUp,
       ),
     ];
     final Map<Type, Widget> widgetMap = {};

@@ -45,7 +45,7 @@ class RegisterPage extends CustomWidget<RegisterPageLogic> {
                   "请填写相关注册信息。",
                   style: TextStyle(fontSize: 14),
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 15.0),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     vertical: 20.0,
@@ -62,6 +62,88 @@ class RegisterPage extends CustomWidget<RegisterPageLogic> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
+                      // CustomUpdatePortrait(
+                      //     // isEdit: controller.isEdit,
+                      //     isEdit: true,
+                      //     onTap: () => controller.selectPortrait(),
+                      //     // onTap: () {},
+                      //     // url: controller.currentUserInfo['portrait'] ??
+                      //     //     'http://192.168.101.4:9000/linyu/default-portrait.jpg',
+                      //     url:
+                      //         'http://192.168.101.4:9000/linyu/default-portrait.jpg',
+                      //     size: 80,
+                      //     radius: 50),
+                      // const SizedBox(height: 16),
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(horizontal: 16),
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     children: [
+                      //       GestureDetector(
+                      //         onTap: () => controller.setSex('男'),
+                      //         child: Container(
+                      //           height: 30,
+                      //           padding:
+                      //               const EdgeInsets.symmetric(horizontal: 10),
+                      //           decoration: BoxDecoration(
+                      //             color: controller.maleColorActive,
+                      //             borderRadius: BorderRadius.circular(10),
+                      //           ),
+                      //           child: Row(
+                      //             children: [
+                      //               Icon(
+                      //                 Icons.male,
+                      //                 size: 20,
+                      //                 color: controller.maleTextColorActive,
+                      //               ),
+                      //               const SizedBox(width: 2),
+                      //               Text(
+                      //                 '男生',
+                      //                 style: TextStyle(
+                      //                   fontSize: 16,
+                      //                   fontWeight: FontWeight.bold,
+                      //                   color: controller.maleTextColorActive,
+                      //                 ),
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         ),
+                      //       ),
+                      //       const SizedBox(width: 30),
+                      //       GestureDetector(
+                      //         onTap: () => controller.setSex('女'),
+                      //         child: Container(
+                      //           height: 30,
+                      //           padding:
+                      //               const EdgeInsets.symmetric(horizontal: 10),
+                      //           decoration: BoxDecoration(
+                      //             color: controller.femaleColorActive,
+                      //             borderRadius: BorderRadius.circular(10),
+                      //           ),
+                      //           child: Row(
+                      //             children: [
+                      //               Icon(
+                      //                 Icons.female,
+                      //                 size: 20,
+                      //                 color: controller.femaleTextColorActive,
+                      //               ),
+                      //               const SizedBox(width: 2),
+                      //               Text(
+                      //                 '女生',
+                      //                 style: TextStyle(
+                      //                   fontSize: 16,
+                      //                   fontWeight: FontWeight.bold,
+                      //                   color: controller.femaleTextColorActive,
+                      //                 ),
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      // const SizedBox(height: 16),
                       CustomTextField(
                         labelText: "用户名",
                         controller: controller.usernameController,
@@ -70,6 +152,19 @@ class RegisterPage extends CustomWidget<RegisterPageLogic> {
                         inputLimit: 30,
                       ),
                       const SizedBox(height: 10.0),
+                      CustomTextField(
+                        labelText: "生日",
+                        hintText: '请选择日期',
+                        controller: controller.birthdayController,
+                        readOnly: true,
+                        showCursor: false,
+                        suffixIcon: IconButton(
+                          onPressed: () => controller.selectDate(context),
+                          icon: Icon(Icons.calendar_today,
+                              size: 20, color: theme.primaryColor),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
                       CustomTextField(
                         labelText: "账号",
                         controller: controller.accountController,
@@ -90,11 +185,17 @@ class RegisterPage extends CustomWidget<RegisterPageLogic> {
                       CustomTextField(
                         labelText: "邮箱",
                         controller: controller.mailController,
+                        focusNode: controller.mailFocusNode,
+                        onEditingComplete: () {
+                          controller.onTapSendMail();
+                          controller.codeFocusNode.requestFocus();
+                        },
                       ),
                       const SizedBox(height: 10.0),
                       CustomTextField(
                         labelText: '验证码',
                         hintText: "请输入验证码",
+                        focusNode: controller.codeFocusNode,
                         controller: controller.codeController,
                         suffix: controller.mailController.text != ""
                             ? Row(
@@ -124,7 +225,7 @@ class RegisterPage extends CustomWidget<RegisterPageLogic> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 10.0),
                 CustomButton(
                   text: "立即注册",
                   onTap: controller.onRegister,

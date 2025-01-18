@@ -130,6 +130,9 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                               iconData: const IconData(0xe620,
                                   fontFamily: 'IconFont'),
                               controller: controller.passwordController,
+                              onEditingComplete: () => controller.login(
+                                context,
+                              ),
                               obscureText: true,
                               inputLimit: 16,
                               onChanged: controller.onPasswordTextChanged,
