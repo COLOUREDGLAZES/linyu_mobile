@@ -504,6 +504,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         useId,
         isChatGroupMessage: msg['source'] == 'group',
       );
+      if (kDebugMode) print('转文字 result is: $result');
       if (result['code'] == 0) {
         final newMsg = result['data'];
         if (kDebugMode) print('newMsg data: $newMsg');
