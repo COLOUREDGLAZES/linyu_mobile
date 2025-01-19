@@ -56,18 +56,10 @@ class LoginPageLogic extends GetxController {
         ),
       );
 
-  // void login(context, TextEditingController usernameController,
-  //     TextEditingController passwordController) async {
   void login(context) async {
     if (passwordFocusNode.hasFocus) passwordFocusNode.unfocus();
-    final lifeStr = await _msgApi.getLifeString();
-
-    if (kDebugMode) print('get lifeStr: $lifeStr');
-
     final deviceInfo = await _deviceInfoPlugin.deviceInfo;
-
     if (kDebugMode) print('$deviceInfo');
-
     final deviceName = deviceInfo.data['product'];
     String username = usernameController.text.trim(); // 去除前后空格
     String password = passwordController.text.trim(); // 去除前后空格
@@ -81,10 +73,11 @@ class LoginPageLogic extends GetxController {
       if (encryptedPassword.isNotEmpty) {
         final loginResult =
             await _useApi.login(username, encryptedPassword, deviceName ?? '');
+        if (kDebugMode) print('userData: $loginResult');
         if (loginResult['code'] == 0) {
           // 使用循环减少冗余代码
           userData = loginResult['data'];
-          if (kDebugMode) print('userData: $userData');
+          // if (kDebugMode) print('userData: $userData');
           // final List<bool> setSharedPreferencesResult =
           final List<bool> setSharedPreferencesResult = await Future.wait([
             _sharedPreferences.setString('x-token', userData['token']),
@@ -99,16 +92,13 @@ class LoginPageLogic extends GetxController {
               _dialog("登录失败，请稍后再试~", context);
               return;
             }
-        }
-      } else
-        _dialog("用户名或密码错误，请重试尝试~", context);
+          await Get.offAndToNamed('/?sex=${userData['sex'] ?? '男'}');
+        } else
+          _dialog("用户名或密码错误，请重试尝试~", context);
+      }
     } catch (e) {
       // 处理异常情况，例如网络错误等
       _dialog("登录过程中出现$e错误，请稍后再试~", context);
-    } finally {
-      passwordController.clear();
-      usernameController.clear();
-      await Get.offAndToNamed('/?sex=${userData['sex'] ?? '男'}');
     }
   }
 
