@@ -45,8 +45,9 @@ class GlobalData extends GetxController {
         // 优化：仅在有未读消息时更新角标
         int chatCount = getUnreadCount('chat');
         int notifyCount = getUnreadCount('notify');
-        if (chatCount > 0 || notifyCount > 0)
-          AppBadger.setCount(chatCount, notifyCount);
+        // if (chatCount > 0 || notifyCount > 0)
+        AppBadger.setCount(
+            chatCount > 0 ? chatCount : 0, notifyCount > 0 ? notifyCount : 0);
       }
     } catch (e) {
       // 增加错误处理
