@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -240,22 +241,26 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
 
   void _permissionRequest() async {
     // 请求麦克风权限
-    var status = await Permission.microphone.request();
-    if (status.isGranted) {
-      if (kDebugMode) print("麦克风权限已授予");
-    } else if (status.isDenied) {
-      if (kDebugMode) print("麦克风权限被拒绝");
-    } else if (status.isPermanentlyDenied) {
-      // 如果权限永久被拒绝，跳转到系统设置页面
-      CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
-      openAppSettings();
+    if (Platform.isAndroid) {
+      var status = await Permission.microphone.request();
+      if (status.isGranted) {
+        if (kDebugMode) print("麦克风权限已授予");
+      } else if (status.isDenied) {
+        if (kDebugMode) print("麦克风权限被拒绝");
+      } else if (status.isPermanentlyDenied) {
+        // 如果权限永久被拒绝，跳转到系统设置页面
+        CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+        openAppSettings();
+      } else {
+        await _record.hasPermission();
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      // onTapDown: (details) async => _permissionRequest(),
+      onTapDown: (details) async => _permissionRequest(),
       onLongPressStart: (details) {
         _startRecording();
         setState(() {
