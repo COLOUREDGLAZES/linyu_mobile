@@ -23,30 +23,30 @@ class NavigationPage extends CustomWidget<NavigationLogic> {
                 backgroundColor: const Color(0xFFEDF2F9),
                 unselectedItemColor: Colors.grey,
                 type: BottomNavigationBarType.fixed,
-                items:
-                    List.generate(controller.unselectedIcons.length, (index) {
-                  return BottomNavigationBarItem(
-                    icon: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Image.asset(
-                          controller.currentIndex.value == index
-                              ? 'assets/images/${controller.selectedIcons[index]}-${theme.themeMode.value}.png'
-                              : controller.unselectedIcons[index],
-                          width: 26,
-                          height: 26,
-                        ),
-                        if (controller.selectedIcons[index] == 'chat' &&
-                            globalData.getUnreadCount('chat') > 0)
-                          CustomTip(globalData.getUnreadCount('chat')),
-                        if (controller.selectedIcons[index] == 'user' &&
-                            globalData.getUnreadCount('friendNotify') > 0)
-                          CustomTip(globalData.getUnreadCount('friendNotify')),
-                      ],
-                    ),
-                    label: controller.name[index],
-                  );
-                }),
+                items: List.generate(
+                    controller.unselectedIcons.length,
+                    (index) => BottomNavigationBarItem(
+                          icon: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Image.asset(
+                                controller.currentIndex.value == index
+                                    ? 'assets/images/${controller.selectedIcons[index]}-${theme.themeMode.value}.png'
+                                    : controller.unselectedIcons[index],
+                                width: 26,
+                                height: 26,
+                              ),
+                              if (controller.selectedIcons[index] == 'chat' &&
+                                  globalData.getUnreadCount('chat') > 0)
+                                CustomTip(globalData.getUnreadCount('chat')),
+                              if (controller.selectedIcons[index] == 'user' &&
+                                  globalData.getUnreadCount('friendNotify') > 0)
+                                CustomTip(
+                                    globalData.getUnreadCount('friendNotify')),
+                            ],
+                          ),
+                          label: controller.name[index],
+                        )),
               ),
             )),
       );

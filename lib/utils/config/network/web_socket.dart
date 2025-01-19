@@ -42,8 +42,8 @@ class WebSocketUtil extends GetxController {
 
   WebSocketUtil._internal() {
     //使用的内网穿透
-    // String wsIp = '192.168.101.4';
-    String wsIp = '114.96.70.115';
+    // String wsIp = '114.96.70.115';
+    String wsIp = '192.168.101.4';
     // String wsIp = '47.99.61.62';
     String port = '9100';
     // String port = '19100';
@@ -90,6 +90,7 @@ class WebSocketUtil extends GetxController {
     if (message == null) return _handleClose();
     try {
       Map<String, dynamic> wsContent = jsonDecode(message);
+      if (kDebugMode) print('WebSocket receive content: $wsContent');
       if (wsContent.containsKey('type')) {
         if (wsContent['data']?['code'] == -1) return _handleClose();
         String contentType = wsContent['type'];

@@ -255,7 +255,7 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (details) async => _permissionRequest(),
+      // onTapDown: (details) async => _permissionRequest(),
       onLongPressStart: (details) {
         _startRecording();
         setState(() {

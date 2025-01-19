@@ -11,11 +11,12 @@ import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/notification.dart';
 import 'package:linyu_mobile/utils/permission_handler.dart';
 import 'package:linyu_mobile/utils/config/network/web_socket.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NavigationLogic extends GetxController {
   late RxInt currentIndex = 0.obs;
   final _wsManager = Get.find<WebSocketUtil>();
-
+  final _sharedPreferences = Get.find<SharedPreferences>();
   final List<GetPage> pages = pageRoute[0].children;
 
   StreamSubscription? _subscription;
@@ -73,18 +74,18 @@ class NavigationLogic extends GetxController {
             });
           return;
         }
-        // if (event['type'] == 'on-receive-notify') {
-        //   var data = event['content'];
-        //   if (kDebugMode) print('event notify data: $data');
-        //   if (data == 'login=>success') {
-        //     CustomFlutterToast.showErrorToast('您的账号已在其他设备登录，请重新登录~');
-        //     _sharedPreferences.clear();
-        //     _wsManager.disconnect();
-        //     globalData.currentToken = null;
-        //     Get.offAllNamed('/login');
-        //     return;
-        //   }
-        // }
+        if (event['type'] == 'on-receive-notify') {
+          var data = event['content'];
+          if (kDebugMode) print('event notify data: $data');
+          if (data == 'login=>success') {
+            CustomFlutterToast.showErrorToast('您的账号已在其他设备登录，请重新登录~');
+            _sharedPreferences.clear();
+            _wsManager.disconnect();
+            globalData.currentToken = null;
+            Get.offAndToNamed('/login');
+            return;
+          }
+        }
         globalData.onGetUserUnreadInfo();
       });
 
@@ -133,7 +134,6 @@ class NavigationLogic extends GetxController {
       _wsManager.disconnect();
       _subscription?.cancel();
     } on Exception catch (e) {
-      // TODO
       if (kDebugMode) print('关闭WebSocket时发生错误: $e');
     } finally {
       super.onClose();
