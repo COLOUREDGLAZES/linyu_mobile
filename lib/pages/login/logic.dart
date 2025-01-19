@@ -4,26 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/msg_api.dart';
 import 'package:linyu_mobile/utils/config/network/web_socket.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/encrypt.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginPageLogic extends GetxController {
   final SharedPreferences _sharedPreferences = Get.find<SharedPreferences>();
   final _wsManager = Get.find<WebSocketUtil>();
   final _useApi = UserApi();
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
+  late final TextEditingController usernameController;
+  late final TextEditingController passwordController;
   final _msgApi = MsgApi();
   final DeviceInfoPlugin _deviceInfoPlugin = new DeviceInfoPlugin();
   RxInt accountTextLength = 0.obs;
 
   RxInt passwordTextLength = 0.obs;
 
-  final FocusNode accountFocusNode = new FocusNode();
+  late final FocusNode accountFocusNode;
 
-  final FocusNode passwordFocusNode = new FocusNode();
+  late final FocusNode passwordFocusNode;
 
   //用户账号输入长度
   void onAccountTextChanged(String value) {
@@ -56,6 +56,8 @@ class LoginPageLogic extends GetxController {
         ),
       );
 
+  // void login(context, TextEditingController usernameController,
+  //     TextEditingController passwordController) async {
   void login(context) async {
     if (passwordFocusNode.hasFocus) passwordFocusNode.unfocus();
     final lifeStr = await _msgApi.getLifeString();
@@ -73,6 +75,7 @@ class LoginPageLogic extends GetxController {
       _dialog("用户名或密码不能为空~", context);
       return;
     }
+    Map<String, dynamic> userData = {};
     try {
       final encryptedPassword = await passwordEncrypt(password);
       if (encryptedPassword.isNotEmpty) {
@@ -80,8 +83,9 @@ class LoginPageLogic extends GetxController {
             await _useApi.login(username, encryptedPassword, deviceName ?? '');
         if (loginResult['code'] == 0) {
           // 使用循环减少冗余代码
-          final userData = loginResult['data'];
+          userData = loginResult['data'];
           if (kDebugMode) print('userData: $userData');
+          // final List<bool> setSharedPreferencesResult =
           final List<bool> setSharedPreferencesResult = await Future.wait([
             _sharedPreferences.setString('x-token', userData['token']),
             _sharedPreferences.setString('username', userData['username']),
@@ -95,13 +99,16 @@ class LoginPageLogic extends GetxController {
               _dialog("登录失败，请稍后再试~", context);
               return;
             }
-          Get.offAllNamed('/?sex=${userData['sex'] ?? '男'}');
         }
       } else
         _dialog("用户名或密码错误，请重试尝试~", context);
     } catch (e) {
       // 处理异常情况，例如网络错误等
       _dialog("登录过程中出现$e错误，请稍后再试~", context);
+    } finally {
+      passwordController.clear();
+      usernameController.clear();
+      await Get.offAndToNamed('/?sex=${userData['sex'] ?? '男'}');
     }
   }
 
@@ -132,6 +139,15 @@ class LoginPageLogic extends GetxController {
       // 处理导航到设置页面时可能出现的错误
       _dialog("导航到设置页面时出现错误：$e，请稍后再试~", Get.context!);
     }
+  }
+
+  @override
+  void onInit() {
+    usernameController = new TextEditingController();
+    passwordController = new TextEditingController();
+    accountFocusNode = new FocusNode();
+    passwordFocusNode = new FocusNode();
+    super.onInit();
   }
 
   @override

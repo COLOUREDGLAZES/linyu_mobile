@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/global_data.dart';
@@ -87,7 +88,7 @@ class NavigationLogic extends GetxController {
         globalData.onGetUserUnreadInfo();
       });
 
-  Future<bool> onBackPressed() async {
+  Future<bool> _onBackPressed() async {
     try {
       if (!isOpenDrawer) {
         int nowExitTime = DateTime.now().millisecondsSinceEpoch;
@@ -107,6 +108,14 @@ class NavigationLogic extends GetxController {
     }
   }
 
+  void onPopPage(didPop, result) {
+    if (didPop) return;
+    _onBackPressed().then((value) {
+      if (value == true)
+        SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    });
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -120,8 +129,14 @@ class NavigationLogic extends GetxController {
 
   @override
   void onClose() {
-    super.onClose();
-    _wsManager.dispose();
-    _subscription?.cancel();
+    try {
+      _wsManager.disconnect();
+      _subscription?.cancel();
+    } on Exception catch (e) {
+      // TODO
+      if (kDebugMode) print('关闭WebSocket时发生错误: $e');
+    } finally {
+      super.onClose();
+    }
   }
 }

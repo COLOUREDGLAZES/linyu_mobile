@@ -21,11 +21,17 @@ class MineLogic extends Logic {
   }
 
   void handlerLogout() async {
-    final bool isLogout = await _prefs.clear();
-    _globalData.currentToken = null;
-    _wsManager.disconnect();
-    if (kDebugMode) print('logout success: $isLogout');
-    if (isLogout) Get.offAllNamed('/login');
+    try {
+      await _prefs.clear();
+      _globalData.currentToken = null;
+      _wsManager.disconnect();
+      if (kDebugMode) print('logout success');
+      Get.back();
+    } catch (e) {
+      if (kDebugMode) print('logout failed: $e');
+    } finally {
+      Get.offAndToNamed('/login');
+    }
   }
 
   void toSetting() async {

@@ -8,8 +8,9 @@ class NavigationPage extends CustomWidget<NavigationLogic> {
   NavigationPage({required super.key});
 
   @override
-  Widget buildWidget(BuildContext context) => WillPopScope(
-        onWillPop: controller.onBackPressed,
+  Widget buildWidget(BuildContext context) => PopScope(
+        canPop: false,
+        onPopInvokedWithResult: controller.onPopPage,
         child: Obx(() => Scaffold(
               drawer: controller.pages[3].page(),
               onDrawerChanged: (isOpen) => controller.isOpenDrawer = isOpen,
