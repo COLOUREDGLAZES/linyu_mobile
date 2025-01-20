@@ -252,33 +252,24 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
         CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
         openAppSettings();
       } else {
-        final directory = await getTemporaryDirectory();
-        _filePath = '${directory.path}/voice.wav';
-        await _record.start(
-            const RecordConfig(
-              encoder: AudioEncoder.wav,
-            ),
-            path: _filePath!);
+        if (!await _record.hasPermission()) {
+          _record.start(const RecordConfig(), path: 'aFullPath/myFile.m4a');
+          _record.stop();
+        }
       }
     }
+  }
+
+  @override
+  void initState() {
+    _permissionRequest();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (details) async => _permissionRequest(),
-      onTapUp: (details) async {
-        if (Platform.isIOS) {
-          _timer?.cancel();
-          final filePath = await _record.stop();
-          _overlayEntry.remove();
-          setState(() {
-            _isRecording = false;
-            _recordingSeconds = 0;
-            _amplitudes = List.filled(20, 0.0);
-          });
-        }
-      },
       onLongPressStart: (details) {
         _startRecording();
         setState(() {
