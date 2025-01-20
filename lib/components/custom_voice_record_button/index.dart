@@ -31,6 +31,8 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
   int _recordingSeconds = 0;
   List<double> _amplitudes = List.filled(20, 0.0);
 
+  late bool _hasPermission;
+
   GlobalThemeConfig theme = Get.find<GlobalThemeConfig>();
 
   Future<void> _startRecording() async {
@@ -56,6 +58,7 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
     try {
       if (!await _record.hasPermission()) {
         CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
+        _hasPermission = false;
         return;
       }
       final directory = await getTemporaryDirectory();
@@ -71,9 +74,9 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
         // bitRate: 128000,
         // samplingRate: 44100,
       );
-
       _startTimer();
       _updateAmplitude();
+      _hasPermission = await _record.hasPermission();
     } catch (e) {
       // 捕捉异常并处理
       if (kDebugMode) print("录音失败: $e");
@@ -244,10 +247,13 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
     if (Platform.isAndroid) {
       var status = await Permission.microphone.request();
       if (status.isGranted) {
+        _hasPermission = true;
         if (kDebugMode) print("麦克风权限已授予");
       } else if (status.isDenied) {
         if (kDebugMode) print("麦克风权限被拒绝");
+        _hasPermission = false;
       } else if (status.isPermanentlyDenied) {
+        _hasPermission = false;
         // 如果权限永久被拒绝，跳转到系统设置页面
         CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
         openAppSettings();
@@ -262,17 +268,17 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
     }
   }
 
-  // @override
-  // void initState() {
-  //   _permissionRequest();
-  //   super.initState();
-  // }
+  @override
+  void initState() {
+    _permissionRequest();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (details) async => _permissionRequest(),
-      onLongPressStart: (details) async {
+      onLongPressStart: (details) {
         _startRecording();
         setState(() {
           _isRecording = true;
@@ -280,7 +286,8 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
           _startPosition = details.globalPosition;
           _currentPosition = _startPosition;
         });
-        if (Platform.isIOS && !await _record.hasPermission()) return;
+        // if (Platform.isIOS && !await _record.hasPermission()) openAppSettings();
+        if (Platform.isIOS && !_hasPermission) openAppSettings();
         _showRecordDialog(context);
       },
       onLongPressMoveUpdate: (details) {
