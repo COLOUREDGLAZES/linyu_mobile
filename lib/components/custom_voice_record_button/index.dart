@@ -251,27 +251,28 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
         // 如果权限永久被拒绝，跳转到系统设置页面
         CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
         openAppSettings();
-      } else {
-        CustomFlutterToast.showSuccessToast("ios权限申请");
-        if (!await _record.hasPermission()) {
-          _record.start(const RecordConfig(), path: 'aFullPath/myFile.m4a');
-          _record.stop();
-        }
       }
+      // else {
+      //   CustomFlutterToast.showSuccessToast("ios权限申请");
+      //   if (!await _record.hasPermission()) {
+      //     _record.start(const RecordConfig(), path: 'aFullPath/myFile.m4a');
+      //     _record.stop();
+      //   }
+      // }
     }
   }
 
-  @override
-  void initState() {
-    _permissionRequest();
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   _permissionRequest();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (details) async => _permissionRequest(),
-      onLongPressStart: (details) {
+      onLongPressStart: (details) async {
         _startRecording();
         setState(() {
           _isRecording = true;
@@ -279,6 +280,7 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
           _startPosition = details.globalPosition;
           _currentPosition = _startPosition;
         });
+        if (Platform.isIOS && !await _record.hasPermission()) return;
         _showRecordDialog(context);
       },
       onLongPressMoveUpdate: (details) {
