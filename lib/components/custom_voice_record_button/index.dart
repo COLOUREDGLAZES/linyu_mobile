@@ -258,6 +258,12 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
   }
 
   @override
+  void initState() {
+    _permissionRequest();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (details) async => _permissionRequest(),
