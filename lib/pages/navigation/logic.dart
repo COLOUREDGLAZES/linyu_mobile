@@ -112,8 +112,10 @@ class NavigationLogic extends GetxController {
   void onPopPage(didPop, result) {
     if (didPop) return;
     _onBackPressed().then((value) {
-      if (value == true)
+      if (value == true) {
+        _wsManager.disconnect();
         SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+      }
     });
   }
 

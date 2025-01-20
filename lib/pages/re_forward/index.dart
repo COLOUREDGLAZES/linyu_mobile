@@ -12,7 +12,6 @@ import 'package:linyu_mobile/utils/date.dart';
 import 'package:linyu_mobile/utils/linyu_msg.dart';
 import 'logic.dart';
 
-// todo: 功能待实现
 class ReForwardPage extends CustomView<ReForwardLogic> {
   ReForwardPage({super.key});
 

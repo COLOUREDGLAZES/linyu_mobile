@@ -1,9 +1,10 @@
-
 subprojects {
     afterEvaluate { project ->
         if (project.plugins.hasPlugin("com.android.application") ||
                 project.plugins.hasPlugin("com.android.library")) {
+//            def packageName = project.android.namespace ?: project.android.defaultConfig.applicationId ?: project.android.sourceSets.main.manifest.srcFile.text.find(/package="([^"]*)"/) ?: project.group
             project.android {
+//                namespace "$packageName"
                 compileSdkVersion 34
                 buildToolsVersion "34.0.0"
             }
