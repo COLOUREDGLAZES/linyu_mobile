@@ -75,6 +75,7 @@ jobs:
 
       - name: flutter build ipa
         run: |
+          rm -rf ~/Library/Developer/Xcode/DerivedData/*
           flutter build ios --release --no-codesign
           cd build/ios/iphoneos
           mkdir Payload

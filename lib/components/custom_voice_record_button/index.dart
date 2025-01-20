@@ -252,6 +252,7 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
         CustomFlutterToast.showErrorToast("权限申请失败，请在设置中手动开启麦克风权限");
         openAppSettings();
       } else {
+        CustomFlutterToast.showSuccessToast("ios权限申请");
         if (!await _record.hasPermission()) {
           _record.start(const RecordConfig(), path: 'aFullPath/myFile.m4a');
           _record.stop();
