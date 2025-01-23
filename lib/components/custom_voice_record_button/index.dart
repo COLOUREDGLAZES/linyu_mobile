@@ -76,7 +76,7 @@ class _VoiceRecordButtonState extends State<CustomVoiceRecordButton> {
       );
       _startTimer();
       _updateAmplitude();
-      _hasPermission = await _record.hasPermission();
+      if (Platform.isIOS) _hasPermission = await _record.hasPermission();
     } catch (e) {
       // 捕捉异常并处理
       if (kDebugMode) print("录音失败: $e");

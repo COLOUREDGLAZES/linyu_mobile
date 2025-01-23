@@ -395,149 +395,155 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                   ],
                                 ),
                               )
-                            : Obx(() => Container(
-                                  color: const Color(0xFFEDF2F9),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0, vertical: 10),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          controller.isRecording.value
-                                              ? _buildIconButton1(
-                                                  const IconData(0xe661,
-                                                      fontFamily: 'IconFont'),
-                                                  () {
-                                                    controller.isRecording
-                                                        .value = false;
-                                                    WidgetsBinding.instance
-                                                        .addPostFrameCallback(
-                                                            (_) => controller
-                                                                .focusNode
-                                                                .requestFocus());
-                                                  },
-                                                )
-                                              : _buildIconButton1(
-                                                  const IconData(0xe7e2,
-                                                      fontFamily: 'IconFont'),
-                                                  () {
-                                                    controller.isRecording
-                                                        .value = true;
-                                                    hidePanel();
-                                                  },
-                                                ),
-                                          const SizedBox(width: 5),
-                                          controller.isRecording.value
-                                              ? Expanded(
-                                                  child:
-                                                      CustomVoiceRecordButton(
-                                                          onFinish: controller
-                                                              .onSendVoiceMsg),
-                                                )
-                                              : Expanded(
-                                                  child: Obx(
-                                                    () => CustomTextField(
-                                                      controller: controller
-                                                          .msgContentController,
-                                                      maxLines: 3,
-                                                      minLines: 1,
-                                                      readOnly: controller
-                                                          .isReadOnly.value,
-                                                      hintTextColor:
-                                                          theme.primaryColor,
-                                                      // hintText: '请输入消息',
-                                                      hintText: controller
-                                                              .lifeStr['data']
-                                                          ['content'],
-                                                      vertical: 8,
-                                                      focusNode:
-                                                          controller.focusNode,
-                                                      fillColor: Colors.white
-                                                          .withOpacity(0.9),
-                                                      onTap: () {
-                                                        controller.isReadOnly
-                                                            .value = false;
-                                                        WidgetsBinding.instance
-                                                            .addPostFrameCallback((_) =>
-                                                                panelController
-                                                                    .updatePanelType(
-                                                                        ChatBottomPanelType
-                                                                            .keyboard));
-                                                        Future.delayed(
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    500),
-                                                            () => controller
-                                                                .scrollBottom());
-                                                      },
-                                                      onChanged: (value) =>
-                                                          controller.isSend
-                                                                  .value =
-                                                              value
-                                                                  .trim()
-                                                                  .isNotEmpty,
+                            : Obx(() => RepaintBoundary(
+                                  child: Container(
+                                    color: const Color(0xFFEDF2F9),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0, vertical: 10),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            controller.isRecording.value
+                                                ? _buildIconButton1(
+                                                    const IconData(0xe661,
+                                                        fontFamily: 'IconFont'),
+                                                    () {
+                                                      controller.isRecording
+                                                          .value = false;
+                                                      WidgetsBinding.instance
+                                                          .addPostFrameCallback(
+                                                              (_) => controller
+                                                                  .focusNode
+                                                                  .requestFocus());
+                                                    },
+                                                  )
+                                                : _buildIconButton1(
+                                                    const IconData(0xe7e2,
+                                                        fontFamily: 'IconFont'),
+                                                    () {
+                                                      controller.isRecording
+                                                          .value = true;
+                                                      hidePanel();
+                                                    },
+                                                  ),
+                                            const SizedBox(width: 5),
+                                            controller.isRecording.value
+                                                ? Expanded(
+                                                    child:
+                                                        CustomVoiceRecordButton(
+                                                            onFinish: controller
+                                                                .onSendVoiceMsg),
+                                                  )
+                                                : Expanded(
+                                                    child: Obx(
+                                                      () => CustomTextField(
+                                                        controller: controller
+                                                            .msgContentController,
+                                                        maxLines: 3,
+                                                        minLines: 1,
+                                                        readOnly: controller
+                                                            .isReadOnly.value,
+                                                        hintTextColor:
+                                                            theme.primaryColor,
+                                                        // hintText: '请输入消息',
+                                                        hintText: controller
+                                                                .lifeStr['data']
+                                                            ['content'],
+                                                        vertical: 8,
+                                                        focusNode: controller
+                                                            .focusNode,
+                                                        fillColor: Colors.white
+                                                            .withOpacity(0.9),
+                                                        onTap: () {
+                                                          controller.isReadOnly
+                                                              .value = false;
+                                                          WidgetsBinding
+                                                              .instance
+                                                              .addPostFrameCallback((_) =>
+                                                                  panelController
+                                                                      .updatePanelType(
+                                                                          ChatBottomPanelType
+                                                                              .keyboard));
+                                                          Future.delayed(
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                              () => controller
+                                                                  .scrollBottom());
+                                                        },
+                                                        onChanged: (value) =>
+                                                            controller.isSend
+                                                                    .value =
+                                                                value
+                                                                    .trim()
+                                                                    .isNotEmpty,
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                          const SizedBox(width: 5),
-                                          if (!controller.isRecording.value)
-                                            _buildIconButton1(
-                                              const IconData(0xe632,
-                                                  fontFamily: 'IconFont'),
-                                              () {
-                                                controller.isReadOnly.value =
-                                                    true;
-                                                WidgetsBinding.instance
-                                                    .addPostFrameCallback((_) =>
-                                                        panelController.updatePanelType(
-                                                            ChatBottomPanelType
-                                                                .other,
-                                                            data:
-                                                                PanelType.emoji,
-                                                            forceHandleFocus:
-                                                                ChatBottomHandleFocus
-                                                                    .requestFocus));
-                                                Future.delayed(
-                                                    const Duration(
-                                                        milliseconds: 500),
-                                                    () => controller
-                                                        .scrollBottom());
-                                              },
-                                            ),
-                                          controller.isSend.value
-                                              ? CustomButton(
-                                                  text: '发送',
-                                                  onTap: controller.sendTextMsg,
-                                                  width: 60,
-                                                  textSize: 14,
-                                                  height: 34,
-                                                )
-                                              : _buildIconButton1(
-                                                  const IconData(0xe636,
-                                                      fontFamily: 'IconFont'),
-                                                  () => WidgetsBinding.instance
-                                                      .addPostFrameCallback(
-                                                          (_) {
-                                                    panelController
-                                                        .updatePanelType(
-                                                            ChatBottomPanelType
-                                                                .other,
-                                                            data:
-                                                                PanelType.tool);
-                                                    Future.delayed(
-                                                        const Duration(
-                                                            milliseconds: 500),
-                                                        () => controller
-                                                            .scrollBottom());
-                                                  }),
-                                                ),
-                                        ],
-                                      ),
-                                      _buildPanelContainer(),
-                                    ],
+                                            const SizedBox(width: 5),
+                                            if (!controller.isRecording.value)
+                                              _buildIconButton1(
+                                                const IconData(0xe632,
+                                                    fontFamily: 'IconFont'),
+                                                () {
+                                                  controller.isReadOnly.value =
+                                                      true;
+                                                  WidgetsBinding.instance
+                                                      .addPostFrameCallback((_) =>
+                                                          panelController.updatePanelType(
+                                                              ChatBottomPanelType
+                                                                  .other,
+                                                              data: PanelType
+                                                                  .emoji,
+                                                              forceHandleFocus:
+                                                                  ChatBottomHandleFocus
+                                                                      .requestFocus));
+                                                  Future.delayed(
+                                                      const Duration(
+                                                          milliseconds: 500),
+                                                      () => controller
+                                                          .scrollBottom());
+                                                },
+                                              ),
+                                            controller.isSend.value
+                                                ? CustomButton(
+                                                    text: '发送',
+                                                    onTap:
+                                                        controller.sendTextMsg,
+                                                    width: 60,
+                                                    textSize: 14,
+                                                    height: 34,
+                                                  )
+                                                : _buildIconButton1(
+                                                    const IconData(0xe636,
+                                                        fontFamily: 'IconFont'),
+                                                    () => WidgetsBinding
+                                                        .instance
+                                                        .addPostFrameCallback(
+                                                            (_) {
+                                                      panelController
+                                                          .updatePanelType(
+                                                              ChatBottomPanelType
+                                                                  .other,
+                                                              data: PanelType
+                                                                  .tool);
+                                                      Future.delayed(
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  500),
+                                                          () => controller
+                                                              .scrollBottom());
+                                                    }),
+                                                  ),
+                                          ],
+                                        ),
+                                        _buildPanelContainer(),
+                                      ],
+                                    ),
                                   ),
                                 )),
                   ],
