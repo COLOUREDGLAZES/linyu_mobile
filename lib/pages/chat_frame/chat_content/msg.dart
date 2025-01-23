@@ -117,6 +117,45 @@ class ChatMessage extends StatelessThemeWidget {
     }
   }
 
+  // 构建聊天头像
+  Widget _buildChatPortrait(dynamic msg, bool isRight, bool isGroup) {
+    String? avatarUrl;
+    try {
+      // 获取头像 URL
+      avatarUrl = isRight
+          ? globalData.currentAvatarUrl
+          : isGroup && !isRight
+              ? msg['msgContent']['formUserPortrait']
+              : chatPortrait;
+
+      // 检查头像 URL 是否有效
+      if (avatarUrl == null || avatarUrl.isEmpty) {
+        throw Exception('头像 URL 无效');
+      }
+    } catch (e) {
+      debugPrint('获取头像出错: $e');
+      CustomFlutterToast.showErrorToast('获取头像出错: $e');
+      avatarUrl = chatPortrait; // 使用默认头像作为后备
+    }
+
+    return CustomPortrait(
+      url: avatarUrl!,
+      size: 40,
+      onTap: () {
+        if (kDebugMode) print('点击头像 :$msg');
+        onTapChatPortrait?.call(msg);
+      },
+      onDoubleTap: () {
+        if (kDebugMode) print('双击头像 :$msg');
+        onDoubleTapChatPortrait?.call(msg);
+      },
+      onLongPress: () {
+        if (kDebugMode) print('长按头像 :$msg');
+        onLongPressChatPortrait?.call(msg);
+      },
+    );
+  }
+
   // 长按消息弹出菜单项
   List<PopMenuItemModel> _menuItems(String type, {bool? toText = true}) => [
         if (type == 'text')
@@ -226,6 +265,7 @@ class ChatMessage extends StatelessThemeWidget {
     if (messageMap.containsKey(type)) {
       final messageWidget =
           messageMap[type]!(msg['msgContent']['formUserName']);
+
       return type == 'retraction' || chatInfo['name'] == null
           ? messageWidget
           : QuickPopUpMenu(
@@ -239,6 +279,7 @@ class ChatMessage extends StatelessThemeWidget {
                       ? content['text'] == null || content['text'].isEmpty
                       : false),
               dataObj: messageWidget,
+              // position: PreferredPosition.bottom,
               child: GestureDetector(
                 onTap: () {
                   if (kDebugMode) print('点击消息 :$msg');
@@ -250,45 +291,6 @@ class ChatMessage extends StatelessThemeWidget {
     } else
       // 异常处理
       return const Text('暂不支持该消息类型');
-  }
-
-  // 构建聊天头像
-  Widget _buildChatPortrait(dynamic msg, bool isRight, bool isGroup) {
-    String? avatarUrl;
-    try {
-      // 获取头像 URL
-      avatarUrl = isRight
-          ? globalData.currentAvatarUrl
-          : isGroup && !isRight
-              ? msg['msgContent']['formUserPortrait']
-              : chatPortrait;
-
-      // 检查头像 URL 是否有效
-      if (avatarUrl == null || avatarUrl.isEmpty) {
-        throw Exception('头像 URL 无效');
-      }
-    } catch (e) {
-      debugPrint('获取头像出错: $e');
-      CustomFlutterToast.showErrorToast('获取头像出错: $e');
-      avatarUrl = chatPortrait; // 使用默认头像作为后备
-    }
-
-    return CustomPortrait(
-      url: avatarUrl!,
-      size: 40,
-      onTap: () {
-        if (kDebugMode) print('点击头像 :$msg');
-        onTapChatPortrait?.call(msg);
-      },
-      onDoubleTap: () {
-        if (kDebugMode) print('双击头像 :$msg');
-        onDoubleTapChatPortrait?.call(msg);
-      },
-      onLongPress: () {
-        if (kDebugMode) print('长按头像 :$msg');
-        onLongPressChatPortrait?.call(msg);
-      },
-    );
   }
 
   @override

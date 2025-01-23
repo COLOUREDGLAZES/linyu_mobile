@@ -15,7 +15,6 @@ class LoginPageLogic extends GetxController {
   final _useApi = UserApi();
   late final TextEditingController usernameController;
   late final TextEditingController passwordController;
-  final _msgApi = MsgApi();
   final DeviceInfoPlugin _deviceInfoPlugin = new DeviceInfoPlugin();
   RxInt accountTextLength = 0.obs;
 
@@ -24,6 +23,13 @@ class LoginPageLogic extends GetxController {
   late final FocusNode accountFocusNode;
 
   late final FocusNode passwordFocusNode;
+
+  bool _isLoggingIn = false;
+  bool get isLoggingIn => _isLoggingIn;
+  set isLoggingIn(bool value) {
+    _isLoggingIn = value;
+    update([const Key('login')]);
+  }
 
   //用户账号输入长度
   void onAccountTextChanged(String value) {
@@ -57,6 +63,7 @@ class LoginPageLogic extends GetxController {
       );
 
   void login(context) async {
+    isLoggingIn = true;
     if (passwordFocusNode.hasFocus) passwordFocusNode.unfocus();
     final deviceInfo = await _deviceInfoPlugin.deviceInfo;
     if (kDebugMode) print('$deviceInfo');
@@ -65,6 +72,7 @@ class LoginPageLogic extends GetxController {
     String password = passwordController.text.trim(); // 去除前后空格
     if (username.isEmpty || password.isEmpty) {
       _dialog("用户名或密码不能为空~", context);
+      isLoggingIn = false;
       return;
     }
     Map<String, dynamic> userData = {};
@@ -90,15 +98,19 @@ class LoginPageLogic extends GetxController {
           for (bool result in setSharedPreferencesResult)
             if (!result) {
               _dialog("登录失败，请稍后再试~", context);
+              isLoggingIn = false;
               return;
             }
           await Get.offAndToNamed('/?sex=${userData['sex'] ?? '男'}');
         } else
-          _dialog("用户名或密码错误，请重试尝试~", context);
+          isLoggingIn = false;
+        _dialog("用户名或密码错误，请重试尝试~", context);
       }
     } catch (e) {
       // 处理异常情况，例如网络错误等
-      _dialog("登录过程中出现$e错误，请稍后再试~", context);
+      // _dialog("登录过程中出现$e错误，请稍后再试~", context);
+      if (kDebugMode) print('login error: $e');
+      isLoggingIn = false;
     }
   }
 
