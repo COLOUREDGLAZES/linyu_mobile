@@ -11,6 +11,8 @@ class AddFriendLogic extends Logic<AddFriendPage> {
 
   late List<dynamic> searchList = [];
 
+  final TextEditingController searchController = TextEditingController();
+
   void onSearchFriend(String friendInfo) {
     if (friendInfo.trim() == '') {
       searchList.clear();

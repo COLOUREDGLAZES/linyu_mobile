@@ -96,64 +96,77 @@ class AddFriendPage extends CustomView<AddFriendLogic> {
             ]),
         body: GestureDetector(
           onTap: () {},
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Column(
-              children: [
-                CustomSearchBox(
-                  hintText: '账号/手机号/邮箱',
-                  onChanged: controller.onSearchFriend,
-                ),
-                if (controller.searchList.isNotEmpty)
-                  Expanded(
-                    child: RefreshIndicator(
-                      onRefresh: () async =>
-                          Future.delayed(const Duration(milliseconds: 700)),
-                      color: theme.primaryColor,
-                      child: ListView(
-                        children: [
-                          if (controller.searchList.isNotEmpty) ...[
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Text(
-                                "搜索结果",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.primaryColor,
+          child: Stack(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Column(
+                  children: [
+                    CustomSearchBox(
+                      hintText: '账号/手机号/邮箱',
+                      textEditingController: controller.searchController,
+                      onChanged: controller.onSearchFriend,
+                    ),
+                    if (controller.searchList.isNotEmpty)
+                      Expanded(
+                        child: RefreshIndicator(
+                          onRefresh: () async =>
+                              Future.delayed(const Duration(milliseconds: 700)),
+                          color: theme.primaryColor,
+                          child: ListView(
+                            children: [
+                              if (controller.searchList.isNotEmpty) ...[
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(
+                                    "搜索结果",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.primaryColor,
+                                    ),
+                                  ),
                                 ),
+                                ...controller.searchList.map((friend) =>
+                                    _buildSearchItem(
+                                        friend, friend['friendId'])),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    if (controller.searchList.isEmpty)
+                      Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/images/empty-bg.png',
+                                width: 100,
                               ),
-                            ),
-                            ...controller.searchList.map((friend) =>
-                                _buildSearchItem(friend, friend['friendId'])),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                if (controller.searchList.isEmpty)
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/empty-bg.png',
-                            width: 100,
+                              const SizedBox(height: 5),
+                              Text(
+                                '暂无搜索结果',
+                                style: TextStyle(
+                                    color: Colors.grey[600], fontSize: 14),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 5),
-                          Text(
-                            '暂无搜索结果',
-                            style: TextStyle(
-                                color: Colors.grey[600], fontSize: 14),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                  ],
+                ),
+              ),
+              if (controller.searchController.text.isNotEmpty &&
+                  controller.searchList.isEmpty)
+                Center(
+                  child: CircularProgressIndicator(
+                    color: theme.primaryColor,
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
         ),
       );

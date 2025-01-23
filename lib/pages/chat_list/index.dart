@@ -164,73 +164,72 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
   }
 
   Widget _buildSearchItem(dynamic chatObject, String id,
-      {bool isGroup = false}) {
-    if (kDebugMode) print('chatObject is: $chatObject');
-    return Material(
-      borderRadius: BorderRadius.circular(12),
-      color: Colors.white,
-      child: InkWell(
-        onTap: () => !isGroup
-            ? controller.onTapSearchFriend(chatObject)
-            : controller.onTapSearchGroup(chatObject),
+          {bool isGroup = false}) =>
+      Material(
         borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.0),
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.grey[200]!,
-                width: 0.5,
+        color: Colors.white,
+        child: InkWell(
+          onTap: () => !isGroup
+              ? controller.onTapSearchFriend(chatObject)
+              : controller.onTapSearchGroup(chatObject),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey[200]!,
+                  width: 0.5,
+                ),
               ),
             ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              children: [
-                CustomPortrait(url: chatObject['portrait']),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            chatObject['name'],
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          if (chatObject[!isGroup ? 'remark' : 'groupRemark'] !=
-                                  null &&
-                              chatObject[!isGroup ? 'remark' : 'groupRemark']
-                                      ?.toString()
-                                      .trim() !=
-                                  '')
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                children: [
+                  CustomPortrait(url: chatObject['portrait']),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
                             Text(
-                              '(${chatObject[!isGroup ? 'remark' : 'groupRemark']})',
+                              chatObject['name'],
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                          const SizedBox(width: 5),
-                          if (isGroup) const CustomBadge(text: '群'),
-                        ],
-                      ),
-                    ],
+                            if (chatObject[
+                                        !isGroup ? 'remark' : 'groupRemark'] !=
+                                    null &&
+                                chatObject[!isGroup ? 'remark' : 'groupRemark']
+                                        ?.toString()
+                                        .trim() !=
+                                    '')
+                              Text(
+                                '(${chatObject[!isGroup ? 'remark' : 'groupRemark']})',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            const SizedBox(width: 5),
+                            if (isGroup) const CustomBadge(text: '群'),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
   @override
   init(BuildContext context) => controller.onGetChatList();
