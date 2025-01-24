@@ -223,9 +223,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 滚动到底部
   void scrollBottom() {
-    if (scrollController.hasClients &&
-        scrollController.position.pixels !=
-            scrollController.position.maxScrollExtent)
+    if (scrollController.hasClients)
       WidgetsBinding.instance
           .addPostFrameCallback((_) => scrollController.animateTo(
                 scrollController.position.maxScrollExtent,
