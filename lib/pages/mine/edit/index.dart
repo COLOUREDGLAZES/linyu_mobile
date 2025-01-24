@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -32,8 +35,10 @@ class EditMinePage extends CustomView<EditMineLogic> {
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
               leading: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_outlined,
+                icon: Icon(
+                  Platform.isIOS
+                      ? CupertinoIcons.back
+                      : Icons.arrow_back_outlined,
                 ),
                 onPressed: () => Get.back(result: true),
               ),
