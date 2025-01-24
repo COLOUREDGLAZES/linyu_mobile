@@ -17,7 +17,8 @@ class NavigationPage extends CustomWidget<NavigationLogic> {
               body: controller.pages[controller.currentIndex.value].page(),
               bottomNavigationBar: BottomNavigationBar(
                 currentIndex: controller.currentIndex.value,
-                onTap: (index) => controller.currentIndex.value = index,
+                // onTap: (index) => controller.currentIndex.value = index,
+                onTap: controller.onSwitchPage,
                 selectedItemColor: theme.primaryColor,
                 showUnselectedLabels: true,
                 backgroundColor: const Color(0xFFEDF2F9),

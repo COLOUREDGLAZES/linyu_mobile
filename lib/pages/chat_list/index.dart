@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
@@ -402,21 +401,28 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                     controller.otherList.isEmpty &&
                     controller.topList.isEmpty)
                   Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/empty-bg.png',
-                            width: 100,
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            '暂无聊天记录~',
-                            style: TextStyle(
-                                color: Colors.grey[600], fontSize: 14),
-                          ),
-                        ],
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        controller.onGetChatList();
+                        return Future.delayed(
+                            const Duration(milliseconds: 700));
+                      },
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/empty-bg.png',
+                              width: 100,
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              '暂无聊天记录~',
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: 14),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

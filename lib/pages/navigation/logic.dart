@@ -119,6 +119,11 @@ class NavigationLogic extends GetxController {
     });
   }
 
+  void onSwitchPage(int index) {
+    if (index == currentIndex.value) return;
+    currentIndex.value = index;
+  }
+
   @override
   void onInit() {
     super.onInit();
