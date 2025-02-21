@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart' show Key, kDebugMode;
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart' show Get, GetNavigation, Inst;
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/config/getx/global_data.dart';
@@ -56,7 +57,8 @@ class MineLogic extends Logic {
   }
 
   void toChangeAccount() async {
-    final result = await Get.toNamed('/change_accounts');
+    // final result = await Get.toNamed('/change_accounts');
+    Fluttertoast.showToast(msg: "功能建设中，敬请期待！");
   }
 
   @override

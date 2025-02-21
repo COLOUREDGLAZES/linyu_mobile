@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData, Color;
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart' show Get, GetBuilder, GetNavigation, Obx;
 import 'package:image_picker/image_picker.dart' show ImageSource;
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
@@ -321,6 +322,24 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                           key: ValueKey(msg['id']),
                                           onTapChatPortrait:
                                               controller.onTapAvatar,
+                                          onTapDelete: (data) =>
+                                              Fluttertoast.showToast(
+                                                  msg: "功能建设中，敬请期待！"),
+                                          onTapMultipleChoice: (data) =>
+                                              Fluttertoast.showToast(
+                                                  msg: "功能建设中，敬请期待！"),
+                                          onTapCite: (data) =>
+                                              Fluttertoast.showToast(
+                                                  msg: "功能建设中，敬请期待！"),
+                                          onTapRemind: (data) =>
+                                              Fluttertoast.showToast(
+                                                  msg: "功能建设中，敬请期待！"),
+                                          onTapSearch: (data) =>
+                                              Fluttertoast.showToast(
+                                                  msg: "功能建设中，敬请期待！"),
+                                          onTapFavorite: (data) =>
+                                              Fluttertoast.showToast(
+                                                  msg: "功能建设中，敬请期待！"),
                                           onTapRepost: (data) =>
                                               controller.onRepostMsg(msg),
                                           reEdit: () =>

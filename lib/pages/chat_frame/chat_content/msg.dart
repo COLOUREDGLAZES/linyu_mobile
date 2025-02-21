@@ -236,13 +236,14 @@ class ChatMessage extends StatelessThemeWidget {
               debugPrint("data: ${data.toString()}");
               onTapRemind?.call(data);
             }),
-        PopMenuItemModel(
-            title: '搜一搜',
-            icon: Icons.search,
-            callback: (data) {
-              debugPrint("data: ${data.toString()} ");
-              onTapSearch?.call(data);
-            }),
+        if (type == 'text')
+          PopMenuItemModel(
+              title: '搜一搜',
+              icon: Icons.search,
+              callback: (data) {
+                debugPrint("data: ${data.toString()} ");
+                onTapSearch?.call(data);
+              }),
       ];
 
   // 根据消息类型获取组件
