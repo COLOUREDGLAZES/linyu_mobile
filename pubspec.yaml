@@ -50,10 +50,17 @@ dependencies:
   url_launcher: 6.1.11
   photo_view: ^0.15.0
   path_provider: ^2.1.5
-  image_gallery_saver: ^2.0.3
+#  image_gallery_saver: ^2.0.3
+  image_gallery_saver:
+    git:
+      url: https://github.com/COLOUREDGLAZES/image_gallery_saver.git
+      ref: master
   just_audio: ^0.9.42
 #  open_filex: ^4.5.0
-  open_filex: ^4.6.0
+  open_filex:
+    git:
+      url: https://github.com/mufassalhussain/open_filex.git
+      ref: master
 #  flutter_webrtc: ^0.12.3
 #  flutter_webrtc: ^0.12.6
   flutter_webrtc: ^0.12.11
