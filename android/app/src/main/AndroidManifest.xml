@@ -2,6 +2,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
+            android:requestLegacyExternalStorage="true"
             android:name="${applicationName}"
             android:icon="@mipmap/ic_launcher"
             android:usesCleartextTraffic="true"
@@ -45,7 +46,8 @@
         <activity
                 android:name="com.yalantis.ucrop.UCropActivity"
                 android:screenOrientation="portrait"
-                android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+                android:theme="@style/Ucrop.CropTheme" />
+<!--                android:theme="@style/Theme.AppCompat.Light.NoActionBar" />-->
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

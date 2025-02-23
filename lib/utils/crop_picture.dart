@@ -19,36 +19,64 @@ void cropPicture(ImageSource? type, UploadPictureCallback uploadPicture,
         await picker.pickImage(source: type ?? ImageSource.gallery);
     if (kDebugMode) print("pickedFile: ${pickedFile?.path}");
     if (pickedFile == null) return;
-    File? croppedFile = await ImageCropper().cropImage(
+
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: pickedFile.path,
-      aspectRatioPresets: [
-        isVariable
-            ? CropAspectRatioPreset.original
-            : CropAspectRatioPreset.square,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: '剪切',
+          toolbarWidgetColor: theme.primaryColor,
+          dimmedLayerColor: Colors.black54,
+          cropFrameColor: theme.primaryColor,
+          activeControlsWidgetColor: theme.primaryColor,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: !isVariable,
+        ),
+        IOSUiSettings(
+          title: '剪切',
+          cancelButtonTitle: '取消',
+          doneButtonTitle: '完成',
+        ),
       ],
-      androidUiSettings: AndroidUiSettings(
-        toolbarTitle: '剪切',
-        toolbarWidgetColor: theme.primaryColor,
-        dimmedLayerColor: Colors.black54,
-        cropFrameColor: theme.primaryColor,
-        activeControlsWidgetColor: theme.primaryColor,
-        initAspectRatio: CropAspectRatioPreset.original,
-        lockAspectRatio: !isVariable,
-      ),
-      iosUiSettings: const IOSUiSettings(
-        title: '剪切',
-        cancelButtonTitle: '取消',
-        doneButtonTitle: '完成',
-      ),
+      // aspectRatioPresets: [
+      //   isVariable
+      //       ? CropAspectRatioPreset.original
+      //       : CropAspectRatioPreset.square,
+      // ],
+      // androidUiSettings: AndroidUiSettings(
+      //   toolbarTitle: '剪切',
+      //   toolbarWidgetColor: theme.primaryColor,
+      //   dimmedLayerColor: Colors.black54,
+      //   cropFrameColor: theme.primaryColor,
+      //   activeControlsWidgetColor: theme.primaryColor,
+      //   initAspectRatio: CropAspectRatioPreset.original,
+      //   lockAspectRatio: !isVariable,
+      // ),
+      // iosUiSettings: const IOSUiSettings(
+      //   title: '剪切',
+      //   cancelButtonTitle: '取消',
+      //   doneButtonTitle: '完成',
+      // ),
     );
 
-    if (croppedFile != null) await uploadPicture(croppedFile);
+    if (croppedFile != null) {
+      final File file = File(croppedFile.path);
+      await uploadPicture(file);
+    }
   } catch (e) {
     // 适当处理错误，例如弹出提示
     if (kDebugMode) print("图片剪切失败: ${e.toString()}");
     // 可以添加更多的错误处理逻辑
     CustomFlutterToast.showErrorToast("图片剪切失败: ${e.toString()}");
   }
+}
+
+class CropAspectRatioPresetCustom implements CropAspectRatioPresetData {
+  @override
+  (int, int)? get data => (2, 3);
+
+  @override
+  String get name => '2x3 (customized)';
 }
 
 //图片剪切
