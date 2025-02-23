@@ -24,11 +24,26 @@ class TalkCreateLogic extends GetxController {
   Future<void> pickImages() async {
     try {
       final ImagePicker picker = ImagePicker();
-      final List<XFile>? images = await picker.pickMultiImage();
-      if (images != null)
+      // final List<XFile>? images = await picker.pickMultiImage();
+      XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      // final List<XFile>? images = await picker.pickMultiImage();
+      // if (images != null)
+      if (image != null) {
         // 检查images是否为空
-        selectedImages
-            .assignAll(images.map((image) => File(image.path)).toList());
+        // selectedImages
+        //     .assignAll(images.map((image) => File(image.path)).toList());
+        // selectedImages.forEach((file) => file.path == image.path
+        //     ? selectedImages.remove(file)
+        //     : selectedImages.add(File(image.path)));
+        // bool isExists = false;
+        // for (var file in selectedImages)
+        //   if (file.path == image.path) {
+        //     isExists = true;
+        //     break;
+        //   }
+        // if (!isExists)
+        selectedImages.add(File(image.path));
+      }
     } catch (e) {
       if (kDebugMode) print('选择图片时发生错误：${e.toString()}');
     }
