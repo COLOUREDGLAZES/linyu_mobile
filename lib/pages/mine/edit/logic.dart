@@ -151,7 +151,7 @@ class EditMineLogic extends Logic<EditMinePage> {
         CustomFlutterToast.showErrorToast(result['msg']);
     } catch (e) {
       if (kDebugMode) print('头像上传失败: $e');
-      CustomFlutterToast.showErrorToast('头像上传失败: $e');
+      // CustomFlutterToast.showErrorToast('头像上传失败: $e');
     }
   }
 
