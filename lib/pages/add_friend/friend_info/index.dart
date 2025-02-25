@@ -1,3 +1,4 @@
+import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_label_value_button/index.dart';
@@ -41,12 +42,12 @@ class SearchInfoPage extends CustomView<SearchInfoLogic> {
                         child: Row(
                           children: [
                             Container(
-                              width: 70,
-                              height: 70,
+                              width: 70.w,
+                              height: 70.h,
                               decoration: BoxDecoration(
                                 border: Border.all(
                                   color: Colors.white,
-                                  width: 5,
+                                  width: 5.w,
                                 ),
                                 borderRadius: BorderRadius.circular(35),
                               ),
@@ -55,7 +56,7 @@ class SearchInfoPage extends CustomView<SearchInfoLogic> {
                                   size: 70,
                                   radius: 35),
                             ),
-                            const SizedBox(width: 20),
+                            SizedBox(width: 20.w),
                             Expanded(
                               child: Row(
                                 mainAxisAlignment:

@@ -1,3 +1,4 @@
+import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart'
@@ -29,45 +30,48 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key, this.initialPage, this.initialRoute});
 
   @override
-  Widget build(BuildContext context) => GetMaterialApp(
-        key: UniqueKey(),
-        navigatorKey: Get.key,
-        smartManagement: SmartManagement.keepFactory,
-        title: '林语',
-        //国际化
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('zh', 'CH'),
-          Locale('en', 'US'),
-        ],
-        locale: const Locale('zh'),
-        //全局绑定Controller
-        initialBinding: ControllerBinding(),
-        enableLog: true,
-        //路由配置
-        getPages: pageRoute,
-        //路由从右侧向左滑入（对GetX有效）
-        defaultTransition: Transition.rightToLeft,
-        //路由监听
-        routingCallback: routingCallback,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF4C9BFF),
-            surface: const Color(0xFFFFFFFF),
-            onSurface: const Color(0xFF1F1F1F),
-            primary: const Color(0xFF4C9BFF),
-            onPrimary: Colors.white,
+  Widget build(BuildContext context) => ScreenUtilInit(
+        designSize: const Size(375, 812),
+        builder: (context, child) => GetMaterialApp(
+          key: UniqueKey(),
+          navigatorKey: Get.key,
+          smartManagement: SmartManagement.keepFactory,
+          title: '林语',
+          //国际化
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('zh', 'CH'),
+            Locale('en', 'US'),
+          ],
+          locale: const Locale('zh'),
+          //全局绑定Controller
+          initialBinding: ControllerBinding(),
+          enableLog: true,
+          //路由配置
+          getPages: pageRoute,
+          //路由从右侧向左滑入（对GetX有效）
+          defaultTransition: Transition.rightToLeft,
+          //路由监听
+          routingCallback: routingCallback,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFF4C9BFF),
+              surface: const Color(0xFFFFFFFF),
+              onSurface: const Color(0xFF1F1F1F),
+              primary: const Color(0xFF4C9BFF),
+              onPrimary: Colors.white,
+            ),
+            splashColor: const Color(0x80EAEAEA),
+            highlightColor: const Color(0x80EAEAEA),
+            useMaterial3: true,
           ),
-          splashColor: const Color(0x80EAEAEA),
-          highlightColor: const Color(0x80EAEAEA),
-          useMaterial3: true,
+          home: initialPage,
+          initialRoute: initialRoute,
         ),
-        home: initialPage,
-        initialRoute: initialRoute,
       );
 }
 
