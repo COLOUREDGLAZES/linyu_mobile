@@ -303,6 +303,10 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                 ListView(
                                   cacheExtent: 99999,
                                   controller: controller.scrollController,
+                                  physics: const AlwaysScrollableScrollPhysics(
+                                    // parent: BouncingScrollPhysics(),
+                                    parent: NeverScrollableScrollPhysics(),
+                                  ),
                                   children: [
                                     if (!controller.hasMore)
                                       const Padding(

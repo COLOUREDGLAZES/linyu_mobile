@@ -331,6 +331,10 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                       },
                       color: theme.primaryColor,
                       child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(
+                          // parent: BouncingScrollPhysics(),
+                          parent: NeverScrollableScrollPhysics(),
+                        ),
                         children: [
                           if ((controller.groupSearchList.isNotEmpty ||
                                   controller.friendSearchList.isNotEmpty) &&
