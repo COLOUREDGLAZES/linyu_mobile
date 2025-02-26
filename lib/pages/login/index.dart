@@ -42,10 +42,11 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        IconButton(
-                            // onPressed: () => Get.toNamed('/setting'),
-                            onPressed: controller.toSetting,
-                            icon: const Icon(Icons.settings)),
+                        if (!controller.isLoggingIn)
+                          IconButton(
+                              // onPressed: () => Get.toNamed('/setting'),
+                              onPressed: controller.toSetting,
+                              icon: const Icon(Icons.settings)),
                       ],
                     ),
                   ),
@@ -143,18 +144,19 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              TextButton(
-                                onPressed: () =>
-                                    controller.toRetrievePassword(),
-                                child: const Text(
-                                  "忘记密码?",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xFFb0b0ba),
-                                    // fontWeight: FontWeight.bold,
+                              if (!controller.isLoggingIn)
+                                TextButton(
+                                  onPressed: () =>
+                                      controller.toRetrievePassword(),
+                                  child: const Text(
+                                    "忘记密码?",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFFb0b0ba),
+                                      // fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                              ),
                             ],
                           ),
                           controller.isLoggingIn
@@ -171,30 +173,31 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                                   width: MediaQuery.of(context).size.width,
                                 ),
                           const SizedBox(height: 5.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "没有账号?",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFFb0b0ba),
-                                  // fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () => controller.toRegister(),
-                                child: Text(
-                                  "立即注册",
+                          if (!controller.isLoggingIn)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "没有账号?",
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: theme.primaryColor,
+                                    color: Color(0xFFb0b0ba),
                                     // fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                                TextButton(
+                                  onPressed: () => controller.toRegister(),
+                                  child: Text(
+                                    "立即注册",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: theme.primaryColor,
+                                      // fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           Expanded(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
