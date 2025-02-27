@@ -2,7 +2,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/api/msg_api.dart';
 import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/encrypt.dart';
@@ -114,11 +113,16 @@ class LoginPageLogic extends GetxController {
     }
   }
 
-  void toRegister() => Get.toNamed('/register');
+  void toRegister() {
+    if (!this.isLoggingIn) Get.toNamed('/register');
+  }
 
-  void toRetrievePassword() => Get.toNamed('/retrieve_password');
+  void toRetrievePassword() {
+    if (!this.isLoggingIn) Get.toNamed('/retrieve_password');
+  }
 
   Future<void> launchURL(String url) async {
+    if (this.isLoggingIn) return;
     final uri = Uri.parse(url);
     try {
       if (await canLaunchUrl(uri))
@@ -135,7 +139,7 @@ class LoginPageLogic extends GetxController {
 
   void toSetting() async {
     try {
-      final result = await Get.toNamed('/setting');
+      if (!this.isLoggingIn) final result = await Get.toNamed('/setting');
       if (!_wsManager.isConnected) _wsManager.connect();
     } catch (e) {
       // 处理导航到设置页面时可能出现的错误

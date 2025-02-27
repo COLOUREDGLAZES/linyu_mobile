@@ -13,6 +13,7 @@ analyzer:
     curly_braces_in_flow_control_structures: ignore
     unnecessary_new: ignore
     unnecessary_nullable_for_final_variable_declarations: ignore
+    unnecessary_this: ignore
 
 
 include: package:flutter_lints/flutter.yaml
