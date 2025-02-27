@@ -5,18 +5,14 @@ import 'package:flutter_pickers/pickers.dart';
 import 'package:flutter_pickers/style/picker_style.dart';
 import 'package:flutter_pickers/time_picker/model/date_type.dart';
 import 'package:flutter_pickers/time_picker/model/pduration.dart';
-import 'package:get/get.dart' show Get, GetNavigation;
+import 'package:get/get.dart' show Get, GetNavigation, GetNumUtils;
 import 'package:intl/intl.dart';
 
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/encrypt.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dio/dio.dart' show MultipartFile, FormData;
-import 'dart:io';
 
-// class RegisterPageLogic extends GetxController {
 class RegisterPageLogic extends Logic {
   final _useApi = UserApi();
 
@@ -295,7 +291,8 @@ class RegisterPageLogic extends Logic {
 
   //开始倒计时
   void _startCountdownTimer() {
-    const oneSec = Duration(seconds: 1);
+    // const oneSec = Duration(seconds: 1);
+    Duration oneSec = 1.seconds;
     callback(timer) => {
           if (countdownTime < 1)
             {_timer.cancel()}
