@@ -50,6 +50,8 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
       setState(() {
         audioTime = content['time'] ?? 0;
         text = content['text'] ?? '';
+        debugPrint('Voice audioUrl is: ${content['text']}');
+        debugPrint('Voice audioUrl is: $text');
         loading = false;
       });
     else

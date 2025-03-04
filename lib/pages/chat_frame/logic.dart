@@ -517,10 +517,17 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   void _handleVoiceToTextError(
       dynamic msg, Map<String, dynamic> content, String errorMessage) {
     CustomFlutterToast.showErrorToast(errorMessage);
-    content['text'] = '';
-    msgList = msgList.replace(
-        oldValue: msg,
-        newValue: msg..['msgContent']['content'] = jsonEncode(content));
+    content['text'] = '网络错误，语音转文字失败~';
+    Map<String, dynamic> msgContent = msg['msgContent'] is String
+        ? jsonDecode(msg['msgContent'])
+        : msg['msgContent'] as Map<String, dynamic>;
+    msgContent['content'] = jsonEncode(content);
+    final Map<String, dynamic> newMsg = Map<String, dynamic>.from(msg);
+
+    newMsg['msgContent'] =
+        newMsg['msgContent'] is String ? jsonEncode(msgContent) : msgContent;
+
+    msgList = msgList.replace(oldValue: msg, newValue: newMsg);
     update([const Key('chat_frame')]);
   }
 
@@ -530,9 +537,21 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     final fromForwardMsgId = msg['fromForwardMsgId'];
     // 显示转文字tips
     Map<String, dynamic> newMsg = Map<String, dynamic>.from(msg);
-    var content = jsonDecode(newMsg['msgContent']['content']);
+
+    final Map<String, dynamic> msgContent;
+    msgContent = msg['msgContent'] is String
+        ? jsonDecode(msg['msgContent'])
+        : msg['msgContent'] as Map<String, dynamic>;
+
+    var content = jsonDecode(msgContent['content']);
     content['text'] = '正在识别中...';
-    newMsg['msgContent']['content'] = jsonEncode(content);
+    // newMsg['msgContent']['content'] = jsonEncode(content);
+    msgContent['content'] = jsonEncode(content);
+
+    newMsg['msgContent'] = msg['msgContent'] is String
+        ? jsonEncode(msgContent)
+        : newMsg['msgContent'] = msgContent;
+
     _updateMessageList(msg, newMsg);
     // 转文字
     try {
@@ -545,18 +564,35 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       );
       if (kDebugMode) print('转文字 result is: $result');
       if (result['code'] == 0) {
-        final newMsg = result['data'];
-        if (kDebugMode) print('newMsg data: $newMsg');
-        newMsg['id'] = msg['id'];
-        newMsg['fromForwardMsgId'] = fromForwardMsgId;
-        newMsg['fromId'] = msg['fromId'];
-        newMsg['msgContent']['formUserPortrait'] =
-            msg['msgContent']['formUserPortrait'];
-        _updateMessageList(msg, newMsg);
+        final resultMsg = result['data'];
+        if (kDebugMode) print('newMsg data: $resultMsg');
+        resultMsg['id'] = msg['id'];
+        resultMsg['fromForwardMsgId'] = fromForwardMsgId;
+        resultMsg['fromId'] = msg['fromId'];
+
+        if (resultMsg['msgContent'] is String || msg['msgContent'] is String) {
+          Map<String, dynamic> newMsgContent = resultMsg['msgContent'] is String
+              ? jsonDecode(resultMsg['msgContent'])
+              : resultMsg['msgContent'] as Map<String, dynamic>;
+          Map<String, dynamic> msgContent = msg['msgContent'] is String
+              ? jsonDecode(msg['msgContent'])
+              : msg['msgContent'] as Map<String, dynamic>;
+          newMsgContent['formUserPortrait'] = msgContent['formUserPortrait'];
+          resultMsg['msgContent'] = resultMsg['msgContent'] is String
+              ? jsonEncode(newMsgContent)
+              : newMsgContent;
+        } else
+          resultMsg['msgContent']['formUserPortrait'] =
+              msg['msgContent']['formUserPortrait'];
+
+        debugPrint('the resultMsg data is: $resultMsg');
+
+        _updateMessageList(msg, resultMsg);
       } else
         _handleVoiceToTextError(msg, content, '语音转文字失败: 网络错误');
     } catch (e) {
-      CustomFlutterToast.showErrorToast('语音转文字时发生错误: $e');
+      // CustomFlutterToast.showErrorToast('语音转文字时发生错误: $e');
+      debugPrint('语音转文字时发生错误: $e');
       content['text'] = '识别失败!';
       _updateMessageList(
           msg, msg..['msgContent']['content'] = jsonEncode(content));
@@ -570,11 +606,19 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   void onHideText(dynamic msg) {
     try {
       Map<String, dynamic> newMsg = Map<String, dynamic>.from(msg);
-      var content = jsonDecode(newMsg['msgContent']['content']);
+
+      final Map<String, dynamic> msgContent = newMsg['msgContent'] is String
+          ? jsonDecode(newMsg['msgContent'])
+          : newMsg['msgContent'] as Map<String, dynamic>;
+
+      var content = jsonDecode(msgContent['content']);
       // 仅在文本非空时才进行替换，以减少不必要的操作
       if (content['text'] != '' || content['text'] != null) {
         content['text'] = '';
-        newMsg['msgContent']['content'] = jsonEncode(content);
+        msgContent['content'] = jsonEncode(content);
+        newMsg['msgContent'] = newMsg['msgContent'] is String
+            ? jsonEncode(msgContent)
+            : msgContent;
         msgList = msgList.replace(oldValue: msg, newValue: newMsg);
         update([const Key('chat_frame')]);
       }
@@ -769,14 +813,14 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       }
       return msgList[index];
     });
-    newMsgList.removeAt(0);
+    if (newMsgList.isNotEmpty) newMsgList.removeAt(0);
     int? result = await sqfliteHelper.updateOrInsertAll(newMsgList);
     if (result != null) debugPrint('onClose insertAll result: $result');
   }
 
   //当加载完所有消息时
   void hasBeenLoaded() {
-    if (!hasMore) {
+    if (!hasMore && msgList.isNotEmpty) {
       final Map<String, dynamic> noMore = Map.from(msgList[0]);
       if (noMore['isNoMore'] == null || !noMore['isNoMore']) {
         noMore['id'] = 'no_more';

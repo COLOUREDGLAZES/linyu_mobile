@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import 'package:chat_bottom_container/panel_container.dart'
     show ChatBottomPanelContainer, ChatBottomPanelContainerController;
 import 'package:chat_bottom_container/typedef.dart';
-import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -225,30 +226,30 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
 
   //聊天内容展示构建
   Widget _buildMsgRecord(context, index) {
-    Widget widget = ChatMessage(
-      key: ValueKey(controller.msgList[index]['id']),
+    final Map<String, dynamic> msg = controller.msgList[index] is String
+        ? jsonDecode(controller.msgList[index])
+        : controller.msgList[index];
+    final Widget widget = ChatMessage(
+      key: ValueKey(msg['id']),
       onTapChatPortrait: controller.onTapAvatar,
-      onTapDelete: (data) =>
-          controller.deleteMsg(data, controller.msgList[index], index),
+      onTapDelete: (data) => controller.deleteMsg(data, msg, index),
       onTapMultipleChoice: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
       onTapCite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
       onTapRemind: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
       onTapSearch: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
       onTapFavorite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
-      onTapRepost: (data) => controller.onRepostMsg(controller.msgList[index]),
-      reEdit: () => controller.reEditMsg(controller.msgList[index]),
-      onTapMsg: () => controller.onTapMsg(controller.msgList[index]),
-      onTapVoiceToText: (data) =>
-          controller.onVoiceToTxt(controller.msgList[index]),
-      onTapVoiceHiddenText: (data) =>
-          controller.onHideText(controller.msgList[index]),
-      onTapCopy: (data) => Clipboard.setData(ClipboardData(
-          text: controller.msgList[index]['msgContent']['content'])),
-      onTapRetract: (data) => controller.retractMsg(controller.msgList[index]),
-      msg: controller.msgList[index],
+      onTapRepost: (data) => controller.onRepostMsg(msg),
+      reEdit: () => controller.reEditMsg(msg),
+      onTapMsg: () => controller.onTapMsg(msg),
+      onTapVoiceToText: (data) => controller.onVoiceToTxt(msg),
+      onTapVoiceHiddenText: (data) => controller.onHideText(msg),
+      onTapCopy: (data) =>
+          Clipboard.setData(ClipboardData(text: msg['msgContent']['content'])),
+      onTapRetract: (data) => controller.retractMsg(msg),
+      msg: msg,
       chatPortrait: controller.chatInfo['portrait'],
       chatInfo: controller.chatInfo,
-      member: controller.members[controller.msgList[index]['fromId']],
+      member: controller.members[msg['fromId']],
     );
 
     return widget;
@@ -960,16 +961,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
       ),
     );
 
-    // 一键滑到底部箭头构建
-    // final Widget bottomArrow = Positioned(
-    //   bottom: 56.6.h,
-    //   right: 6.w,
-    //   child: IconButton(
-    //     onPressed: controller.scrollBottom,
-    //     icon: const Icon(Icons.arrow_circle_down_sharp),
-    //   ),
-    // );
-
     // 整体布局构建
     final Widget view = GestureDetector(
       onTap: () => controller.panelType.value = 'none',
@@ -989,10 +980,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
               ),
             ),
             if (!controller.isLoading && !controller.isFriend) notFriend,
-            // if (controller.scrollController.hasClients &&
-            //     controller.scrollController.position.pixels !=
-            //         controller.scrollController.position.maxScrollExtent)
-            //   bottomArrow,
           ],
         ),
       ),
