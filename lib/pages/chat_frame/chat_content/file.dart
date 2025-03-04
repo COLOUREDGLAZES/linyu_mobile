@@ -32,7 +32,11 @@ class FileMessage extends StatelessThemeWidget {
 
   @override
   Widget build(BuildContext context) {
-    dynamic content = jsonDecode(value['msgContent']['content']);
+    final Map<String, dynamic> msgContent = value['msgContent'] is String
+        ? jsonDecode(value['msgContent'])
+        : value['msgContent'];
+
+    dynamic content = jsonDecode(msgContent['content']);
     return SizedBox(
       height: 85,
       child: FutureBuilder<String>(
