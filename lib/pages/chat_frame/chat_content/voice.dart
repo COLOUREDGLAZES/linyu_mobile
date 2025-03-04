@@ -36,7 +36,16 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
   }
 
   void _parseValue() {
-    final content = jsonDecode(widget.value['msgContent']['content']);
+    // debugPrint(
+    //     'Voice the decode before value is: ${widget.value['msgContent']['content']}');
+    Map<String, dynamic> msgContent;
+    if (widget.value['msgContent'] is String)
+      msgContent = jsonDecode(widget.value['msgContent']);
+    else
+      msgContent = widget.value['msgContent'];
+    // final content = jsonDecode(widget.value['msgContent']['content']);
+    final content = jsonDecode(msgContent['content']);
+    debugPrint('Voice content is: $content');
     if (content != null)
       setState(() {
         audioTime = content['time'] ?? 0;

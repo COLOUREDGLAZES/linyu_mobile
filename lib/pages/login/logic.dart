@@ -139,11 +139,12 @@ class LoginPageLogic extends GetxController {
 
   void toSetting() async {
     try {
-      if (!this.isLoggingIn) final result = await Get.toNamed('/setting');
-      if (!_wsManager.isConnected) _wsManager.connect();
+      if (!this.isLoggingIn) await Get.toNamed('/setting');
     } catch (e) {
       // 处理导航到设置页面时可能出现的错误
       _dialog("导航到设置页面时出现错误：$e，请稍后再试~", Get.context!);
+    } finally {
+      if (!_wsManager.isConnected) _wsManager.connect();
     }
   }
 

@@ -24,6 +24,7 @@ import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart'
     show GlobalThemeConfig;
 import 'package:linyu_mobile/utils/config/getx/route.dart' show AppRoutes;
 import 'package:linyu_mobile/utils/config/network/web_socket.dart';
+import 'package:linyu_mobile/utils/config/getx/sqflite_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //路由配置
@@ -124,6 +125,9 @@ abstract class Logic<V extends Widget> extends GetxController {
   //数据存储（本地存储）
   SharedPreferences get sharedPreferences =>
       GetInstance().find<SharedPreferences>(tag: null);
+
+  //数据库管理
+  SqfliteHelper get sqfliteHelper => GetInstance().find<SqfliteHelper>();
 }
 
 abstract class CustomView<T extends Logic> extends StatelessWidget {

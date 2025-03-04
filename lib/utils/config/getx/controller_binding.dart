@@ -47,6 +47,7 @@ import 'package:linyu_mobile/pages/video_chat/logic.dart';
 import 'package:linyu_mobile/utils/config/getx/global_data.dart';
 import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 import 'package:linyu_mobile/utils/config/network/web_socket.dart';
+import 'package:linyu_mobile/utils/config/getx/sqflite_helper.dart';
 
 //依赖注入
 class ControllerBinding extends Bindings {
@@ -56,6 +57,7 @@ class ControllerBinding extends Bindings {
     Get.put<GlobalData>(GlobalData(), permanent: true);
     Get.put<GlobalThemeConfig>(GlobalThemeConfig(), permanent: true);
     Get.put<WebSocketUtil>(WebSocketUtil(), permanent: true);
+    Get.put<SqfliteHelper>(SqfliteHelper(), permanent: true);
     // Get.putAsync<SharedPreferences>(() async {
     //   final sp = await SharedPreferences.getInstance();
     //   return sp;

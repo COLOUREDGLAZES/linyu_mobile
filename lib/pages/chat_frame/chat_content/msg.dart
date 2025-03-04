@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:custom_pop_up_menu_fork/custom_pop_up_menu.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:linyu_mobile/pages/chat_frame/chat_content/voice.dart';
 import 'package:linyu_mobile/utils/date.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 
+import 'no_more.dart';
 import 'text.dart';
 
 typedef CallBack = dynamic Function(dynamic data);
@@ -99,8 +101,15 @@ class ChatMessage extends StatelessThemeWidget {
 
   // 处理群聊消息的显示名称
   String _handlerGroupDisplayName() {
+    Map<String, dynamic>? msgContent;
+    if (msg['msgContent'] is String)
+      msgContent = jsonDecode(msg['msgContent']);
+    else
+      msgContent = msg['msgContent'];
+
     // 检查 member 是否为 null
-    if (member == null) return msg['msgContent']?['formUserName'] ?? '';
+    // if (member == null) return msg['msgContent']?['formUserName'] ?? '';
+    if (member == null) return msgContent?['formUserName'] ?? '';
     // 尝试从 member 中获取优先属性
     try {
       return member?.containsKey('groupName') == true &&
@@ -120,12 +129,21 @@ class ChatMessage extends StatelessThemeWidget {
   // 构建聊天头像
   Widget _buildChatPortrait(dynamic msg, bool isRight, bool isGroup) {
     String? avatarUrl;
+    Map<String, dynamic> msgContent = {};
+    Widget? chatPortraitWidget;
+
     try {
+      if (msg['msgContent'] is String)
+        msgContent = jsonDecode(msg['msgContent']);
+      else
+        msgContent = msg['msgContent'];
+
       // 获取头像 URL
       avatarUrl = isRight
           ? globalData.currentAvatarUrl
           : isGroup && !isRight
-              ? msg['msgContent']['formUserPortrait']
+              // ? msg['msgContent']['formUserPortrait']
+              ? msgContent['formUserPortrait']
               : chatPortrait;
 
       // 检查头像 URL 是否有效
@@ -137,8 +155,7 @@ class ChatMessage extends StatelessThemeWidget {
       CustomFlutterToast.showErrorToast('获取头像出错: $e');
       avatarUrl = chatPortrait; // 使用默认头像作为后备
     }
-
-    return CustomPortrait(
+    chatPortraitWidget = CustomPortrait(
       url: avatarUrl!,
       size: 40,
       onTap: () {
@@ -154,6 +171,10 @@ class ChatMessage extends StatelessThemeWidget {
         onLongPressChatPortrait?.call(msg);
       },
     );
+
+    if (msgContent['type'] == 'no_more') chatPortraitWidget = Container();
+
+    return chatPortraitWidget;
   }
 
   // 长按消息弹出菜单项
@@ -248,10 +269,18 @@ class ChatMessage extends StatelessThemeWidget {
 
   // 根据消息类型获取组件
   Widget _getComponentByType(Map<String, dynamic> msg, bool isRight) {
-    String? type = msg['msgContent']['type'];
+    Map<String, dynamic> msgContent;
+    if (msg['msgContent'] is String)
+      msgContent = jsonDecode(msg['msgContent']);
+    else
+      msgContent = msg['msgContent'];
+    // String? type = msg['msgContent']['type'];
+    String? type = msgContent['type'];
     Map<String, dynamic>? content;
-    if (type == 'voice') content = jsonDecode(msg['msgContent']['content']);
+    // if (type == 'voice') content = jsonDecode(msg['msgContent']['content']);
+    if (type == 'voice') content = jsonDecode(msgContent['content']);
     final messageMap = {
+      'no_more': (String? username) => Container(),
       'text': (String? username) => TextMessage(value: msg, isRight: isRight),
       'file': (String? username) => FileMessage(value: msg, isRight: isRight),
       'img': (String? username) => ImageMessage(value: msg, isRight: isRight),
@@ -264,8 +293,14 @@ class ChatMessage extends StatelessThemeWidget {
     };
 
     if (messageMap.containsKey(type)) {
+      Map<String, dynamic> msgContent;
+      if (msg['msgContent'] is String)
+        msgContent = jsonDecode(msg['msgContent']);
+      else
+        msgContent = msg['msgContent'];
       final messageWidget =
-          messageMap[type]!(msg['msgContent']['formUserName']);
+          // messageMap[type]!(msg['msgContent']['formUserName']);
+          messageMap[type]!(msgContent['formUserName']);
 
       return type == 'retraction' || chatInfo['name'] == null
           ? messageWidget
@@ -296,8 +331,20 @@ class ChatMessage extends StatelessThemeWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isNoMore = msg['isNoMore'] == true;
     bool isRight = msg['fromId'] == globalData.currentUserId;
-    bool isRetract = msg['msgContent']['type'] == 'retraction';
+    Map<String, dynamic> msgContent;
+    // debugPrint('msg content is: ${msg['msgContent']}');
+    bool isRetract;
+    if (msg['msgContent'] is String) {
+      msgContent = jsonDecode(msg['msgContent']);
+      isRetract = msgContent['type'] == 'retraction';
+    } else {
+      msgContent = msg['msgContent'];
+      // isRetract = msg['msgContent']['type'] == 'retraction';
+      isRetract = msgContent['type'] == 'retraction';
+    }
+    // bool isRetract = msg['msgContent']['type'] == 'retraction';
     bool isShowTime = msg['isShowTime'] == true;
     bool isGroupChat = chatInfo['type'] == 'group';
     bool isUserChat = chatInfo['type'] == 'user';
@@ -306,6 +353,11 @@ class ChatMessage extends StatelessThemeWidget {
 
     return Column(
       children: [
+        const SizedBox(height: 10),
+        if (isNoMore)
+          NoMoreContent(
+            value: msg['msgContent'].toString(),
+          ),
         // 时间组件
         if (isShowTime)
           TimeContent(value: DateUtil.formatTime(msg['createTime'])),
@@ -329,20 +381,21 @@ class ChatMessage extends StatelessThemeWidget {
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    if (!isRetract)
+                    if (!isRetract && !isNoMore)
                       Text(
                         displayName,
                         style: const TextStyle(
                             color: Color(0xFF969696), fontSize: 12),
                       ),
-                    const SizedBox(height: 5),
+                    if (!isNoMore) const SizedBox(height: 5),
                     // 消息组件
                     _getComponentByType(msg, isRight),
                   ],
                 ),
                 if (isRetract &&
                     isRight &&
-                    msg['msgContent']['ext'] == 'text') ...[
+                    // msg['msgContent']['ext'] == 'text') ...[
+                    msgContent['ext'] == 'text') ...[
                   const SizedBox(width: 1.2),
                   Column(
                     children: [
@@ -389,11 +442,12 @@ class ChatMessage extends StatelessThemeWidget {
                 ),
                 if (isRetract &&
                     isRight &&
-                    msg['msgContent']['ext'] == 'text') ...[
+                    // msg['msgContent']['ext'] == 'text') ...[
+                    msgContent['ext'] == 'text') ...[
                   const SizedBox(width: 1),
                   Column(
                     children: [
-                      const SizedBox(height: 1.2),
+                      SizedBox(height: 12.4.h),
                       CustomTextButton(
                         '重新编辑',
                         fontSize: 12,
@@ -411,7 +465,7 @@ class ChatMessage extends StatelessThemeWidget {
               ],
             ),
           ),
-        const SizedBox(height: 15),
+        if (!isNoMore) const SizedBox(height: 15),
       ],
     );
   }

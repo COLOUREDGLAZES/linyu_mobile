@@ -11,7 +11,9 @@ analyzer:
   errors:
     avoid_function_literals_in_foreach_calls: ignore
     curly_braces_in_flow_control_structures: ignore
+    prefer_conditional_assignment: ignore
     unnecessary_new: ignore
+    unnecessary_null_comparison: ignore
     unnecessary_nullable_for_final_variable_declarations: ignore
     unnecessary_this: ignore
 

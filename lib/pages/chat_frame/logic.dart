@@ -12,7 +12,8 @@ import 'package:flutter/cupertino.dart'
         TextEditingController,
         TextEditingValue,
         TextSelection,
-        WidgetsBinding;
+        WidgetsBinding,
+        debugPrint;
 import 'package:flutter/foundation.dart' show Key, kDebugMode;
 import 'package:get/get.dart'
     show
@@ -97,7 +98,8 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // 心灵鸡汤
   Map<String, dynamic> lifeStr = {
     'data': {
-      'content': '承君此诺，必守一生~',
+      // 'content': '承君此诺，必守一生~',
+      'content': '输入文字~',
     }
   };
 
@@ -161,27 +163,39 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 获取消息记录
   Future<void> _onGetMsgRecode({int? index}) async {
-    lifeStr = await _msgApi.getLifeString();
-    if (kDebugMode) print('lifeStr :$lifeStr');
+    // lifeStr = await _msgApi.getLifeString();
+    // if (kDebugMode) print('lifeStr :$lifeStr');
     if (isLoading) return; // 防止重复加载
     isLoading = true;
-    update([const Key('chat_frame')]);
+    // update([const Key('chat_frame')]);
     try {
-      final res = await _msgApi.record(_targetId, index ?? _index, _num);
-      if (res['code'] == 0 && res['data'] is List) {
-        // 确认返回的数据类型
-        msgList = res['data'];
-        _index += msgList.length;
-        hasMore = msgList.isNotEmpty; // 判断是否还有更多数据
-        update([const Key('chat_frame')]);
-        scrollBottom();
-      } else
-        CustomFlutterToast.showErrorToast(
-            '获取消息记录失败: ${res['message'] ?? '未知错误'}');
+      //先获取本地消息记录
+      if (kDebugMode) print('sqfliteHelper: $sqfliteHelper');
+      List<dynamic> localMsgList = await sqfliteHelper.queryByCondition(
+          globalData.currentUserId, _targetId, index ?? _index, _num);
+      // }
+      msgList = localMsgList.copy();
+      debugPrint('msgList :${msgList.length}');
+      if (msgList.isEmpty) {
+        // 本地消息记录为空，从服务器获取
+        final res = await _msgApi.record(_targetId, index ?? _index, _num);
+        if (res['code'] == 0 && res['data'] is List) {
+          // 确认返回的数据类型
+          msgList = res['data'];
+          _index += msgList.length;
+          hasMore = msgList.isNotEmpty; // 判断是否还有更多数据
+          // update([const Key('chat_frame')]);
+          // scrollBottom();
+        } else
+          debugPrint('获取消息记录失败: ${res['message'] ?? '未知错误'}');
+      }
+      debugPrint('msgList the first:${msgList[0]}');
     } catch (e) {
-      CustomFlutterToast.showErrorToast('获取消息记录时发生错误: $e');
+      if (kDebugMode) print('onGetMsgRecode error: $e');
+      // CustomFlutterToast.showErrorToast('获取消息记录时发生错误: $e');
     } finally {
       isLoading = false;
+      scrollBottom();
       update([const Key('chat_frame')]);
     }
   }
@@ -223,13 +237,21 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 滚动到底部
   void scrollBottom() {
-    if (scrollController.hasClients)
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => scrollController.animateTo(
-                scrollController.position.maxScrollExtent,
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.fastOutSlowIn,
-              ));
+    try {
+      if (scrollController.hasClients)
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => scrollController.animateTo(
+                  scrollController.position.maxScrollExtent,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.fastOutSlowIn,
+                ));
+    } on Exception catch (e) {
+      debugPrint('scrollBottom error: $e');
+    } finally {
+      update([const Key('chat_frame')]);
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
+    }
   }
 
   // 查看双方是否为好友
@@ -280,23 +302,36 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       } else
         CustomFlutterToast.showErrorToast('发送失败: ${res['message'] ?? '未知错误'}');
     } catch (e) {
-      CustomFlutterToast.showErrorToast('发送消息时发生错误: $e');
+      // CustomFlutterToast.showErrorToast('发送消息时发生错误: $e');
+      debugPrint('发送消息时发生错误: $e');
     }
   }
 
   // 把消息添加到消息列表中
-  void _msgListAddMsg(msg) {
+  void _msgListAddMsg(Map<String, dynamic> msg) async {
     if (msg == null) {
       CustomFlutterToast.showErrorToast('消息内容不能为空');
       return;
     }
     try {
-      msgList.add(msg);
+      if (msg['msgContent'] is Map) {
+        String msgContent = jsonEncode(msg['msgContent']);
+        debugPrint('onClose msgContent: $msgContent');
+        msg['msgContent'] = msgContent;
+      }
+      if (msg['lastMsgContent'] is Map) {
+        String lastMsgContent = jsonEncode(msg['lastMsgContent']);
+        debugPrint('onClose lastMsgContent: $lastMsgContent');
+        msg['lastMsgContent'] = lastMsgContent;
+      }
+      final int? insertMsg = await sqfliteHelper.insert(msg);
+      if (insertMsg != null) msgList.add(msg);
       _index = msgList.length;
-      update([const Key('chat_frame')]);
       scrollBottom();
+      update([const Key('chat_frame')]);
     } catch (e) {
-      CustomFlutterToast.showErrorToast('添加消息时发生错误: $e');
+      // CustomFlutterToast.showErrorToast('添加消息时发生错误: $e');
+      debugPrint('添加消息时发生错误: $e');
     } finally {
       //判断websocket是否连接
       if (!wsManager.isConnected) wsManager.connect();
@@ -312,16 +347,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
               'isOnlyAudio': isOnlyAudio,
             })
           : CustomFlutterToast.showErrorToast('${res['msg']}'));
-
-  // 选择文件
-  void selectFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    final path = result?.files.single.path;
-    if (path != null) {
-      File file = new File(path);
-      _onSendImgOrFileMsg(file, 'file');
-    }
-  }
 
   // 发送图片或文件消息
   Future<void> _onSendImgOrFileMsg(File file, type) async {
@@ -352,6 +377,16 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         });
       }
     });
+  }
+
+  // 选择文件
+  void selectFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    final path = result?.files.single.path;
+    if (path != null) {
+      File file = new File(path);
+      _onSendImgOrFileMsg(file, 'file');
+    }
   }
 
   // 上传图片
@@ -408,7 +443,11 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // 点击消息记录
   void onTapMsg(dynamic msg) {
     view?.hidePanel();
-    final msgContent = msg['msgContent'] as Map<String, dynamic>;
+    final Map<String, dynamic> msgContent;
+    if (msg['msgContent'] is String)
+      msgContent = jsonDecode(msg['msgContent']);
+    else
+      msgContent = msg['msgContent'] as Map<String, dynamic>;
     // 检查消息类型是否为非文本类型
     if (msgContent['type'] != 'text')
       try {
@@ -656,9 +695,20 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         });
         if (kDebugMode) print('friend_info result: $result');
         if (result != null) {
-          _targetId = result['fromId'];
           chatInfo = result;
-          chatBackground = chatInfo['chatBackground'] ?? '';
+          _targetId = chatInfo['fromId'];
+          // 聊天背景本地获取
+          chatBackground =
+              sharedPreferences.getString('${_targetId}_chat_background') ?? '';
+          // 若本地没有获取到则从网络获取聊天背景
+          if (chatBackground.isEmpty) {
+            // chatInfo = result;
+            chatBackground = chatInfo['chatBackground'] ?? '';
+            // 保存聊天背景到本地
+            if (chatBackground.isNotEmpty)
+              sharedPreferences.setString(
+                  '${_targetId}_chat_background', chatBackground);
+          }
           await _onGetMsgRecode(index: 0);
         }
       }
@@ -673,8 +723,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 在表情面板中点击删除按钮
   void removeChar() {
-    String originalText = msgContentController
-        .text; // textEditingController 我textField的Controller
+    String originalText = msgContentController.text;
     dynamic text;
     if (originalText.isNotEmpty) {
       text = originalText.characters.skipLast(1);
@@ -690,22 +739,86 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   void initData() async {
     if (kDebugMode) print('view type is: ${view.runtimeType}');
     chatInfo = Get.arguments?['chatInfo'] ?? {};
+    debugPrint('chat_frame chatInfo: $chatInfo');
     _targetId = chatInfo['fromId'] ?? '';
     if (kDebugMode) print('chat_frame targetId: $chatInfo');
-    chatBackground = chatInfo['chatBackground'] ?? '';
+    // 聊天背景本地获取
+    chatBackground =
+        sharedPreferences.getString('${_targetId}_chat_background') ?? '';
+    // 若本地没有获取到则从网络获取聊天背景
+    if (chatBackground.isEmpty) {
+      chatBackground = chatInfo['chatBackground'] ?? '';
+      // 保存聊天背景到本地
+      if (chatBackground.isNotEmpty)
+        sharedPreferences.setString(
+            '${_targetId}_chat_background', chatBackground);
+    }
+  }
+
+  void saveMsgToLocal() async {
+    List newMsgList = new List.generate(msgList.length, (index) {
+      if (msgList[index]['msgContent'] is Map) {
+        String msgContent = jsonEncode(msgList[index]['msgContent']);
+        debugPrint('onClose msgContent: $msgContent');
+        msgList[index]['msgContent'] = msgContent;
+      }
+      if (msgList[index]['lastMsgContent'] is Map) {
+        String lastMsgContent = jsonEncode(msgList[index]['lastMsgContent']);
+        debugPrint('onClose lastMsgContent: $lastMsgContent');
+        msgList[index]['lastMsgContent'] = lastMsgContent;
+      }
+      return msgList[index];
+    });
+    newMsgList.removeAt(0);
+    int? result = await sqfliteHelper.updateOrInsertAll(newMsgList);
+    if (result != null) debugPrint('onClose insertAll result: $result');
+  }
+
+  //当加载完所有消息时
+  void hasBeenLoaded() {
+    if (!hasMore) {
+      final Map<String, dynamic> noMore = Map.from(msgList[0]);
+      if (noMore['isNoMore'] == null || !noMore['isNoMore']) {
+        noMore['id'] = 'no_more';
+        noMore['isNoMore'] = true;
+        noMore['isShowTime'] = false;
+        noMore['msgContent'] = {
+          "formUserId": "b0fe7e5e-ac9e-45d0-badf-f940d73973c2",
+          "formUserName": "1008",
+          "formUserPortrait":
+              "http://114.96.70.115:19000/linyu/default-portrait.jpg",
+          "type": "no_more",
+          "content": "没有更多消息了"
+        };
+        msgList.insert(0, noMore);
+      }
+    }
+  }
+
+  void deleteMsg(dynamic data, Map<String, dynamic> msg, int index) async {
+    try {
+      final int? result = await sqfliteHelper.delete(msg['id']);
+      if (result != null || result != 0) {
+        msgList.removeAt(index);
+        update([const Key('chat_frame')]);
+        CustomFlutterToast.showSuccessToast('删除成功');
+      } else
+        CustomFlutterToast.showErrorToast('删除失败');
+    } catch (e) {
+      // CustomFlutterToast.showErrorToast('删除消息时发生错误: $e');
+      debugPrint('删除消息时发生错误: $e');
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
+    }
   }
 
   @override
   void onInit() {
     initData();
     super.onInit();
-    // _onGetMembers();
-    _onGetMsgRecode().catchError((error) {
-      // 适当处理错误，例如记录日志或显示提示
-      if (kDebugMode) print('初始化过程中发生错误: $error');
-    });
+    _onGetMsgRecode().catchError((error) => debugPrint('初始化过程中发生错误: $error'));
     _eventListen();
-    // _onRead(null);
     // 添加滚动监听
     scrollController.addListener(() {
       if (scrollController.hasClients &&
@@ -716,18 +829,31 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   @override
   void onReady() {
-    if (chatInfo['type'] == 'user') _onCheckFriend(_targetId);
-    _onGetMembers();
-    _onRead(null);
-    super.onReady();
+    try {
+      // 判断是否是好友
+      if (chatInfo['type'] == 'user') _onCheckFriend(_targetId);
+      _onGetMembers();
+      _onRead(null);
+    } on Exception catch (e) {
+      // if (kDebugMode) print('onReady过程中发生错误: $e');
+      debugPrint('onReady过程中发生错误: $e');
+    } finally {
+      super.onReady();
+    }
   }
 
   @override
   void onClose() {
-    msgContentController.dispose();
-    scrollController.dispose();
-    _subscription?.cancel();
-    focusNode.dispose();
-    super.onClose();
+    try {
+      saveMsgToLocal();
+    } catch (e) {
+      if (kDebugMode) print('onClose过程中发生错误: $e');
+    } finally {
+      msgContentController.dispose();
+      scrollController.dispose();
+      _subscription?.cancel();
+      focusNode.dispose();
+      super.onClose();
+    }
   }
 }

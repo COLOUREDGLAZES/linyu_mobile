@@ -16,7 +16,12 @@ class CallMessage extends StatelessThemeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final content = jsonDecode(value['msgContent']['content']);
+    Map msgContent;
+    if (value['msgContent'].runtimeType == String)
+      msgContent = jsonDecode(value['msgContent']);
+    else
+      msgContent = value['msgContent'];
+    final content = jsonDecode(msgContent['content']);
     final type = content?['type'];
     final time = content?['time'] ?? 0;
 

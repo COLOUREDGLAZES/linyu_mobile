@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_gradient_line/index.dart';
@@ -31,6 +32,7 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 0),
             child: SizedBox(
               height: screenHeight -
                   MediaQuery.of(context).padding.top -
@@ -42,11 +44,17 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        // if (!controller.isLoggingIn)
                         IconButton(
-                            // onPressed: () => Get.toNamed('/setting'),
-                            onPressed: controller.toSetting,
-                            icon: const Icon(Icons.settings)),
+                          onPressed: () => Get.toNamed('/about'),
+                          icon: Image.asset('assets/images/mine-about.png',
+                              width: 26),
+                          padding: const EdgeInsets.all(0.0),
+                        ),
+                        IconButton(
+                          onPressed: controller.toSetting,
+                          icon: const Icon(Icons.settings),
+                          padding: const EdgeInsets.all(0.0),
+                        ),
                       ],
                     ),
                   ),
@@ -216,7 +224,8 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                                       ),
                                     ),
                                     Text(
-                                      " 相关地址 ",
+                                      // " 相关地址 ",
+                                      " 其他登录方式 ",
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: Color(0xFFb0b0ba),
@@ -245,8 +254,10 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                                         size: 36.0,
                                         color: Color(0xFFb0b0ba),
                                       ),
-                                      onTap: () => controller.launchURL(
-                                          'https://github.com/DWHengr/linyu_mobile'),
+                                      // onTap: () => controller.launchURL(
+                                      //     'https://github.com/DWHengr/linyu_mobile'),
+                                      onTap: () => Fluttertoast.showToast(
+                                          msg: "功能开发中..."),
                                     ),
                                     const SizedBox(width: 15),
                                     CustomMaterialButton(
@@ -256,8 +267,10 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                                         size: 36.0,
                                         color: Color(0xFFb0b0ba),
                                       ),
-                                      onTap: () => controller.launchURL(
-                                          'https://space.bilibili.com/135427028/channel/series'),
+                                      // onTap: () => controller.launchURL(
+                                      //     'https://space.bilibili.com/135427028/channel/series'),
+                                      onTap: () => Fluttertoast.showToast(
+                                          msg: "功能开发中..."),
                                     ),
                                   ],
                                 )

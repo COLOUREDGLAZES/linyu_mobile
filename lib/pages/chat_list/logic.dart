@@ -7,6 +7,7 @@ import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/config/network/web_socket.dart';
+import 'package:linyu_mobile/utils/config/getx/sqflite_helper.dart';
 
 // class ChatListLogic extends GetxController {
 class ChatListLogic extends Logic {
@@ -19,6 +20,7 @@ class ChatListLogic extends Logic {
   final _wsManager = Get.find<WebSocketUtil>();
   StreamSubscription? _subscription;
   final TextEditingController searchBoxController = new TextEditingController();
+  // late final SqfliteHelper sqfliteHelper;
 
   // GlobalData get globalData => GetInstance().find<GlobalData>();
 
@@ -121,8 +123,10 @@ class ChatListLogic extends Logic {
 
   void onTapToChat(dynamic chat) async {
     try {
-      final result =
-          await Get.toNamed('/chat_frame', arguments: {'chatInfo': chat});
+      await Get.toNamed('/chat_frame', arguments: {
+        'chatInfo': chat,
+        // 'sqfliteHelper': sqfliteHelper,
+      });
       onGetChatList();
       focusNode.unfocus();
     } on Exception catch (e) {
@@ -144,8 +148,8 @@ class ChatListLogic extends Logic {
 
   @override
   void onInit() {
-    super.onInit();
     eventListen();
+    super.onInit();
   }
 
   @override

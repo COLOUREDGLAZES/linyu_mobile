@@ -56,7 +56,7 @@ class ChatSettingLogic extends Logic<ChatSettingPage> {
             'friendId': chatInfo['fromId'],
             'isFromChatSetting': true,
           };
-    final result = await Get.toNamed(route, arguments: arg);
+    await Get.toNamed(route, arguments: arg);
   }
 
   // 设置聊天置顶
@@ -97,6 +97,8 @@ class ChatSettingLogic extends Logic<ChatSettingPage> {
       if (setResult['code'] == 0) {
         if (kDebugMode) print('set chat background is:${setResult['data']}');
         _chatFrameLogic.chatBackground = setResult['data'];
+        sharedPreferences.setString('${chatInfo['fromId']}_chat_background',
+            _chatFrameLogic.chatBackground);
         CustomFlutterToast.showSuccessToast('设置聊天背景成功~');
         Get.back();
       } else
