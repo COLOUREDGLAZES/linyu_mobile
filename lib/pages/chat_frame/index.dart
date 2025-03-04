@@ -961,14 +961,14 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     );
 
     // 一键滑到底部箭头构建
-    final Widget bottomArrow = Positioned(
-      bottom: 56.6.h,
-      right: 6.w,
-      child: IconButton(
-        onPressed: controller.scrollBottom,
-        icon: const Icon(Icons.arrow_circle_down_sharp),
-      ),
-    );
+    // final Widget bottomArrow = Positioned(
+    //   bottom: 56.6.h,
+    //   right: 6.w,
+    //   child: IconButton(
+    //     onPressed: controller.scrollBottom,
+    //     icon: const Icon(Icons.arrow_circle_down_sharp),
+    //   ),
+    // );
 
     // 整体布局构建
     final Widget view = GestureDetector(
@@ -989,10 +989,10 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
               ),
             ),
             if (!controller.isLoading && !controller.isFriend) notFriend,
-            if (controller.scrollController.hasClients &&
-                controller.scrollController.position.pixels !=
-                    controller.scrollController.position.maxScrollExtent)
-              bottomArrow,
+            // if (controller.scrollController.hasClients &&
+            //     controller.scrollController.position.pixels !=
+            //         controller.scrollController.position.maxScrollExtent)
+            //   bottomArrow,
           ],
         ),
       ),
