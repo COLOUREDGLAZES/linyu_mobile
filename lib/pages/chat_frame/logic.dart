@@ -36,6 +36,7 @@ import 'package:linyu_mobile/utils/crop_picture.dart';
 import 'package:linyu_mobile/utils/extension.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
 import 'package:dio/dio.dart' show FormData, MultipartFile;
+import 'package:logger/logger.dart';
 
 import 'index.dart';
 
@@ -167,15 +168,14 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     // if (kDebugMode) print('lifeStr :$lifeStr');
     if (isLoading) return; // 防止重复加载
     isLoading = true;
-    // update([const Key('chat_frame')]);
     try {
       //先获取本地消息记录
       if (kDebugMode) print('sqfliteHelper: $sqfliteHelper');
-      List<dynamic> localMsgList = await sqfliteHelper.queryByCondition(
+      List<dynamic> localMsgList = await sqfliteHelper.queryMessageByCondition(
           globalData.currentUserId, _targetId, index ?? _index, _num);
       // }
       msgList = localMsgList.copy();
-      debugPrint('msgList :${msgList.length}');
+      if (kDebugMode) print('msgList :${msgList.length}');
       if (msgList.isEmpty) {
         // 本地消息记录为空，从服务器获取
         final res = await _msgApi.record(_targetId, index ?? _index, _num);
@@ -186,10 +186,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
           hasMore = msgList.isNotEmpty; // 判断是否还有更多数据
           // update([const Key('chat_frame')]);
           // scrollBottom();
-        } else
-          debugPrint('获取消息记录失败: ${res['message'] ?? '未知错误'}');
+        } else if (kDebugMode) print('获取消息记录失败: ${res['message'] ?? '未知错误'}');
       }
-      debugPrint('msgList the first:${msgList[0]}');
+      if (kDebugMode) print('msgList the first:${msgList[0]}');
     } catch (e) {
       if (kDebugMode) print('onGetMsgRecode error: $e');
       // CustomFlutterToast.showErrorToast('获取消息记录时发生错误: $e');
@@ -246,7 +245,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
                   curve: Curves.fastOutSlowIn,
                 ));
     } on Exception catch (e) {
-      debugPrint('scrollBottom error: $e');
+      if (kDebugMode) print('scrollBottom error: $e');
     } finally {
       update([const Key('chat_frame')]);
       //判断websocket是否连接
@@ -303,7 +302,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         CustomFlutterToast.showErrorToast('发送失败: ${res['message'] ?? '未知错误'}');
     } catch (e) {
       // CustomFlutterToast.showErrorToast('发送消息时发生错误: $e');
-      debugPrint('发送消息时发生错误: $e');
+      if (kDebugMode) print('发送消息时发生错误: $e');
     }
   }
 
@@ -316,12 +315,12 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     try {
       if (msg['msgContent'] is Map) {
         String msgContent = jsonEncode(msg['msgContent']);
-        debugPrint('onClose msgContent: $msgContent');
+        if (kDebugMode) print('onClose msgContent: $msgContent');
         msg['msgContent'] = msgContent;
       }
       if (msg['lastMsgContent'] is Map) {
         String lastMsgContent = jsonEncode(msg['lastMsgContent']);
-        debugPrint('onClose lastMsgContent: $lastMsgContent');
+        if (kDebugMode) print('onClose lastMsgContent: $lastMsgContent');
         msg['lastMsgContent'] = lastMsgContent;
       }
       final int? insertMsg = await sqfliteHelper.insert(msg);
@@ -331,7 +330,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       update([const Key('chat_frame')]);
     } catch (e) {
       // CustomFlutterToast.showErrorToast('添加消息时发生错误: $e');
-      debugPrint('添加消息时发生错误: $e');
+      if (kDebugMode) print('添加消息时发生错误: $e');
     } finally {
       //判断websocket是否连接
       if (!wsManager.isConnected) wsManager.connect();
@@ -585,14 +584,14 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
           resultMsg['msgContent']['formUserPortrait'] =
               msg['msgContent']['formUserPortrait'];
 
-        debugPrint('the resultMsg data is: $resultMsg');
+        if (kDebugMode) print('the resultMsg data is: $resultMsg');
 
         _updateMessageList(msg, resultMsg);
       } else
         _handleVoiceToTextError(msg, content, '语音转文字失败: 网络错误');
     } catch (e) {
       // CustomFlutterToast.showErrorToast('语音转文字时发生错误: $e');
-      debugPrint('语音转文字时发生错误: $e');
+      if (kDebugMode) print('语音转文字时发生错误: $e');
       content['text'] = '识别失败!';
       _updateMessageList(
           msg, msg..['msgContent']['content'] = jsonEncode(content));
@@ -695,9 +694,19 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   }
 
   // 点击头像查看用户详情
-  void onTapAvatar(dynamic msg) async {
+  void onTapChatPortrait(dynamic msg) async {
     if (kDebugMode) print('onTapAvatar: $msg');
     try {
+      if (globalData.currentUserId == msg['fromId']) {
+        // 点击自己的头像查看个人信息
+        final result = await Get.toNamed('/friend_info', arguments: {
+          'friendId': msg['fromId'],
+          'isFromChatPage': true,
+        });
+        if (result != null && result) await _onGetMsgRecode(index: 0);
+        return;
+      }
+
       if (msg['source'] == 'user' &&
           globalData.currentUserId != msg['fromId']) {
         // 先检查是否为好友
@@ -783,7 +792,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   void initData() async {
     if (kDebugMode) print('view type is: ${view.runtimeType}');
     chatInfo = Get.arguments?['chatInfo'] ?? {};
-    debugPrint('chat_frame chatInfo: $chatInfo');
+    if (kDebugMode) print('chat_frame chatInfo: $chatInfo');
     _targetId = chatInfo['fromId'] ?? '';
     if (kDebugMode) print('chat_frame targetId: $chatInfo');
     // 聊天背景本地获取
@@ -803,19 +812,20 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     List newMsgList = new List.generate(msgList.length, (index) {
       if (msgList[index]['msgContent'] is Map) {
         String msgContent = jsonEncode(msgList[index]['msgContent']);
-        debugPrint('onClose msgContent: $msgContent');
+        if (kDebugMode) print('onClose msgContent: $msgContent');
         msgList[index]['msgContent'] = msgContent;
       }
       if (msgList[index]['lastMsgContent'] is Map) {
         String lastMsgContent = jsonEncode(msgList[index]['lastMsgContent']);
-        debugPrint('onClose lastMsgContent: $lastMsgContent');
+        if (kDebugMode) print('onClose lastMsgContent: $lastMsgContent');
         msgList[index]['lastMsgContent'] = lastMsgContent;
       }
       return msgList[index];
     });
     if (newMsgList.isNotEmpty) newMsgList.removeAt(0);
     int? result = await sqfliteHelper.updateOrInsertAll(newMsgList);
-    if (result != null) debugPrint('onClose insertAll result: $result');
+    if (result != null) if (kDebugMode)
+      print('onClose insertAll result: $result');
   }
 
   //当加载完所有消息时
@@ -850,7 +860,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         CustomFlutterToast.showErrorToast('删除失败');
     } catch (e) {
       // CustomFlutterToast.showErrorToast('删除消息时发生错误: $e');
-      debugPrint('删除消息时发生错误: $e');
+      if (kDebugMode) print('删除消息时发生错误: $e');
     } finally {
       //判断websocket是否连接
       if (!wsManager.isConnected) wsManager.connect();
@@ -861,7 +871,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   void onInit() {
     initData();
     super.onInit();
-    _onGetMsgRecode().catchError((error) => debugPrint('初始化过程中发生错误: $error'));
+    _onGetMsgRecode();
     _eventListen();
     // 添加滚动监听
     scrollController.addListener(() {
@@ -880,7 +890,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       _onRead(null);
     } on Exception catch (e) {
       // if (kDebugMode) print('onReady过程中发生错误: $e');
-      debugPrint('onReady过程中发生错误: $e');
+      if (kDebugMode) print('onReady过程中发生错误: $e');
     } finally {
       super.onReady();
     }

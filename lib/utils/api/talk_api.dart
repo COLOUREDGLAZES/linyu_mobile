@@ -25,6 +25,11 @@ class TalkApi {
     return response.data;
   }
 
+  Future<Map<String, dynamic>> getTalkByUser() async {
+    final response = await _dio.post('/v1/api/talk/latest/self/details');
+    return response.data;
+  }
+
   Future<Map<String, dynamic>> uploadImg(FormData formData) async {
     final response =
         await _dio.post('/v1/api/talk/upload/img/form', data: formData);

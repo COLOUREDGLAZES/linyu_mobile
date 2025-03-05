@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart' show BaseOptions, Dio, InterceptorsWrapper;
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
@@ -48,12 +48,7 @@ class Http {
 
   Http._internal() {
     _init();
-    debugPrint("ip地址=================>$baseUrl");
-    // String ip = '47.99.61.62';
-    // String ip = '114.96.70.115';
-    // String ip = '192.168.101.4';
-    // String port = '19200';
-    // String port = '9200';
+    if (kDebugMode) print("ip地址=================>$baseUrl");
     dio = Dio(BaseOptions(
       // baseUrl: 'http://$ip:$port',
       connectTimeout: const Duration(seconds: 20),

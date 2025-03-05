@@ -224,14 +224,14 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         iconColor: const Color(0xFF1F1F1F),
       );
 
-  //聊天内容展示构建
+  //聊天记录展示
   Widget _buildMsgRecord(context, index) {
     final Map<String, dynamic> msg = controller.msgList[index] is String
         ? jsonDecode(controller.msgList[index])
         : controller.msgList[index];
     final Widget widget = ChatMessage(
       key: ValueKey(msg['id']),
-      onTapChatPortrait: controller.onTapAvatar,
+      onTapChatPortrait: controller.onTapChatPortrait,
       onTapDelete: (data) => controller.deleteMsg(data, msg, index),
       onTapMultipleChoice: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
       onTapCite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),

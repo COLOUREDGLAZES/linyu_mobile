@@ -7,9 +7,7 @@ import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/config/network/web_socket.dart';
-import 'package:linyu_mobile/utils/config/getx/sqflite_helper.dart';
 
-// class ChatListLogic extends GetxController {
 class ChatListLogic extends Logic {
   final _chatListApi = ChatListApi();
   final FocusNode focusNode = new FocusNode(skipTraversal: true);
@@ -20,9 +18,6 @@ class ChatListLogic extends Logic {
   final _wsManager = Get.find<WebSocketUtil>();
   StreamSubscription? _subscription;
   final TextEditingController searchBoxController = new TextEditingController();
-  // late final SqfliteHelper sqfliteHelper;
-
-  // GlobalData get globalData => GetInstance().find<GlobalData>();
 
   Future<void> onGetChatList() async {
     try {

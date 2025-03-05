@@ -31,7 +31,9 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
           backgroundColor: const Color(0xFFF9FBFF),
           appBar: AppBar(
               centerTitle: true,
-              title: const AppBarTitle('好友资料'),
+              title: globalData.currentUserId != controller.friendId
+                  ? const AppBarTitle('好友资料')
+                  : const AppBarTitle('个人资料'),
               backgroundColor: const Color(0xFFF9FBFF),
               actions: [
                 IconButton(
@@ -210,20 +212,26 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                         ),
                         const SizedBox(height: 1),
                         CustomLabelValueButton(
-                            onTap: () => Get.toNamed('set_remark', arguments: {
-                                  'remark': controller.friendRemark,
-                                  'friendId': controller.friendId
-                                }),
+                            onTap: () =>
+                                globalData.currentUserId != controller.friendId
+                                    ? Get.toNamed('set_remark', arguments: {
+                                        'remark': controller.friendRemark,
+                                        'friendId': controller.friendId
+                                      })
+                                    : null,
                             width: 50,
                             label: '备注',
                             hint: '未设置备注',
                             value: controller.friendRemark),
                         const SizedBox(height: 1),
                         CustomLabelValueButton(
-                            onTap: () => Get.toNamed('set_group', arguments: {
-                                  'groupName': controller.friendGroup,
-                                  'friendId': controller.friendId
-                                }),
+                            onTap: () =>
+                                globalData.currentUserId != controller.friendId
+                                    ? Get.toNamed('set_group', arguments: {
+                                        'groupName': controller.friendGroup,
+                                        'friendId': controller.friendId
+                                      })
+                                    : null,
                             width: 50,
                             label: '分组',
                             value: controller.friendGroup),
@@ -284,54 +292,59 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
               ),
             ),
           ),
-          bottomNavigationBar: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: CustomButton(
-                    text: '发消息',
-                    onTap: controller.onToSendMsg,
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: CustomButton(
-                    text: '音视通话',
-                    onTap: () => Get.bottomSheet(
-                      backgroundColor: Colors.white,
-                      Wrap(
-                        children: [
-                          Center(
-                            child: TextButton(
-                              onPressed: () =>
-                                  controller.onVideoChat(isOnlyAudio: true),
-                              child: Text(
-                                '语音通话',
-                                style: TextStyle(color: theme.primaryColor),
-                              ),
-                            ),
-                          ),
-                          Center(
-                            child: TextButton(
-                              onPressed: () => controller.onVideoChat(),
-                              child: Text(
-                                '视频通话',
-                                style: TextStyle(color: theme.primaryColor),
-                              ),
-                            ),
-                          ),
-                        ],
+          bottomNavigationBar: globalData.currentUserId != controller.friendId
+              ? Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: CustomButton(
+                          text: '发消息',
+                          onTap: controller.onToSendMsg,
+                        ),
                       ),
-                    ),
-                    type: 'minor',
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: CustomButton(
+                          text: '音视通话',
+                          onTap: () => Get.bottomSheet(
+                            backgroundColor: Colors.white,
+                            Wrap(
+                              children: [
+                                Center(
+                                  child: TextButton(
+                                    onPressed: () => controller.onVideoChat(
+                                        isOnlyAudio: true),
+                                    child: Text(
+                                      '语音通话',
+                                      style:
+                                          TextStyle(color: theme.primaryColor),
+                                    ),
+                                  ),
+                                ),
+                                Center(
+                                  child: TextButton(
+                                    onPressed: () => controller.onVideoChat(),
+                                    child: Text(
+                                      '视频通话',
+                                      style:
+                                          TextStyle(color: theme.primaryColor),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          type: 'minor',
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          ),
+                )
+              : null,
         ),
       );
 }

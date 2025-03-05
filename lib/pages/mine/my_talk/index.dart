@@ -4,7 +4,6 @@ import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_image_group/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_text_button/index.dart';
-import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/date.dart';
 

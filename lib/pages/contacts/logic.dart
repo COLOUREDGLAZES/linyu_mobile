@@ -78,7 +78,7 @@ class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
       globalData.onGetUserUnreadInfo();
       _chatGroupApi.list().then((res) {
         if (res['code'] == 0) {
-          debugPrint('获取群聊列表 : ${res['data'][0].toString()}');
+          if (kDebugMode) print('获取群聊列表 : ${res['data'][0].toString()}');
           chatGroupList = res['data'];
           update([const Key("contacts")]);
         } else

@@ -1,157 +1,175 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:sqflite/sqflite.dart';
 
+enum DBTyble { message, chatList, talk }
+
 class SqfliteHelper extends GetxController {
-  final sqlFileName = 'linyu.db';
-  final table = 'message';
-  Database? db;
+  factory SqfliteHelper() => _sqfliteHelper;
+  SqfliteHelper._internal() {
+    _tables = {
+      DBTyble.message: _messageTable,
+      DBTyble.chatList: _chatList,
+      DBTyble.talk: _talk,
+    };
+    if (kDebugMode) print("SqfliteHelper init ......");
+  }
+  static final SqfliteHelper _sqfliteHelper = SqfliteHelper._internal();
+
+  final _sqlFileName = 'linyu.db';
+
+  final _messageTable = 'message';
+  final _chatList = 'chat_list';
+  final _talk = 'talk';
+  late final Map<DBTyble, String> _tables;
+  Database? _db;
   void open() async {
-    String path = "${await getDatabasesPath()}/$sqlFileName";
-    debugPrint("SqfliteHelper open path: $path");
-    if (db == null)
-      db = await openDatabase(
-        path,
-        version: 1,
-        onCreate: (Database db, int version) async => await db.execute('''
-        create table if not exists message
-        (
-          id           text primary key,
-          fromId      text,
-          toId        text,
-          type         text,
-          isShowTime bit,
-          msgContent  text,
-          status       text,
-          source       text,
-          createTime  text,
-          updateTime  text,
-          fromForwardMsgId text
-          );
-        '''),
-      );
-    debugPrint("SqfliteHelper open success ......");
+    String path = "${await getDatabasesPath()}/$_sqlFileName";
+    if (kDebugMode) print("SqfliteHelper open path: $path");
+    if (_db == null)
+      _db = await openDatabase(path, version: 1,
+          onCreate: (Database db, int version) async {
+        await db.execute('''
+            create table if not exists $_messageTable(
+                id               text primary key,
+                fromId           text,
+                toId             text,
+                type             text,
+                isShowTime       bit,
+                msgContent       text,
+                status           text,
+                source           text,
+                createTime       text,
+                updateTime       text,
+                fromForwardMsgId text
+            );
+        ''');
+        // await db.execute('''
+        //     create table if not exists $_chatList(
+        //         id              text primary key,
+        //         userId          text,
+        //         fromId          text,
+        //         isTop           bit,
+        //         unreadNum       integer,
+        //         lastMsgContent  text,
+        //         type            text,
+        //         status          text,
+        //         createTime      text,
+        //         updateTime      text
+        //     );
+        // ''');
+        // await db.execute('''
+        //     create table if not exists $_talk(
+        //         id            text primary key,
+        //         userId        text,
+        //         content       text,
+        //         likeNum       integer,
+        //         commentNum    integer,
+        //         latestComment text,
+        //         status        text,
+        //         createTime    text,
+        //         updateTime    text
+        //     );
+        // ''');
+      });
+    if (kDebugMode) print("SqfliteHelper open success ......");
   }
 
-  Future<int?> insert(Map<String, dynamic> data) async {
-    final result = await db?.insert(table, data,
+  Future<int?> insert(Map<String, dynamic> data, {DBTyble? table}) async {
+    String tableStr = _tables[table ?? DBTyble.message]!;
+    final result = await _db?.insert(tableStr, data,
         conflictAlgorithm: ConflictAlgorithm.ignore);
     return result;
   }
 
-  Future<int?> insertAll(List<dynamic> data) async {
+  Future<int?> insertAll(List<dynamic> data, {DBTyble? table}) async {
     int count = 0;
     data.forEach((element) async {
-      await insert(element);
+      await insert(element, table: table);
       count++;
     });
     return count;
   }
 
-  Future<int?> updateDB(Map<String, dynamic> data) async {
-    final result =
-        await db?.update(table, data, where: 'id =?', whereArgs: [data['id']]);
+  Future<int?> updateDB(Map<String, dynamic> data, {DBTyble? table}) async {
+    final String tableStr = _tables[table ?? DBTyble.message]!;
+
+    final result = await _db
+        ?.update(tableStr, data, where: 'id =?', whereArgs: [data['id']]);
     return result;
   }
 
-  Future<int?> updateOrInsert(Map<String, dynamic> data) async {
-    final result = await db?.insert(table, data,
+  Future<int?> updateOrInsert(Map<String, dynamic> data,
+      {DBTyble? table}) async {
+    final String tableStr = _tables[table ?? DBTyble.message]!;
+    final result = await _db?.insert(tableStr, data,
         conflictAlgorithm: ConflictAlgorithm.replace);
     return result;
   }
 
-  Future<int?> updateOrInsertAll(List<dynamic> data) async {
+  Future<int?> updateOrInsertAll(List<dynamic> data, {DBTyble? table}) async {
     int count = 0;
     data.forEach((element) async {
-      await updateOrInsert(element);
+      await updateOrInsert(element, table: table);
       count++;
     });
     return count;
   }
 
-  Future<int?> delete(String id) async {
-    final result = await db?.delete(table, where: 'id =?', whereArgs: [id]);
+  Future<int?> delete(String id, {DBTyble? table}) async {
+    final String tableStr = _tables[table ?? DBTyble.message]!;
+    final result = await _db?.delete(tableStr, where: 'id =?', whereArgs: [id]);
     return result;
   }
 
-  Future<int?> deleteAll() async {
-    final result = await db?.delete(table);
+  Future<int?> deleteAll({DBTyble? table}) async {
+    final String tableStr = _tables[table ?? DBTyble.message]!;
+    final result = await _db?.delete(tableStr);
     return result;
   }
 
   Future<List<Map<String, dynamic>>?> query(String sql) async {
-    final result = await db?.rawQuery(sql);
+    final result = await _db?.rawQuery(sql);
     return result;
   }
 
-  Future<List<Map<String, dynamic>>?> queryAll() async {
-    final result = await db?.query(table);
+  Future<List<Map<String, dynamic>>?> queryAll({DBTyble? table}) async {
+    final String tableStr = _tables[table ?? DBTyble.message]!;
+    final result = await _db?.query(tableStr);
     return result;
   }
 
-  Future<List<Map<String, dynamic>>?> queryById(String id) async {
-    final result = await db?.query(table, where: 'id =?', whereArgs: [id]);
+  Future<List<Map<String, dynamic>>?> queryById(String id,
+      {DBTyble? table}) async {
+    final String tableStr = _tables[table ?? DBTyble.message]!;
+    final result = await _db?.query(tableStr, where: 'id =?', whereArgs: [id]);
     return result;
   }
 
-  Future<List<Map<String, dynamic>>?> queryByFromId(String fromId) async {
+  Future<List<Map<String, dynamic>>?> queryByFromId(String fromId,
+      {DBTyble? table}) async {
+    final String tableStr = _tables[table ?? DBTyble.message]!;
     final result =
-        await db?.query(table, where: 'from_id =?', whereArgs: [fromId]);
+        await _db?.query(tableStr, where: 'from_id =?', whereArgs: [fromId]);
     return result;
   }
 
-  Future<List<Map<String, dynamic>>?> queryByToId(String toId) async {
-    final result = await db?.query(table, where: 'to_id =?', whereArgs: [toId]);
-    return result;
-  }
-
-  Future<List<Map<String, dynamic>>?> queryByStatus(String status) async {
+  Future<List<Map<String, dynamic>>?> queryByToId(String toId,
+      {DBTyble? table}) async {
+    final String tableStr = _tables[table ?? DBTyble.message]!;
     final result =
-        await db?.query(table, where: 'status =?', whereArgs: [status]);
+        await _db?.query(tableStr, where: 'to_id =?', whereArgs: [toId]);
     return result;
   }
 
-  Future<List<Map<String, dynamic>>?> queryBySource(String source) async {
-    final result =
-        await db?.query(table, where: 'source =?', whereArgs: [source]);
-    return result;
-  }
-
-  Future<List<Map<String, dynamic>>?> queryByCreateTime(
-      String createTime) async {
-    final result = await db
-        ?.query(table, where: 'create_time =?', whereArgs: [createTime]);
-    return result;
-  }
-
-  Future<List<Map<String, dynamic>>?> queryByUpdateTime(
-      String updateTime) async {
-    final result = await db
-        ?.query(table, where: 'update_time =?', whereArgs: [updateTime]);
-    return result;
-  }
-
-  Future<List<Map<String, dynamic>>?> queryByFromForwardMsgId(
-      String fromForwardMsgId) async {
-    final result = await db?.query(table,
-        where: 'from_forward_msgId =?', whereArgs: [fromForwardMsgId]);
-    return result;
-  }
-
-  Future<List<dynamic>> queryByCondition(
+  Future<List<dynamic>> queryMessageByCondition(
     String userId,
     String targetId,
     int index,
     int num,
   ) async {
-    // final result = await db?.rawQuery('''
-    //     SELECT * FROM (SELECT * FROM `message` WHERE
-    //     (`fromId` = ? AND `toId` = ?) OR (`fromId` = ? AND `toId` = ?)
-    //     OR (`source` = 'group' AND `toId` = ?)
-    //     ORDER BY `createTime` DESC LIMIT ?, ?)
-    //     AS subquery ORDER BY `createTime` ASC;
-    //     ''', [userId, targetId, targetId, userId, targetId, index, num]);
-    final result = await db?.rawQuery('''
+    final result = await _db?.rawQuery('''
         select * from(
             select * from message where
               ( fromId = ? and toId = ? ) or 
@@ -164,7 +182,7 @@ class SqfliteHelper extends GetxController {
   }
 
   Future close() async {
-    await db?.close();
+    await _db?.close();
   }
 
   @override

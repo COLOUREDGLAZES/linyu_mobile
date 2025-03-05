@@ -142,9 +142,7 @@ class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
       return allIncluded ? theme.primaryColor : Colors.transparent;
     } catch (e) {
       // 处理潜在的错误
-      if (kDebugMode) {
-        print('Error in checkBoxFillColor: $e');
-      }
+      if (kDebugMode) print('Error in checkBoxFillColor: $e');
       return theme.searchBarColor; // 如果出错，返回默认颜色
     }
   }

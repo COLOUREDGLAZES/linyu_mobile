@@ -13,6 +13,25 @@ import 'package:web_socket_channel/web_socket_channel.dart'
 late String? websocketUrl;
 
 class WebSocketUtil extends GetxController {
+  factory WebSocketUtil() {
+    _instance ??= WebSocketUtil._internal();
+    return _instance!;
+  }
+
+  WebSocketUtil._internal() {
+    //使用的内网穿透
+    // String wsIp = '47.99.61.62';
+    // String wsIp = '114.96.70.115';
+    // String wsIp = '192.168.101.4';
+    // String wsIp = '192.168.101.78';
+    String wsIp = '27.25.159.46';
+    String port = '9100';
+    // String port = '19100';
+    // _websocketIp =
+    //     _preferences.getString('websocket_ip') ?? 'ws://$wsIp:$port';
+    _websocketIp = websocketUrl ?? 'ws://$wsIp:$port';
+  }
+
   final SharedPreferences _preferences =
       GetInstance().find<SharedPreferences>();
   static WebSocketUtil? _instance;
@@ -39,25 +58,6 @@ class WebSocketUtil extends GetxController {
       StreamController<Map<String, dynamic>>.broadcast();
 
   Stream<Map<String, dynamic>> get eventStream => eventController.stream;
-
-  WebSocketUtil._internal() {
-    //使用的内网穿透
-    // String wsIp = '47.99.61.62';
-    // String wsIp = '114.96.70.115';
-    // String wsIp = '192.168.101.4';
-    // String wsIp = '192.168.101.78';
-    String wsIp = '27.25.159.46';
-    String port = '9100';
-    // String port = '19100';
-    // _websocketIp =
-    //     _preferences.getString('websocket_ip') ?? 'ws://$wsIp:$port';
-    _websocketIp = websocketUrl ?? 'ws://$wsIp:$port';
-  }
-
-  factory WebSocketUtil() {
-    _instance ??= WebSocketUtil._internal();
-    return _instance!;
-  }
 
   Future<void> connect() async {
     String? token = _globalData.currentToken;

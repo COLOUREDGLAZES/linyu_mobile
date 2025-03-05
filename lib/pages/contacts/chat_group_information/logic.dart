@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart'
     show Get, GetInstance, GetNavigation, GetxController;
 import 'package:linyu_mobile/pages/contacts/logic.dart';
@@ -53,7 +54,7 @@ class ChatGroupInformationLogic extends GetxController {
     try {
       final res = await _chatGroupApi.details(_chatGroupId);
       if (res['code'] == 0) {
-        debugPrint("chatGroupDetails is: ${res['data'].toString()}");
+        if (kDebugMode) print("chatGroupDetails is: ${res['data'].toString()}");
         chatGroupDetails = res['data'];
         final prefs = await SharedPreferences.getInstance();
         _currentUserId = prefs.getString('userId');

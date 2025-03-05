@@ -33,7 +33,7 @@ Map get widgetMap => AppRoutes.routeConfig[0];
 
 //路由监听
 void routingCallback(router) {
-  debugPrint("enter>>>>>>>>>>>>>>>>${router.current}");
+  if (kDebugMode) print("enter>>>>>>>>>>>>>>>>${router.current}");
 }
 
 /// 通过内置GetBuilder来构建，配合GetView使用
@@ -63,7 +63,9 @@ abstract class CustomWidget<T extends GetxController> extends StatelessWidget {
   GlobalData get globalData => GetInstance().find<GlobalData>(tag: tag);
 
   /// 初始化
-  void init(BuildContext context) => print("init>$runtimeType");
+  void init(BuildContext context) {
+    if (kDebugMode) print("init>$runtimeType");
+  }
 
   /// 依赖发生变化
   void didChangeDependencies(BuildContext context) =>
@@ -102,6 +104,7 @@ abstract class CustomWidget<T extends GetxController> extends StatelessWidget {
       );
 }
 
+/// 视图业务逻辑基类
 abstract class Logic<V extends Widget> extends GetxController {
   /// 当前与controller绑定的view
   /// 当不传入泛型时，view为null 不能在controller的onInit中使用view
@@ -130,6 +133,9 @@ abstract class Logic<V extends Widget> extends GetxController {
   SqfliteHelper get sqfliteHelper => GetInstance().find<SqfliteHelper>();
 }
 
+/// 自定义的视图基类
+/// 通过内置GetBuilder来构建
+/// 与业务逻辑绑定，通过GetX实现状态管理，这样页面只负责渲染，业务逻辑全部在控制器中实现
 abstract class CustomView<T extends Logic> extends StatelessWidget {
   /// 构造函数
   /// 当传入key的时候，若更新widget需使用controller.update([key],)
@@ -157,7 +163,7 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
     if (kDebugMode) print("init>$runtimeType");
     if (!controller.initialized || controller.view != null)
       return; // 提前返回，减少不必要的计算
-    controller.view = this;
+    if (controller.view == null) controller.view = this;
   }
 
   /// 依赖发生变化
@@ -188,9 +194,9 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
   /// 构建
   @override
   Widget build(BuildContext context) => GetBuilder<T>(
-        id: key,
-        assignId: true,
+        id: super.key,
         // 开启控制器随着view的生命周期一起销毁
+        assignId: true,
         key: Key("${context.widget.hashCode}_builder"),
         initState: (GetBuilderState<T> state) => this.init(context),
         didChangeDependencies: (GetBuilderState<T> state) =>
@@ -201,6 +207,7 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
       );
 }
 
+/// 主题配置基类
 abstract class StatelessThemeWidget extends StatelessWidget {
   const StatelessThemeWidget({super.key});
 

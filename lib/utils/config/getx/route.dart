@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show Key, Widget, debugPrint;
 import 'package:get/get.dart' show GetPage, Transition;
 import 'package:linyu_mobile/pages/change_accounts/index.dart';
@@ -300,7 +301,7 @@ class AppRoutes {
           widgetMap[child.page().runtimeType] = child.page();
     }
     final List<dynamic> result = [widgetMap, routes];
-    debugPrint('routes init success...');
+    if (kDebugMode) print('routes init success...');
     return result;
   }
 }

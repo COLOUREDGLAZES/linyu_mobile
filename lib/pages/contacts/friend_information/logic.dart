@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:linyu_mobile/pages/contacts/logic.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
 import 'package:linyu_mobile/utils/api/friend_api.dart';
+import 'package:linyu_mobile/utils/api/talk_api.dart';
+import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/api/video_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
@@ -15,6 +17,8 @@ class FriendInformationLogic extends Logic {
   final _friendApi = new FriendApi();
   final _videoApi = new VideoApi();
   final _chatListApi = new ChatListApi();
+  final _userApi = new UserApi();
+  final _talkApi = new TalkApi();
 
   //初始化获取从联系人页面传递过来的好友信息参数
   Map<String, dynamic> get friendData => arguments['friend'];
@@ -137,30 +141,51 @@ class FriendInformationLogic extends Logic {
 
   //获取好友信息
   Future<Map<String, dynamic>> getFriendInfo() async {
-    if (friendId != '0') {
-      final response = await _friendApi.details(friendId);
+    try {
+      final response = friendId == globalData.currentUserId
+          ? await _userApi.info()
+          : friendId != '0'
+              ? await _friendApi.details(friendId)
+              : {};
+
       if (response['code'] == 0) {
         final data = response['data'];
+        if (kDebugMode) print('data: ${data.toString()}');
         talkContent = data['talkContent'] ?? talkContent;
-        friendPortrait = data['portrait'];
-        friendName = data['name'];
+        if (globalData.currentUserId == friendId) {
+          final talkResponse = await _talkApi.getTalkByUser();
+          if (talkResponse['code'] == 0)
+            talkContent = talkResponse['data'] ?? talkContent;
+        }
+        friendPortrait = data['portrait'] ?? '';
+        friendName = data['name'] ?? '';
         friendRemark = data['remark'] ?? '';
-        friendAccount = data['account'];
-        friendGender = data['sex'];
-        friendBirthday = data['birthday'];
+        friendAccount = data['account'] ?? '';
+        friendGender = data['sex'] ?? '';
+        friendBirthday = data['birthday'] ?? '';
         friendSignature = data['signature'] ?? '';
         friendGroup = data['groupName'] ?? '未分组';
-        isConcern = data['isConcern'];
+        isConcern = (data['isConcern'] ?? false) as bool;
+
+        update([const Key('friend_info')]);
+        return data;
+      } else {
+        CustomFlutterToast.showErrorToast(response['msg']);
+        return {};
       }
-      update([const Key('friend_info')]);
-      return response['data'];
-    } else {
+    } catch (e) {
+      if (kDebugMode) print('error: $e');
+      CustomFlutterToast.showErrorToast('发生错误，请稍后再试');
       return {};
     }
   }
 
   //设置特别关心
   void setConcern() async {
+    if (globalData.currentUserId == friendId) {
+      CustomFlutterToast.showErrorToast('不能关注自己');
+      return;
+    }
     if (isConcern) {
       final response = await _friendApi.unCareFor(friendId);
       setResult(response);
@@ -182,6 +207,10 @@ class FriendInformationLogic extends Logic {
 
   //删除好友
   void deleteFriend() async {
+    if (globalData.currentUserId == friendId) {
+      CustomFlutterToast.showErrorToast('不能删除自己');
+      return;
+    }
     final response = await _friendApi.delete(friendId);
     if (response['code'] == 0) {
       CustomFlutterToast.showSuccessToast("删除成功~");
@@ -232,8 +261,8 @@ class FriendInformationLogic extends Logic {
 
   @override
   void onInit() {
-    super.onInit();
     getFriendInfo();
+    super.onInit();
   }
 
   @override

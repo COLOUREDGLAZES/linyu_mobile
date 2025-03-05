@@ -84,8 +84,6 @@ class LoginPageLogic extends GetxController {
         if (loginResult['code'] == 0) {
           // 使用循环减少冗余代码
           userData = loginResult['data'];
-          // if (kDebugMode) print('userData: $userData');
-          // final List<bool> setSharedPreferencesResult =
           final List<bool> setSharedPreferencesResult = await Future.wait([
             _sharedPreferences.setString('x-token', userData['token']),
             _sharedPreferences.setString('username', userData['username']),
@@ -106,8 +104,6 @@ class LoginPageLogic extends GetxController {
         _dialog("用户名或密码错误，请重试尝试~", context);
       }
     } catch (e) {
-      // 处理异常情况，例如网络错误等
-      // _dialog("登录过程中出现$e错误，请稍后再试~", context);
       if (kDebugMode) print('login error: $e');
       isLoggingIn = false;
     }

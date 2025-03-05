@@ -36,7 +36,7 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
   }
 
   void _parseValue() {
-    // debugPrint(
+    // if (kDebugMode) print(
     //     'Voice the decode before value is: ${widget.value['msgContent']['content']}');
     Map<String, dynamic> msgContent;
     if (widget.value['msgContent'] is String)
@@ -45,13 +45,13 @@ class _ChatContentVoiceState extends State<VoiceMessage> {
       msgContent = widget.value['msgContent'];
     // final content = jsonDecode(widget.value['msgContent']['content']);
     final content = jsonDecode(msgContent['content']);
-    debugPrint('Voice content is: $content');
+    if (kDebugMode) print('Voice content is: $content');
     if (content != null)
       setState(() {
         audioTime = content['time'] ?? 0;
         text = content['text'] ?? '';
-        debugPrint('Voice audioUrl is: ${content['text']}');
-        debugPrint('Voice audioUrl is: $text');
+        if (kDebugMode) print('Voice audioUrl is: ${content['text']}');
+        if (kDebugMode) print('Voice audioUrl is: $text');
         loading = false;
       });
     else

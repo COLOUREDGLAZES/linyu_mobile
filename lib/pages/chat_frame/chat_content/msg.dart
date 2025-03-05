@@ -120,7 +120,7 @@ class ChatMessage extends StatelessThemeWidget {
               : member!['name'] ?? '';
     } catch (e) {
       // 异常处理：返回一个空字符串或增加日志记录
-      debugPrint('Error fetching display name: $e');
+      if (kDebugMode) print('Error fetching display name: $e');
       CustomFlutterToast.showErrorToast('Error fetching display name :$e');
       return '';
     }
@@ -151,7 +151,7 @@ class ChatMessage extends StatelessThemeWidget {
         throw Exception('头像 URL 无效');
       }
     } catch (e) {
-      debugPrint('获取头像出错: $e');
+      if (kDebugMode) print('获取头像出错: $e');
       CustomFlutterToast.showErrorToast('获取头像出错: $e');
       avatarUrl = chatPortrait; // 使用默认头像作为后备
     }
@@ -184,7 +184,7 @@ class ChatMessage extends StatelessThemeWidget {
             title: '复制',
             icon: Icons.content_copy,
             callback: (data) {
-              debugPrint("data: ${data.toString()}");
+              if (kDebugMode) print("data: ${data.toString()}");
               onTapCopy?.call(data);
             },
           ),
@@ -193,7 +193,7 @@ class ChatMessage extends StatelessThemeWidget {
             title: '转文字',
             icon: Icons.text_fields,
             callback: (data) {
-              debugPrint("data: ${data.toString()}");
+              if (kDebugMode) print("data: ${data.toString()}");
               onTapVoiceToText?.call(data);
             },
           ),
@@ -202,7 +202,7 @@ class ChatMessage extends StatelessThemeWidget {
             title: '隐藏',
             icon: Icons.high_quality,
             callback: (data) {
-              debugPrint("data: ${data.toString()}");
+              if (kDebugMode) print("data: ${data.toString()}");
               onTapVoiceHiddenText?.call(data);
             },
           ),
@@ -211,21 +211,21 @@ class ChatMessage extends StatelessThemeWidget {
               title: '转发',
               icon: Icons.send_sharp,
               callback: (data) {
-                debugPrint("data: ${data.toString()}");
+                if (kDebugMode) print("data: ${data.toString()}");
                 onTapRepost?.call(data);
               }),
         PopMenuItemModel(
             title: '收藏',
             icon: Icons.collections,
             callback: (data) {
-              debugPrint("data: ${data.toString()}");
+              if (kDebugMode) print("data: ${data.toString()}");
               onTapFavorite?.call(data);
             }),
         PopMenuItemModel(
             title: '删除',
             icon: Icons.delete,
             callback: (data) {
-              debugPrint("data: ${data.toString()}");
+              if (kDebugMode) print("data: ${data.toString()}");
               onTapDelete?.call(data);
             }),
         if (msg['fromId'] == globalData.currentUserId)
@@ -233,28 +233,28 @@ class ChatMessage extends StatelessThemeWidget {
               title: '撤回',
               icon: Icons.reply_all,
               callback: (data) {
-                debugPrint("data: ${data.toString()}");
+                if (kDebugMode) print("data: ${data.toString()}");
                 onTapRetract?.call(data);
               }),
         PopMenuItemModel(
             title: '多选',
             icon: Icons.playlist_add_check,
             callback: (data) {
-              debugPrint("data: ${data.toString()}");
+              if (kDebugMode) print("data: ${data.toString()}");
               onTapMultipleChoice?.call(data);
             }),
         PopMenuItemModel(
             title: '引用',
             icon: Icons.format_quote,
             callback: (data) {
-              debugPrint("data: ${data.toString()}");
+              if (kDebugMode) print("data: ${data.toString()}");
               onTapCite?.call(data);
             }),
         PopMenuItemModel(
             title: '提醒',
             icon: Icons.add_alert,
             callback: (data) {
-              debugPrint("data: ${data.toString()}");
+              if (kDebugMode) print("data: ${data.toString()}");
               onTapRemind?.call(data);
             }),
         if (type == 'text')
@@ -262,7 +262,7 @@ class ChatMessage extends StatelessThemeWidget {
               title: '搜一搜',
               icon: Icons.search,
               callback: (data) {
-                debugPrint("data: ${data.toString()} ");
+                if (kDebugMode) print("data: ${data.toString()} ");
                 onTapSearch?.call(data);
               }),
       ];
@@ -334,7 +334,7 @@ class ChatMessage extends StatelessThemeWidget {
     bool isNoMore = msg['isNoMore'] == true;
     bool isRight = msg['fromId'] == globalData.currentUserId;
     Map<String, dynamic> msgContent;
-    // debugPrint('msg content is: ${msg['msgContent']}');
+    // if (kDebugMode) print('msg content is: ${msg['msgContent']}');
     bool isRetract;
     if (msg['msgContent'] is String) {
       msgContent = jsonDecode(msg['msgContent']);
@@ -404,7 +404,7 @@ class ChatMessage extends StatelessThemeWidget {
                         '重新编辑',
                         fontSize: 12,
                         onTap: () {
-                          debugPrint("重新编辑");
+                          if (kDebugMode) print("重新编辑");
                           reEdit?.call();
                         },
                       ),
@@ -452,7 +452,7 @@ class ChatMessage extends StatelessThemeWidget {
                         '重新编辑',
                         fontSize: 12,
                         onTap: () {
-                          debugPrint("重新编辑");
+                          if (kDebugMode) print("重新编辑");
                           reEdit?.call();
                         },
                       ),

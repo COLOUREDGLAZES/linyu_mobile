@@ -45,7 +45,7 @@ class ReForwardLogic extends Logic<ReForwardPage> {
     // });
     final res = await _chatListApi.search(friendInfo);
     if (res['code'] == 0) {
-      debugPrint('searchList is: ${res['data']}');
+      if (kDebugMode) print('searchList is: ${res['data']}');
       friendSearchList = res['data']['friend'];
       groupSearchList = res['data']['group'];
       update([const Key("repost")]);

@@ -268,34 +268,56 @@ class EditMineLogic extends Logic<EditMinePage> {
         sharedPreferences.setString('signature', signature);
         isEdit = false;
         return;
-      } else {
+      } else
         CustomFlutterToast.showErrorToast(updateResult['msg']);
-      }
       return;
+    }
+  }
+
+  void initData() async {
+    final userInfo = await _useApi.info();
+    try {
+      // 更新用户名信息
+      currentUserInfo['name'] =
+          sharedPreferences.getString('username') ?? userInfo['data']['name'];
+      nameController.text = currentUserInfo['name'];
+      nameTextLength =
+          nameController.text.length.clamp(0, 30); // 直接设置长度，并确保不超过30
+
+      currentUserInfo['portrait'] = sharedPreferences.getString('portrait') ??
+          userInfo['data']['portrait'];
+
+      // 更新性别信息
+      currentUserInfo['sex'] =
+          sharedPreferences.getString('sex') ?? userInfo['data']['sex'];
+      sex = currentUserInfo['sex'];
+      _setSexValue(sex);
+
+      // 更新生日信息
+      birthday = DateTime.parse(userInfo['data']['birthday']).toLocal();
+      birthdayController.text = DateFormat('yyyy-MM-dd').format(birthday);
+      currentUserInfo['birthday'] = birthday;
+
+      // 更新个性签名信息
+      final signature = sharedPreferences.getString('signature') ??
+          userInfo['data']['signature'];
+      if (signature != null && signature.isNotEmpty) {
+        signatureController.text = signature;
+        signatureTextLength =
+            signatureController.text.length.clamp(0, 100); // 直接设置长度，并确保不超过100
+      }
+      if (kDebugMode) print('初始化用户信息成功 : $currentUserInfo');
+    } catch (e) {
+      if (kDebugMode) print('初始化用户信息失败: $e');
+      CustomFlutterToast.showErrorToast('初始化用户信息失败，请稍后再试');
     }
   }
 
   //初始化
   @override
-  void onInit() async {
+  void onInit() {
+    initData();
     super.onInit();
-    final userInfo = await _useApi.info();
-    currentUserInfo['name'] =
-        sharedPreferences.getString('username') ?? userInfo['data']['name'];
-    currentUserInfo['portrait'] =
-        sharedPreferences.getString('portrait') ?? userInfo['data']['portrait'];
-    nameController.text = currentUserInfo['name'];
-    nameTextLength = nameController.text.length;
-    sex = sharedPreferences.getString('sex') ?? userInfo['data']['sex'];
-    _setSexValue(sex);
-    currentUserInfo['sex'] = sex;
-    birthday = DateTime.parse(userInfo['data']['birthday']).toLocal();
-    birthdayController.text =
-        DateFormat('yyyy-MM-dd').format(birthday); // 格式化日期
-    currentUserInfo['birthday'] = birthday;
-    signatureController.text = sharedPreferences.getString('signature') ??
-        userInfo['data']['signature'];
-    signatureTextLength = signatureController.text.length;
   }
 
   //当页面返回时，销毁控制器
