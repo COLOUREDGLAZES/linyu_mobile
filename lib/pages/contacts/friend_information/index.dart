@@ -245,7 +245,7 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                             value: controller.friendSignature),
                         const SizedBox(height: 1),
                         CustomLabelValueButton(
-                          onTap: () => Get.toNamed('/talk', arguments: {
+                          onTap: () => Get.toNamed('/my_talk_page', arguments: {
                             'isNotShowLeading': true,
                             'userId': controller.friendId,
                             'title': StringUtil.isNotNullOrEmpty(

@@ -53,7 +53,7 @@ jobs:
         run: flutter build apk --release
 
 
-      - name: 上传 Android 产物
+      - name: 上传 Android artifact
         uses: actions/upload-artifact@v4
         with:
           name: linyu_mobile-android-release

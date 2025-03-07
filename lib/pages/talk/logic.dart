@@ -1,3 +1,4 @@
+import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -23,6 +24,8 @@ class TalkLogic extends Logic {
   bool isLoading = false;
   final ScrollController scrollController = ScrollController();
 
+  RxDouble opacity = 0.0.obs;
+
   Future<void> init() async {
     // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     currentUserInfo['name'] = sharedPreferences.getString('username');
@@ -39,10 +42,28 @@ class TalkLogic extends Logic {
     currentUserId = sharedPreferences.getString('userId') ?? '';
   }
 
+  void scrollToTop() {
+    scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 500), // 动画持续时间
+      curve: Curves.easeInOut, // 动画曲线
+    );
+  }
+
   void scrollListener() {
     if (scrollController.position.pixels ==
         scrollController.position.maxScrollExtent) {
       onTalkList();
+    }
+    if (scrollController.offset > 140.w &&
+        !scrollController.position.outOfRange &&
+        opacity.value != 1) {
+      opacity.value = 1;
+    }
+    if (scrollController.offset < 140.w &&
+        !scrollController.position.outOfRange &&
+        opacity.value != 0) {
+      opacity.value = 0;
     }
   }
 
