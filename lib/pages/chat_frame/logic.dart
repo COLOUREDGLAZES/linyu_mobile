@@ -330,10 +330,13 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         msg['lastMsgContent'] = lastMsgContent;
       }
       final int? insertMsg = await sqfliteHelper.insert(msg);
-      if (insertMsg != null) msgList.add(msg);
-      _index = msgList.length;
-      scrollBottom();
-      update([const Key('chat_frame')]);
+      if (insertMsg != null) {
+        msgList.add(msg);
+        _index = msgList.length;
+        update([const Key('chat_frame')]);
+        scrollBottom();
+      } else
+        CustomFlutterToast.showErrorToast('消息保存失败');
     } catch (e) {
       // CustomFlutterToast.showErrorToast('添加消息时发生错误: $e');
       if (kDebugMode) print('添加消息时发生错误: $e');

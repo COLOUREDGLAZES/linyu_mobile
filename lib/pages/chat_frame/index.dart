@@ -229,32 +229,28 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     final Map<String, dynamic> msg = controller.msgList[index] is String
         ? jsonDecode(controller.msgList[index])
         : controller.msgList[index];
-    final Widget widget = index == controller.msgList.length - 1
-        ? Container()
-        : ChatMessage(
-            key: ValueKey(msg['id']),
-            onTapChatPortrait: controller.onTapChatPortrait,
-            onTapDelete: (data) => controller.deleteMsg(data, msg, index),
-            onTapMultipleChoice: (data) =>
-                Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
-            onTapCite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
-            onTapRemind: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
-            onTapSearch: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
-            onTapFavorite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
-            onTapRepost: (data) => controller.onRepostMsg(msg),
-            reEdit: () => controller.reEditMsg(msg),
-            onTapMsg: () => controller.onTapMsg(msg),
-            onTapVoiceToText: (data) => controller.onVoiceToTxt(msg),
-            onTapVoiceHiddenText: (data) => controller.onHideText(msg),
-            onTapCopy: (data) => Clipboard.setData(
-                ClipboardData(text: msg['msgContent']['content'])),
-            onTapRetract: (data) => controller.retractMsg(msg),
-            msg: msg,
-            chatPortrait: controller.chatInfo['portrait'],
-            chatInfo: controller.chatInfo,
-            member: controller.members[msg['fromId']],
-          );
-
+    final Widget widget = ChatMessage(
+      key: ValueKey(msg['id']),
+      onTapChatPortrait: controller.onTapChatPortrait,
+      onTapDelete: (data) => controller.deleteMsg(data, msg, index),
+      onTapMultipleChoice: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
+      onTapCite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
+      onTapRemind: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
+      onTapSearch: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
+      onTapFavorite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
+      onTapRepost: (data) => controller.onRepostMsg(msg),
+      reEdit: () => controller.reEditMsg(msg),
+      onTapMsg: () => controller.onTapMsg(msg),
+      onTapVoiceToText: (data) => controller.onVoiceToTxt(msg),
+      onTapVoiceHiddenText: (data) => controller.onHideText(msg),
+      onTapCopy: (data) =>
+          Clipboard.setData(ClipboardData(text: msg['msgContent']['content'])),
+      onTapRetract: (data) => controller.retractMsg(msg),
+      msg: msg,
+      chatPortrait: controller.chatInfo['portrait'],
+      chatInfo: controller.chatInfo,
+      member: controller.members[msg['fromId']],
+    );
     return widget;
   }
 
