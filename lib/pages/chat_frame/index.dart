@@ -65,6 +65,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     if (controller.focusNode.hasFocus) controller.focusNode.unfocus();
     controller.isReadOnly.value = false;
     panelController.updatePanelType(ChatBottomPanelType.none);
+    controller.keyboardHeight = 0;
   }
 
   Widget _buildEmoji() {
@@ -337,6 +338,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                       ChatBottomPanelType.keyboard));
                               // Future.delayed(const Duration(milliseconds: 500),
                               //     controller.scrollBottom);
+                              controller.keyboardHeight = 329.h;
                             },
                             onChanged: (value) => controller.isSend.value =
                                 value.trim().isNotEmpty,
@@ -357,6 +359,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                   ChatBottomHandleFocus.requestFocus));
                       // Future.delayed(const Duration(milliseconds: 500),
                       //     controller.scrollBottom);
+                      controller.keyboardHeight = 329.h;
                     },
                   ),
                 controller.isSend.value
@@ -369,13 +372,16 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                       )
                     : _buildIconButton1(
                         const IconData(0xe636, fontFamily: 'IconFont'),
-                        () => WidgetsBinding.instance.addPostFrameCallback((_) {
-                          panelController.updatePanelType(
-                              ChatBottomPanelType.other,
-                              data: PanelType.tool);
-                          // Future.delayed(const Duration(milliseconds: 500),
-                          //     controller.scrollBottom);
-                        }),
+                        () {
+                          WidgetsBinding.instance.addPostFrameCallback((_) =>
+                                  panelController.updatePanelType(
+                                      ChatBottomPanelType.other,
+                                      data: PanelType.tool)
+                              // Future.delayed(const Duration(milliseconds: 500),
+                              //     controller.scrollBottom);
+                              );
+                          controller.keyboardHeight = 329.h;
+                        },
                       ),
               ],
             ),
@@ -581,7 +587,9 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                         icon: Icons.keyboard_arrow_down,
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).viewInsets.bottom,
+                        // height: MediaQuery.of(context).viewInsets.bottom,
+                        // height: 329.h,
+                        height: controller.keyboardHeight,
                       ),
                     ],
                   )),

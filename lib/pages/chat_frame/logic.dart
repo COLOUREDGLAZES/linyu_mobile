@@ -102,6 +102,13 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     update([const Key('chat_frame')]);
   }
 
+  double _keyboardHeight = 0;
+  double get keyboardHeight => _keyboardHeight;
+  set keyboardHeight(double value) {
+    _keyboardHeight = value;
+    update([const Key('chat_frame')]);
+  }
+
   // 心灵鸡汤
   Map<String, dynamic> lifeStr = {
     'data': {
