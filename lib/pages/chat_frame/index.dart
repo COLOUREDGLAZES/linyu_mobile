@@ -36,6 +36,9 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
 
   final panelController = new ChatBottomPanelContainerController<PanelType>();
 
+  bool _isKeyboardVisible = false;
+  double _previousViewInsetsBottom = 0.0;
+
   Widget _buildPanelContainer() {
     try {
       return ChatBottomPanelContainer<PanelType>(
@@ -255,142 +258,129 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     return widget;
   }
 
-  Widget _buildGroupDissolvedMessage() {
-    return Container(
-      color: const Color(0xFFEDF2F9),
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-      child: const Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('该群已解散', style: TextStyle(fontSize: 14, color: Colors.grey)),
-        ],
-      ),
-    );
-  }
-
-  // 不是好友时展示的组件
-  Widget _buildNotFriendMessage() {
-    return Container(
-      color: const Color(0xFFEDF2F9),
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-      child: const Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('Ta已不是好友', style: TextStyle(fontSize: 14, color: Colors.grey)),
-        ],
-      ),
-    );
-  }
-
-  // 输入框和按钮构建
-  Widget _buildTextFieldAndButtons() {
-    return RepaintBoundary(
-      child: Container(
+  Widget _buildGroupDissolvedMessage() => Container(
         color: const Color(0xFFEDF2F9),
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: const Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                controller.isRecording.value
-                    ? _buildIconButton1(
-                        const IconData(0xe661, fontFamily: 'IconFont'),
-                        () {
-                          controller.isRecording.value = false;
-                          WidgetsBinding.instance.addPostFrameCallback(
-                              (_) => controller.focusNode.requestFocus());
-                        },
-                      )
-                    : _buildIconButton1(
-                        const IconData(0xe7e2, fontFamily: 'IconFont'),
-                        () {
-                          controller.isRecording.value = true;
-                          hidePanel();
-                        },
-                      ),
-                const SizedBox(width: 5),
-                controller.isRecording.value
-                    ? Expanded(
-                        child: CustomVoiceRecordButton(
-                          onFinish: controller.onSendVoiceMsg,
-                        ),
-                      )
-                    : Expanded(
-                        child: Obx(
-                          () => CustomTextField(
-                            controller: controller.msgContentController,
-                            maxLines: 3,
-                            minLines: 1,
-                            readOnly: controller.isReadOnly.value,
-                            hintTextColor: theme.primaryColor,
-                            hintText: controller.lifeStr['data']['content'],
-                            vertical: 8,
-                            focusNode: controller.focusNode,
-                            fillColor: Colors.white.withOpacity(0.9),
-                            onTap: () {
-                              controller.isReadOnly.value = false;
-                              WidgetsBinding.instance.addPostFrameCallback(
-                                  (_) => panelController.updatePanelType(
-                                      ChatBottomPanelType.keyboard));
-                              // Future.delayed(const Duration(milliseconds: 500),
-                              //     controller.scrollBottom);
-                              controller.keyboardHeight = 329.h;
-                            },
-                            onChanged: (value) => controller.isSend.value =
-                                value.trim().isNotEmpty,
-                          ),
-                        ),
-                      ),
-                const SizedBox(width: 5),
-                if (!controller.isRecording.value)
-                  _buildIconButton1(
-                    const IconData(0xe632, fontFamily: 'IconFont'),
-                    () {
-                      controller.isReadOnly.value = true;
-                      WidgetsBinding.instance.addPostFrameCallback((_) =>
-                          panelController.updatePanelType(
-                              ChatBottomPanelType.other,
-                              data: PanelType.emoji,
-                              forceHandleFocus:
-                                  ChatBottomHandleFocus.requestFocus));
-                      // Future.delayed(const Duration(milliseconds: 500),
-                      //     controller.scrollBottom);
-                      controller.keyboardHeight = 329.h;
-                    },
-                  ),
-                controller.isSend.value
-                    ? CustomButton(
-                        text: '发送',
-                        onTap: controller.sendTextMsg,
-                        width: 60,
-                        textSize: 14,
-                        height: 34,
-                      )
-                    : _buildIconButton1(
-                        const IconData(0xe636, fontFamily: 'IconFont'),
-                        () {
-                          WidgetsBinding.instance.addPostFrameCallback((_) =>
-                                  panelController.updatePanelType(
-                                      ChatBottomPanelType.other,
-                                      data: PanelType.tool)
-                              // Future.delayed(const Duration(milliseconds: 500),
-                              //     controller.scrollBottom);
-                              );
-                          controller.keyboardHeight = 329.h;
-                        },
-                      ),
-              ],
-            ),
-            _buildPanelContainer(),
+            Text('该群已解散', style: TextStyle(fontSize: 14, color: Colors.grey)),
           ],
         ),
-      ),
-    );
-  }
+      );
+
+  // 不是好友时展示的组件
+  Widget _buildNotFriendMessage() => Container(
+        color: const Color(0xFFEDF2F9),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+        child: const Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Ta已不是好友', style: TextStyle(fontSize: 14, color: Colors.grey)),
+          ],
+        ),
+      );
+
+  // 输入框和按钮构建
+  Widget _buildTextFieldAndButtons() => RepaintBoundary(
+        child: Container(
+          color: const Color(0xFFEDF2F9),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  controller.isRecording.value
+                      ? _buildIconButton1(
+                          const IconData(0xe661, fontFamily: 'IconFont'),
+                          () {
+                            controller.isRecording.value = false;
+                            WidgetsBinding.instance.addPostFrameCallback(
+                                (_) => controller.focusNode.requestFocus());
+                          },
+                        )
+                      : _buildIconButton1(
+                          const IconData(0xe7e2, fontFamily: 'IconFont'),
+                          () {
+                            controller.isRecording.value = true;
+                            hidePanel();
+                          },
+                        ),
+                  const SizedBox(width: 5),
+                  controller.isRecording.value
+                      ? Expanded(
+                          child: CustomVoiceRecordButton(
+                            onFinish: controller.onSendVoiceMsg,
+                          ),
+                        )
+                      : Expanded(
+                          child: Obx(
+                            () => CustomTextField(
+                              controller: controller.msgContentController,
+                              maxLines: 3,
+                              minLines: 1,
+                              readOnly: controller.isReadOnly.value,
+                              hintTextColor: theme.primaryColor,
+                              hintText: controller.lifeStr['data']['content'],
+                              vertical: 8,
+                              focusNode: controller.focusNode,
+                              fillColor: Colors.white.withOpacity(0.9),
+                              onTap: () {
+                                controller.isReadOnly.value = false;
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                    (_) => panelController.updatePanelType(
+                                        ChatBottomPanelType.keyboard));
+                                controller.keyboardHeight = 276.h;
+                              },
+                              onChanged: (value) => controller.isSend.value =
+                                  value.trim().isNotEmpty,
+                            ),
+                          ),
+                        ),
+                  const SizedBox(width: 5),
+                  if (!controller.isRecording.value)
+                    _buildIconButton1(
+                      const IconData(0xe632, fontFamily: 'IconFont'),
+                      () {
+                        controller.isReadOnly.value = true;
+                        WidgetsBinding.instance.addPostFrameCallback((_) =>
+                            panelController.updatePanelType(
+                                ChatBottomPanelType.other,
+                                data: PanelType.emoji,
+                                forceHandleFocus:
+                                    ChatBottomHandleFocus.requestFocus));
+                        controller.keyboardHeight = 276.h;
+                      },
+                    ),
+                  controller.isSend.value
+                      ? CustomButton(
+                          text: '发送',
+                          onTap: controller.sendTextMsg,
+                          width: 60,
+                          textSize: 14,
+                          height: 34,
+                        )
+                      : _buildIconButton1(
+                          const IconData(0xe636, fontFamily: 'IconFont'),
+                          () {
+                            WidgetsBinding.instance.addPostFrameCallback((_) =>
+                                panelController.updatePanelType(
+                                    ChatBottomPanelType.other,
+                                    data: PanelType.tool));
+                            controller.keyboardHeight = 276.h;
+                          },
+                        ),
+                ],
+              ),
+              _buildPanelContainer(),
+            ],
+          ),
+        ),
+      );
 
   @override
   void init(BuildContext context) {
@@ -400,6 +390,26 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
 
   @override
   Widget buildView(BuildContext context) {
+    // 获取当前窗口的 viewInsets
+    final viewInsets = MediaQuery.of(context).viewInsets;
+    // 判断键盘是否可见
+    if (viewInsets.bottom != _previousViewInsetsBottom) {
+      if (viewInsets.bottom == 0.0) {
+        if (_isKeyboardVisible) {
+          // 键盘刚刚关闭
+          _isKeyboardVisible = false;
+          if (kDebugMode) print('Keyboard closed');
+          // 在这里执行键盘关闭后的操作
+          controller.keyboardHeight = 0;
+        }
+      } else {
+        _isKeyboardVisible = true; //标记键盘是打开的，这样才能在关闭时判断是否发生了关闭动作
+        if (kDebugMode) print('Keyboard Opened');
+        //添加 打开状态的打印
+      }
+      _previousViewInsetsBottom = viewInsets.bottom; // 更新 viewInsets.bottom 的值
+    }
+
     controller.hasBeenLoaded();
     // appBar 构建
     final PreferredSizeWidget appBar = AppBar(
@@ -575,7 +585,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
             if (!controller.isLoading && !controller.isFriend) notFriend,
             if (!controller.isOnBottom)
               Positioned(
-                  bottom: 66.h,
+                  bottom: 59.h,
                   right: 9.w,
                   child: Column(
                     children: [
@@ -597,28 +607,8 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         ),
       ),
     );
-
     return view;
   }
-
-  // @override
-  // void didChangeMetrics() {
-  //   final keyboardHeight = MediaQuery.of(Get.context!).viewInsets.bottom;
-  //   if (keyboardHeight > 0)
-  //     Future.delayed(
-  //         const Duration(milliseconds: 300),
-  //         () => WidgetsBinding.instance.addPostFrameCallback((_) {
-  //               if (controller.scrollController.hasClients &&
-  //                   controller.scrollController.position.pixels !=
-  //                       controller.scrollController.position.maxScrollExtent)
-  //                 controller.scrollController.animateTo(
-  //                   controller.scrollController.position.maxScrollExtent + 500,
-  //                   duration: const Duration(milliseconds: 300),
-  //                   curve: Curves.fastOutSlowIn,
-  //                 );
-  //             }));
-  //   super.didChangeMetrics();
-  // }
 
   @override
   void close(BuildContext context) {
