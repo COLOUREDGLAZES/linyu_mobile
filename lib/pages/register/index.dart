@@ -28,6 +28,7 @@ class RegisterPage extends CustomWidget<RegisterPageLogic> {
           systemOverlayStyle: SystemUiOverlayStyle.dark,
         ),
         body: SingleChildScrollView(
+          controller: controller.scrollController,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -62,88 +63,6 @@ class RegisterPage extends CustomWidget<RegisterPageLogic> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      // CustomUpdatePortrait(
-                      //     // isEdit: controller.isEdit,
-                      //     isEdit: true,
-                      //     onTap: () => controller.selectPortrait(),
-                      //     // onTap: () {},
-                      //     // url: controller.currentUserInfo['portrait'] ??
-                      //     //     'http://192.168.101.4:9000/linyu/default-portrait.jpg',
-                      //     url:
-                      //         'http://192.168.101.4:9000/linyu/default-portrait.jpg',
-                      //     size: 80,
-                      //     radius: 50),
-                      // const SizedBox(height: 16),
-                      // Container(
-                      //   padding: const EdgeInsets.symmetric(horizontal: 16),
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       GestureDetector(
-                      //         onTap: () => controller.setSex('男'),
-                      //         child: Container(
-                      //           height: 30,
-                      //           padding:
-                      //               const EdgeInsets.symmetric(horizontal: 10),
-                      //           decoration: BoxDecoration(
-                      //             color: controller.maleColorActive,
-                      //             borderRadius: BorderRadius.circular(10),
-                      //           ),
-                      //           child: Row(
-                      //             children: [
-                      //               Icon(
-                      //                 Icons.male,
-                      //                 size: 20,
-                      //                 color: controller.maleTextColorActive,
-                      //               ),
-                      //               const SizedBox(width: 2),
-                      //               Text(
-                      //                 '男生',
-                      //                 style: TextStyle(
-                      //                   fontSize: 16,
-                      //                   fontWeight: FontWeight.bold,
-                      //                   color: controller.maleTextColorActive,
-                      //                 ),
-                      //               ),
-                      //             ],
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       const SizedBox(width: 30),
-                      //       GestureDetector(
-                      //         onTap: () => controller.setSex('女'),
-                      //         child: Container(
-                      //           height: 30,
-                      //           padding:
-                      //               const EdgeInsets.symmetric(horizontal: 10),
-                      //           decoration: BoxDecoration(
-                      //             color: controller.femaleColorActive,
-                      //             borderRadius: BorderRadius.circular(10),
-                      //           ),
-                      //           child: Row(
-                      //             children: [
-                      //               Icon(
-                      //                 Icons.female,
-                      //                 size: 20,
-                      //                 color: controller.femaleTextColorActive,
-                      //               ),
-                      //               const SizedBox(width: 2),
-                      //               Text(
-                      //                 '女生',
-                      //                 style: TextStyle(
-                      //                   fontSize: 16,
-                      //                   fontWeight: FontWeight.bold,
-                      //                   color: controller.femaleTextColorActive,
-                      //                 ),
-                      //               ),
-                      //             ],
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                      // const SizedBox(height: 16),
                       CustomTextField(
                         labelText: "用户名",
                         controller: controller.usernameController,
@@ -231,6 +150,9 @@ class RegisterPage extends CustomWidget<RegisterPageLogic> {
                   onTap: controller.onRegister,
                   width: MediaQuery.of(context).size.width,
                   type: 'gradient',
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).viewInsets.bottom,
                 )
               ],
             ),

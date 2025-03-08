@@ -24,6 +24,13 @@ class TalkLogic extends Logic {
   bool isLoading = false;
   final ScrollController scrollController = ScrollController();
 
+  bool _isExpanded = true;
+  bool get isExpanded => _isExpanded;
+  set isExpanded(bool value) {
+    _isExpanded = value;
+    update([const Key("talk")]);
+  }
+
   RxDouble opacity = 0.0.obs;
 
   Future<void> init() async {
@@ -65,6 +72,11 @@ class TalkLogic extends Logic {
         opacity.value != 0) {
       opacity.value = 0;
     }
+    final double offset = scrollController.offset;
+    // 检查滚动视图是否在顶部，并且偏移量在可展开高度范围内
+    // 这里需要考虑AppBar完全展开的临界值。
+    bool isExpanded = offset <= 0; // 或者可以加一个容错范围，例如 offset <= 5
+    if (isExpanded != this.isExpanded) this.isExpanded = isExpanded;
   }
 
   void onTalkList() {

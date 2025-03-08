@@ -1,6 +1,8 @@
 import 'dart:async' show Future, StreamSubscription;
 import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:io' show File;
+
+import 'package:dio/dio.dart' show FormData, MultipartFile;
 import 'package:file_picker/file_picker.dart' show FilePicker, FilePickerResult;
 import 'package:flutter/cupertino.dart'
     show
@@ -12,8 +14,7 @@ import 'package:flutter/cupertino.dart'
         TextEditingController,
         TextEditingValue,
         TextSelection,
-        WidgetsBinding,
-        debugPrint;
+        WidgetsBinding;
 import 'package:flutter/foundation.dart' show Key, kDebugMode;
 import 'package:get/get.dart'
     show
@@ -25,18 +26,16 @@ import 'package:get/get.dart'
         RxString,
         StringExtension;
 import 'package:image_picker/image_picker.dart' show ImageSource;
+import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
+import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/api/chat_group_member.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
 import 'package:linyu_mobile/utils/api/friend_api.dart';
 import 'package:linyu_mobile/utils/api/msg_api.dart';
 import 'package:linyu_mobile/utils/api/video_api.dart';
-import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/String.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
 import 'package:linyu_mobile/utils/crop_picture.dart';
 import 'package:linyu_mobile/utils/extension.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
-import 'package:dio/dio.dart' show FormData, MultipartFile;
-import 'package:logger/logger.dart';
 
 import 'index.dart';
 
@@ -93,6 +92,13 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   bool get isFriend => _isFriend;
   set isFriend(bool value) {
     _isFriend = value;
+    update([const Key('chat_frame')]);
+  }
+
+  bool _isOnBottom = false;
+  bool get isOnBottom => _isOnBottom;
+  set isOnBottom(bool value) {
+    _isOnBottom = value;
     update([const Key('chat_frame')]);
   }
 
@@ -165,7 +171,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // 获取消息记录
   Future<void> _onGetMsgRecode({int? index}) async {
     // lifeStr = await _msgApi.getLifeString();
-    // if (kDebugMode) print('lifeStr :$lifeStr');
     if (isLoading) return; // 防止重复加载
     isLoading = true;
     try {
@@ -223,7 +228,8 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
               10;
           scrollController.animateTo(
             newOffset,
-            duration: const Duration(milliseconds: 200),
+            // 0,
+            duration: const Duration(milliseconds: 500),
             curve: Curves.fastOutSlowIn,
           );
         });
@@ -240,7 +246,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       if (scrollController.hasClients)
         WidgetsBinding.instance
             .addPostFrameCallback((_) => scrollController.animateTo(
-                  scrollController.position.maxScrollExtent,
+                  scrollController.position.maxScrollExtent + 10,
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.fastOutSlowIn,
                 ));
@@ -789,25 +795,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     }
   }
 
-  void initData() async {
-    if (kDebugMode) print('view type is: ${view.runtimeType}');
-    chatInfo = Get.arguments?['chatInfo'] ?? {};
-    if (kDebugMode) print('chat_frame chatInfo: $chatInfo');
-    _targetId = chatInfo['fromId'] ?? '';
-    if (kDebugMode) print('chat_frame targetId: $chatInfo');
-    // 聊天背景本地获取
-    chatBackground =
-        sharedPreferences.getString('${_targetId}_chat_background') ?? '';
-    // 若本地没有获取到则从网络获取聊天背景
-    if (chatBackground.isEmpty) {
-      chatBackground = chatInfo['chatBackground'] ?? '';
-      // 保存聊天背景到本地
-      if (chatBackground.isNotEmpty)
-        sharedPreferences.setString(
-            '${_targetId}_chat_background', chatBackground);
-    }
-  }
-
+  // 保存消息到本地
   void saveMsgToLocal() async {
     List newMsgList = new List.generate(msgList.length, (index) {
       if (msgList[index]['msgContent'] is Map) {
@@ -849,6 +837,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     }
   }
 
+  //删除消息
   void deleteMsg(dynamic data, Map<String, dynamic> msg, int index) async {
     try {
       final int? result = await sqfliteHelper.delete(msg['id']);
@@ -867,18 +856,52 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     }
   }
 
+  // 加载更多消息
+  void scrollListener() {
+    isOnBottom = scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent;
+    if (scrollController.hasClients &&
+        scrollController.position.pixels ==
+            scrollController.position.minScrollExtent) _loadMore();
+  }
+
+  // 初始化数据
+  void initData() async {
+    if (kDebugMode) print('view type is: ${view.runtimeType}');
+    chatInfo = Get.arguments?['chatInfo'] ?? {};
+    if (kDebugMode) print('chat_frame chatInfo: $chatInfo');
+    _targetId = chatInfo['fromId'] ?? '';
+    if (kDebugMode) print('chat_frame targetId: $chatInfo');
+    // 聊天背景本地获取
+    chatBackground =
+        sharedPreferences.getString('${_targetId}_chat_background') ?? '';
+    // 若本地没有获取到则从网络获取聊天背景
+    if (chatBackground.isEmpty) {
+      chatBackground = chatInfo['chatBackground'] ?? '';
+      // 保存聊天背景到本地
+      if (chatBackground.isNotEmpty)
+        sharedPreferences.setString(
+            '${_targetId}_chat_background', chatBackground);
+    }
+    // 添加滚动监听
+    scrollController.addListener(scrollListener);
+  }
+
   @override
   void onInit() {
-    initData();
-    super.onInit();
-    _onGetMsgRecode();
-    _eventListen();
-    // 添加滚动监听
-    scrollController.addListener(() {
-      if (scrollController.hasClients &&
-          scrollController.position.pixels ==
-              scrollController.position.minScrollExtent) _loadMore();
-    });
+    try {
+      initData();
+      _onGetMsgRecode();
+      _eventListen();
+    } catch (e) {
+      if (kDebugMode) print('onInit过程中发生错误: $e');
+      // 可以在这里调用错误处理方法，例如：showErrorToast()
+      CustomFlutterToast.showErrorToast('初始化聊天界面时发生错误: $e');
+    } finally {
+      super.onInit();
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
+    }
   }
 
   @override
@@ -889,7 +912,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       _onGetMembers();
       _onRead(null);
     } on Exception catch (e) {
-      // if (kDebugMode) print('onReady过程中发生错误: $e');
       if (kDebugMode) print('onReady过程中发生错误: $e');
     } finally {
       super.onReady();

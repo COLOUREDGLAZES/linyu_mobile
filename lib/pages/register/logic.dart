@@ -37,6 +37,9 @@ class RegisterPageLogic extends Logic {
   final FocusNode mailFocusNode = new FocusNode();
   final FocusNode codeFocusNode = new FocusNode();
 
+  //滑动控制器
+  final ScrollController scrollController = new ScrollController();
+
   //计时器
   late Timer _timer;
   int _countdownTime = 0;
@@ -184,30 +187,6 @@ class RegisterPageLogic extends Logic {
     }
   }
 
-  // //设置性别值
-  // void _setSexValue(String value) {
-  //   sex = value;
-  //   theme.changeThemeMode(sex == "女" ? "pink" : "blue");
-  //   if (value == "男") {
-  //     maleColorActive = const Color(0xFF4C9BFF);
-  //     maleTextColorActive = Colors.white;
-  //     femaleColorActive = const Color(0xFFe0e0e0);
-  //     femaleTextColorActive = const Color(0xFF727275);
-  //   } else {
-  //     maleColorActive = const Color(0xFFe0e0e0);
-  //     maleTextColorActive = const Color(0xFF727275);
-  //     femaleColorActive = const Color(0xFFffa0cf);
-  //     femaleTextColorActive = Colors.white;
-  //   }
-  // }
-  //
-  // //设置性别
-  // void setSex(String value) {
-  //   _setSexValue(value);
-  //   return;
-  // }
-
-  //选择生日
   Future<void> selectDate(BuildContext context) async {
     final iniDate = PDuration.parse(birthday);
     Pickers.showDatePicker(
@@ -248,47 +227,6 @@ class RegisterPageLogic extends Logic {
     );
   }
 
-  //上传头像
-  // Future<void> _uploadPicture(File picture) async {
-  //   try {
-  //     final fileName = picture.path.split('/').last;
-  //     final file =
-  //         await MultipartFile.fromFile(picture.path, filename: fileName);
-  //
-  //     final formData = FormData.fromMap({
-  //       'type': 'image/jpeg',
-  //       'name': fileName,
-  //       'size': picture.lengthSync(),
-  //       'file': file,
-  //     });
-  //
-  //     final result = await _useApi.upload(formData);
-  //
-  //     if (result['code'] == 0) {
-  //       currentUserInfo['portrait'] = result['data'];
-  //       final sharedPreferences = await SharedPreferences.getInstance();
-  //       await sharedPreferences.setString(
-  //           'portrait', currentUserInfo['portrait']);
-  //       globalData.currentAvatarUrl = currentUserInfo['portrait'];
-  //       update([const Key("register")]);
-  //       CustomFlutterToast.showSuccessToast('头像修改成功');
-  //     } else
-  //       CustomFlutterToast.showErrorToast(result['msg']);
-  //   } catch (e) {
-  //     if (kDebugMode) print('头像上传失败: $e');
-  //     CustomFlutterToast.showErrorToast('头像上传失败: $e');
-  //   }
-  // }
-
-  //点击头像按钮弹出底部选择框
-  // void selectPortrait() {
-  //   Get.toNamed('/image_viewer_update', arguments: {
-  //     'imageUrl': currentUserInfo['portrait'] ??
-  //         'http://192.168.101.4:9000/linyu/default-portrait.jpg',
-  //     'onConfirm': _uploadPicture
-  //   });
-  // }
-
   //开始倒计时
   void _startCountdownTimer() {
     // const oneSec = Duration(seconds: 1);
@@ -328,6 +266,19 @@ class RegisterPageLogic extends Logic {
       } else
         CustomFlutterToast.showErrorToast(registerResult['msg']);
     }
+  }
+
+  void scrollToBottom() {
+    update([const Key("register")]);
+    scrollController.animateTo(
+      scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.ease,
+    );
+    if (kDebugMode)
+      print("scroll to bottom: ${scrollController.position.maxScrollExtent}");
+    if (kDebugMode)
+      print("current scroll position: ${scrollController.position.pixels}");
   }
 
   @override

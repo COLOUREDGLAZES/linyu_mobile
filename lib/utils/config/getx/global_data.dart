@@ -17,6 +17,8 @@ class GlobalData extends GetxController {
       'http://114.96.70.115:19000/linyu/default-portrait.jpg';
   String? currentToken;
 
+  String? currentBackGroundUrl;
+
   Future<void> init() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
