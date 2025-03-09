@@ -1,12 +1,13 @@
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
+import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_image_group/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
+import 'package:linyu_mobile/components/custom_shadow_text/index.dart';
 import 'package:linyu_mobile/components/custom_text_button/index.dart';
 import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/date.dart';
@@ -158,6 +159,115 @@ class TalkPage extends CustomWidget<TalkLogic> {
         ),
       );
 
+  // 构建appbar展开以及收缩时的动画效果
+  Widget buildFlexibleSpace(BuildContext context, BoxConstraints constraints) {
+    double top = constraints.biggest.height;
+    double avatarSize = 120;
+    double minAvatarSize = 36; // 最小头像
+    double currentAvatarSize = avatarSize * (top / 250);
+    if (currentAvatarSize < minAvatarSize) currentAvatarSize = minAvatarSize;
+    //  计算动画进度
+    double animationProgress = (250 - top) / (250 - kToolbarHeight);
+    if (animationProgress < 0) animationProgress = 0;
+    if (animationProgress > 1) animationProgress = 1;
+    // 计算头像位置, 当appbar完全展开时，头像在底部中央，当appbar收缩时，头像在左上角
+    double avatarBottom = 20 * (1 - animationProgress);
+
+    // 头像组件
+    final Widget avatarWidget = Image.network(
+      key: ValueKey(globalData.currentAvatarUrl),
+      globalData.currentAvatarUrl ??
+          'https://avatars.githubusercontent.com/u/66918811?v=4',
+      fit: BoxFit.cover,
+    ).onTap(
+      () => Get.toNamed('/my_talk_page', arguments: {
+        'isNotShowLeading': true,
+        'userId': globalData.currentUserId,
+        'title': '我的说说'
+      }),
+    );
+
+    // 用户昵称组件
+    final Widget nameTextWidget = CustomShadowText(
+      text: '${globalData.currentUserName}',
+      textColor: controller.textColor,
+    ).onLongPress(
+      () => Fluttertoast.showToast(msg: '功能暂未开放，敬请期待~'),
+    );
+
+    // 账号信息组件
+    final Widget accountTextWidget = Text(
+      key: ValueKey(globalData.currentUserAccount),
+      globalData.currentUserAccount,
+      style: TextStyle(
+        fontSize: 12,
+        color: controller.textColor,
+        fontWeight: FontWeight.bold,
+      ),
+    ).onLongPress(
+      () => Fluttertoast.showToast(msg: '功能暂未开放，敬请期待~'),
+    );
+
+    // 背景图片组件
+    final Widget backgroundImageWidget = Image.network(
+      key: ValueKey(globalData.currentBackGroundUrl ??
+          "http://114.96.70.115:19000/linyu/default-portrait.jpg"),
+      globalData.currentBackGroundUrl ??
+          "http://114.96.70.115:19000/linyu/default-portrait.jpg",
+      fit: BoxFit.cover,
+    ).onTap(
+      () => !controller.isExpanded
+          ? controller.scrollToTop()
+          : Fluttertoast.showToast(msg: '功能暂未开放，敬请期待~'),
+    );
+
+    // 动画
+    return FlexibleSpaceBar(
+      background: Stack(
+        fit: StackFit.expand,
+        children: [
+          backgroundImageWidget,
+          // 过渡动画
+          Positioned(
+            left: 13.2,
+            top: avatarBottom + 88,
+            child: TweenAnimationBuilder(
+              tween: Tween<double>(begin: avatarSize, end: currentAvatarSize),
+              duration: DurationExtensions(200).milliseconds,
+              builder: (BuildContext context, double size, Widget? child) =>
+                  Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: size - 10,
+                    height: size - 10,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(size / 2),
+                      child: avatarWidget,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  SizedBox(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 5,
+                    children: [
+                      const SizedBox(height: 36),
+                      nameTextWidget,
+                      accountTextWidget,
+                    ],
+                  )),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 构建appbar
   List<Widget> _buildAppBar(BuildContext context) => [
         SliverAppBar(
           floating: false,
@@ -189,101 +299,7 @@ class TalkPage extends CustomWidget<TalkLogic> {
                       10)
               .height,
           flexibleSpace: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              double top = constraints.biggest.height;
-              double avatarSize = 120;
-              double minAvatarSize = 36; // 最小头像
-              double currentAvatarSize = avatarSize * (top / 250);
-              if (currentAvatarSize < minAvatarSize)
-                currentAvatarSize = minAvatarSize;
-              //  计算动画进度
-              double animationProgress = (250 - top) / (250 - kToolbarHeight);
-              if (animationProgress < 0) animationProgress = 0;
-              if (animationProgress > 1) animationProgress = 1;
-              // 计算头像位置, 当appbar完全展开时，头像在底部中央，当appbar收缩时，头像在左上角
-              double avatarBottom = 20 * (1 - animationProgress);
-              // 动画
-              return FlexibleSpaceBar(
-                background: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    // 背景图片
-                    GestureDetector(
-                      onTap: () => !controller.isExpanded
-                          ? controller.scrollToTop()
-                          : Fluttertoast.showToast(msg: '功能暂未开放，敬请期待~'),
-                      child: Image.network(
-                        globalData.currentBackGroundUrl ??
-                            "http://114.96.70.115:19000/linyu/default-portrait.jpg",
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    // 过渡动画
-                    Positioned(
-                      left: 13.2,
-                      top: avatarBottom + 88,
-                      child: TweenAnimationBuilder(
-                        tween: Tween<double>(
-                            begin: avatarSize, end: currentAvatarSize),
-                        duration: const Duration(milliseconds: 200),
-                        builder: (BuildContext context, double size,
-                                Widget? child) =>
-                            Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () => Get.toNamed('/my_talk_page',
-                                  arguments: {
-                                    'isNotShowLeading': true,
-                                    'userId': globalData.currentUserId,
-                                    'title': '我的说说'
-                                  }),
-                              child: SizedBox(
-                                width: size - 10,
-                                height: size - 10,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(size / 2),
-                                  child: Image.network(
-                                    globalData.currentAvatarUrl ??
-                                        'https://avatars.githubusercontent.com/u/66918811?v=4',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            SizedBox(
-                                child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: 5,
-                              children: [
-                                const SizedBox(height: 36),
-                                Text('${globalData.currentUserName}'),
-                                Text(globalData.currentUserAccount),
-                              ],
-                            )),
-                          ],
-                        ),
-                      ),
-                    ),
-                    // 返回按钮的动画
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      child: Opacity(
-                        opacity: animationProgress,
-                        child: IconButton(
-                          icon:
-                              const Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
+            builder: buildFlexibleSpace,
           ),
           actions: [
             if (StringUtil.isNullOrEmpty(controller.targetUserId))

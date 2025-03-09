@@ -172,10 +172,8 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
   }
 
   /// 更新Widget
-  void didUpdateWidget(
-    GetBuilder oldWidget,
-    GetBuilderState<T> state,
-  ) {
+  void didUpdateWidget(GetBuilder oldWidget, GetBuilderState<T> state,
+      {BuildContext? context}) {
     if (kDebugMode) print("update>$runtimeType");
   }
 
@@ -201,7 +199,8 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
         initState: (GetBuilderState<T> state) => this.init(context),
         didChangeDependencies: (GetBuilderState<T> state) =>
             this.didChangeDependencies(context),
-        didUpdateWidget: this.didUpdateWidget,
+        didUpdateWidget: (GetBuilder oldWidget, GetBuilderState<T> state) =>
+            this.didUpdateWidget(oldWidget, state, context: context),
         builder: (_) => this.buildView(context),
         dispose: (GetBuilderState<T> state) => this.close(context),
       );

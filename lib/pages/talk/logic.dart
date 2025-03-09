@@ -1,11 +1,13 @@
 import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show Colors;
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/talk_api.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 // class TalkLogic extends GetxController {
 class TalkLogic extends Logic {
@@ -28,6 +30,13 @@ class TalkLogic extends Logic {
   bool get isExpanded => _isExpanded;
   set isExpanded(bool value) {
     _isExpanded = value;
+    update([const Key("talk")]);
+  }
+
+  Color _textColor = Colors.black;
+  Color get textColor => _textColor;
+  set textColor(Color value) {
+    _textColor = value;
     update([const Key("talk")]);
   }
 
@@ -174,10 +183,40 @@ class TalkLogic extends Logic {
           sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
   }
 
+  Future<Color> updateTextColor(String imageUrl) async {
+    // accept imageUrl parameter
+    final PaletteGenerator paletteGenerator =
+        await PaletteGenerator.fromImageProvider(
+            NetworkImage(imageUrl)); // Use imageUrl here
+    Color? dominantColor = paletteGenerator.dominantColor?.color;
+
+    if (dominantColor != null) {
+      // Calculate brightness
+      double brightness = (0.299 * dominantColor.red +
+              0.587 * dominantColor.green +
+              0.114 * dominantColor.blue) /
+          255;
+      // Choose text color based on brightness
+      // textColor = brightness > 0.5 ? Colors.white : Colors.black;
+      textColor = brightness > 0.5 ? Colors.black : Colors.white;
+    } else
+      textColor = Colors.black;
+
+    return textColor;
+  }
+
   @override
   void onInit() {
     init();
     super.onInit();
+  }
+
+  @override
+  void onReady() {
+    updateTextColor(globalData.currentBackGroundUrl ??
+        // globalData.currentAvatarUrl ??
+        'http://114.96.70.115:19000/linyu/default-portrait.jpg');
+    super.onReady();
   }
 
   @override

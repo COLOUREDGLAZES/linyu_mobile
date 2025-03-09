@@ -10,7 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData, Color;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart'
-    show ExtensionBottomSheet, Get, GetBuilder, GetNavigation, Obx;
+    show
+        ExtensionBottomSheet,
+        Get,
+        GetBuilder,
+        GetBuilderState,
+        GetNavigation,
+        Obx;
 import 'package:image_picker/image_picker.dart' show ImageSource;
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
@@ -334,7 +340,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                 WidgetsBinding.instance.addPostFrameCallback(
                                     (_) => panelController.updatePanelType(
                                         ChatBottomPanelType.keyboard));
-                                controller.keyboardHeight = 276.h;
+                                controller.keyboardHeight = 300.8.h;
                               },
                               onChanged: (value) => controller.isSend.value =
                                   value.trim().isNotEmpty,
@@ -353,7 +359,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                 data: PanelType.emoji,
                                 forceHandleFocus:
                                     ChatBottomHandleFocus.requestFocus));
-                        controller.keyboardHeight = 276.h;
+                        controller.keyboardHeight = 300.8.h;
                       },
                     ),
                   controller.isSend.value
@@ -371,7 +377,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                 panelController.updatePanelType(
                                     ChatBottomPanelType.other,
                                     data: PanelType.tool));
-                            controller.keyboardHeight = 276.h;
+                            controller.keyboardHeight = 300.8.h;
                           },
                         ),
                 ],
@@ -390,26 +396,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
 
   @override
   Widget buildView(BuildContext context) {
-    // 获取当前窗口的 viewInsets
-    final viewInsets = MediaQuery.of(context).viewInsets;
-    // 判断键盘是否可见
-    if (viewInsets.bottom != _previousViewInsetsBottom) {
-      if (viewInsets.bottom == 0.0) {
-        if (_isKeyboardVisible) {
-          // 键盘刚刚关闭
-          _isKeyboardVisible = false;
-          if (kDebugMode) print('Keyboard closed');
-          // 在这里执行键盘关闭后的操作
-          controller.keyboardHeight = 0;
-        }
-      } else {
-        _isKeyboardVisible = true; //标记键盘是打开的，这样才能在关闭时判断是否发生了关闭动作
-        if (kDebugMode) print('Keyboard Opened');
-        //添加 打开状态的打印
-      }
-      _previousViewInsetsBottom = viewInsets.bottom; // 更新 viewInsets.bottom 的值
-    }
-
     controller.hasBeenLoaded();
     // appBar 构建
     final PreferredSizeWidget appBar = AppBar(
@@ -583,9 +569,12 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
               ),
             ),
             if (!controller.isLoading && !controller.isFriend) notFriend,
-            if (!controller.isOnBottom)
-              Positioned(
-                  bottom: 59.h,
+            if (!controller.isOnBottom && controller.isUpSroll)
+              // Positioned(
+              AnimatedPositioned(
+                  duration: 300.milliseconds,
+                  curve: Curves.ease,
+                  bottom: 63.h + controller.keyboardHeight,
                   right: 9.w,
                   child: Column(
                     children: [
@@ -596,11 +585,11 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                         onTap: () => controller.scrollBottom(),
                         icon: Icons.keyboard_arrow_down,
                       ),
-                      SizedBox(
-                        // height: MediaQuery.of(context).viewInsets.bottom,
-                        // height: 329.h,
-                        height: controller.keyboardHeight,
-                      ),
+                      // SizedBox(
+                      //   // height: MediaQuery.of(context).viewInsets.bottom,
+                      //   // height: 329.h,
+                      //   height: controller.keyboardHeight,
+                      // ),
                     ],
                   )),
           ],

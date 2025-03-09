@@ -1,4 +1,5 @@
 import 'package:ducafe_ui_core/ducafe_ui_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart'
@@ -30,16 +31,25 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key, this.initialPage, this.initialRoute});
 
   @override
-  Widget build(BuildContext context) => ScreenUtilInit(
-        // designSize: const Size(375, 812),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (context, child) => GetMaterialApp(
+  Widget build(BuildContext context) {
+    // 获取屏幕尺寸
+    Size screenSize = MediaQuery.of(context).size;
+
+    if (kDebugMode)
+      print(
+          'screenWidth: ${screenSize.width}, screenHeight: ${screenSize.height}');
+
+    return ScreenUtilInit(
+      designSize: screenSize, // 直接使用screenSize
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return GetMaterialApp(
           key: UniqueKey(),
           navigatorKey: Get.key,
           smartManagement: SmartManagement.keepFactory,
           title: '林语',
-          //国际化
+          // 国际化
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
@@ -50,14 +60,14 @@ class MyApp extends StatelessWidget {
             Locale('en', 'US'),
           ],
           locale: const Locale('zh'),
-          //全局绑定Controller
+          // 全局绑定Controller
           initialBinding: ControllerBinding(),
           enableLog: true,
-          //路由配置
+          // 路由配置
           getPages: pageRoute,
-          //路由从右侧向左滑入（对GetX有效）
+          // 路由从右侧向左滑入（对GetX有效）
           defaultTransition: Transition.rightToLeft,
-          //路由监听
+          // 路由监听
           routingCallback: routingCallback,
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
@@ -73,6 +83,8 @@ class MyApp extends StatelessWidget {
           ),
           home: initialPage,
           initialRoute: initialRoute,
-        ),
-      );
+        );
+      },
+    );
+  }
 }

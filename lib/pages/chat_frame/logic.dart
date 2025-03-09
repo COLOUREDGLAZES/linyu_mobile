@@ -102,6 +102,15 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     update([const Key('chat_frame')]);
   }
 
+  double _previousOffset = 0.0;
+
+  bool _isUpSroll = false;
+  bool get isUpSroll => _isUpSroll;
+  set isUpSroll(bool value) {
+    _isUpSroll = value;
+    update([const Key('chat_frame')]);
+  }
+
   double _keyboardHeight = 0;
   double get keyboardHeight => _keyboardHeight;
   set keyboardHeight(double value) {
@@ -870,8 +879,28 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   void scrollListener() {
     isOnBottom = scrollController.position.pixels ==
         scrollController.position.maxScrollExtent;
+    final currentOffset = scrollController.offset;
+
+    if (currentOffset > _previousOffset)
+      // setState(() {
+      //   _scrollDirection = "Down";
+      // });
+      isUpSroll = true;
+    else if (currentOffset < _previousOffset)
+      // setState(() {
+      //   _scrollDirection = "Up";
+      // });
+      isUpSroll = false;
+    else
+      // setState(() {
+      //   _scrollDirection = "Idle";
+      // });
+      isUpSroll = false;
+
+    _previousOffset = currentOffset;
+
     if (scrollController.hasClients &&
-        scrollController.position.pixels ==
+        scrollController.position.pixels >=
             scrollController.position.minScrollExtent) _loadMore();
   }
 

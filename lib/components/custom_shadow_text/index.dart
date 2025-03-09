@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show Colors;
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 class CustomShadowText extends StatelessThemeWidget {
@@ -6,13 +7,16 @@ class CustomShadowText extends StatelessThemeWidget {
   final double fontSize;
   final FontWeight fontWeight;
   final double shadowTop;
+  final Color? textColor;
 
-  const CustomShadowText(
-      {super.key,
-      required this.text,
-      this.fontSize = 16,
-      this.shadowTop = 13,
-      this.fontWeight = FontWeight.bold});
+  const CustomShadowText({
+    super.key,
+    required this.text,
+    this.fontSize = 16,
+    this.shadowTop = 13,
+    this.fontWeight = FontWeight.bold,
+    this.textColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +56,7 @@ class CustomShadowText extends StatelessThemeWidget {
           text,
           maxLines: 1,
           style: TextStyle(
+            color: this.textColor,
             fontSize: fontSize,
             fontWeight: fontWeight,
             overflow: TextOverflow.ellipsis,
