@@ -98,6 +98,14 @@ class UserApi {
     return response.data;
   }
 
+  Future<Map<String, dynamic>> uploadTalkBackground(FormData formData) async {
+    final response = await _dio.post(
+      '/v1/api/user/update/talk/background',
+      data: formData,
+    );
+    return response.data;
+  }
+
   Future<Map<String, dynamic>> update({
     required String name,
     required String sex,

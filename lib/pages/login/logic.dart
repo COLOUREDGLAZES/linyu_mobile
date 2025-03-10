@@ -84,6 +84,10 @@ class LoginPageLogic extends GetxController {
         if (loginResult['code'] == 0) {
           // 使用循环减少冗余代码
           userData = loginResult['data'];
+
+          if (kDebugMode)
+            print('userData talkBackground is: ${userData['talkBackground']}');
+
           final List<bool> setSharedPreferencesResult = await Future.wait([
             _sharedPreferences.setString('x-token', userData['token']),
             _sharedPreferences.setString('username', userData['username']),
@@ -91,6 +95,10 @@ class LoginPageLogic extends GetxController {
             _sharedPreferences.setString('account', userData['account']),
             _sharedPreferences.setString('portrait', userData['portrait']),
             _sharedPreferences.setString('sex', userData['sex'] ?? '男'),
+            _sharedPreferences.setString(
+                'talkBackground',
+                userData['talkBackground'] ??
+                    'http://114.96.70.115:19000/linyu/default-portrait.jpg'),
           ]);
           for (bool result in setSharedPreferencesResult)
             if (!result) {

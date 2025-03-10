@@ -1,12 +1,19 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart' show FormData, MultipartFile;
 import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show Colors;
-import 'package:get/get.dart';
+import 'package:flutter/material.dart'
+    show Colors, Icons, ListTile, TextButton, showModalBottomSheet;
+import 'package:get/get.dart' as GetX;
+import 'package:image_picker/image_picker.dart';
+import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/api/talk_api.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/utils/crop_picture.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 // class TalkLogic extends GetxController {
@@ -40,7 +47,7 @@ class TalkLogic extends Logic {
     update([const Key("talk")]);
   }
 
-  RxDouble opacity = 0.0.obs;
+  GetX.RxDouble opacity = 0.0.obs;
 
   Future<void> init() async {
     // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -48,10 +55,10 @@ class TalkLogic extends Logic {
     currentUserInfo['portrait'] = sharedPreferences.getString('portrait');
     currentUserInfo['account'] = sharedPreferences.getString('account');
     currentUserInfo['sex'] = sharedPreferences.getString('sex');
-    if (Get.arguments != null) {
-      targetUserId = Get.arguments['userId'] ?? '';
-      title = Get.arguments['title'] ?? '说说';
-      isNotShowLeading = Get.arguments['isNotShowLeading'] ?? false;
+    if (GetX.Get.arguments != null) {
+      targetUserId = GetX.Get.arguments['userId'] ?? '';
+      title = GetX.Get.arguments['title'] ?? '说说';
+      isNotShowLeading = GetX.Get.arguments['isNotShowLeading'] ?? false;
     }
     await refreshData();
     scrollController.addListener(scrollListener);
@@ -177,7 +184,7 @@ class TalkLogic extends Logic {
   }
 
   void onLongPressPortrait() async {
-    final result = await Get.toNamed('/edit_mine');
+    final result = await GetX.Get.toNamed('/edit_mine');
     if (result != null)
       init().then((_) => theme.changeThemeMode(
           sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
@@ -204,6 +211,64 @@ class TalkLogic extends Logic {
 
     return textColor;
   }
+
+  //上传背景图片
+  Future<void> _uploadPicture(File picture) async {
+    try {
+      final fileName = picture.path.split('/').last;
+      final file =
+          await MultipartFile.fromFile(picture.path, filename: fileName);
+      final formData = FormData.fromMap({
+        'type': 'image/jpeg',
+        'name': fileName,
+        'size': picture.lengthSync(),
+        'file': file,
+      });
+      final result = await _userApi.uploadTalkBackground(formData);
+      if (result['code'] == 0) {
+        GetX.Get.back();
+        final data = result['data'];
+        await sharedPreferences.setString(
+            'talkBackground', data['talkBackground']);
+        globalData.currentBackGroundUrl = data['talkBackground'];
+        await updateTextColor(data['talkBackground']);
+        CustomFlutterToast.showSuccessToast('说说背景上传成功');
+      } else
+        CustomFlutterToast.showErrorToast(result['msg']);
+    } catch (e) {
+      if (kDebugMode) print('头像上传失败: $e');
+    }
+  }
+
+  // 选择图片
+  Future _cropChatPicture(ImageSource? type) async =>
+      cropPicture(type, _uploadPicture, isVariable: true);
+
+  //更换说说背景
+  void changeTalkBackground(BuildContext context) => showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
+        ),
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text('图库'),
+                onTap: () => _cropChatPicture(null),
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('拍照'),
+                onTap: () => _cropChatPicture(ImageSource.camera),
+              ),
+            ],
+          );
+        },
+      );
 
   @override
   void onInit() {

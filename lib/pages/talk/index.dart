@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -174,11 +175,10 @@ class TalkPage extends CustomWidget<TalkLogic> {
     double avatarBottom = 20 * (1 - animationProgress);
 
     // 头像组件
-    final Widget avatarWidget = Image.network(
-      key: ValueKey(globalData.currentAvatarUrl),
-      globalData.currentAvatarUrl ??
-          'https://avatars.githubusercontent.com/u/66918811?v=4',
+    final Widget avatarWidget = CachedNetworkImage(
       fit: BoxFit.cover,
+      imageUrl: globalData.currentAvatarUrl ??
+          'https://avatars.githubusercontent.com/u/66918811?v=4',
     ).onTap(
       () => Get.toNamed('/my_talk_page', arguments: {
         'isNotShowLeading': true,
@@ -218,7 +218,7 @@ class TalkPage extends CustomWidget<TalkLogic> {
     ).onTap(
       () => !controller.isExpanded
           ? controller.scrollToTop()
-          : Fluttertoast.showToast(msg: '功能暂未开放，敬请期待~'),
+          : controller.changeTalkBackground(context),
     );
 
     // 动画

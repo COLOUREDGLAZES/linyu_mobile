@@ -150,7 +150,7 @@ class FriendInformationLogic extends Logic {
 
       if (response['code'] == 0) {
         final data = response['data'];
-        if (kDebugMode) print('data: ${data.toString()}');
+        if (kDebugMode) print('user info data is: ${data.toString()}');
         talkContent = data['talkContent'] ?? talkContent;
         if (globalData.currentUserId == friendId) {
           final talkResponse = await _talkApi.getTalkByUser();
