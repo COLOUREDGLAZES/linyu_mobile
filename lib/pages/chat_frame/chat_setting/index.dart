@@ -82,7 +82,7 @@ class ChatSettingPage extends CustomView<ChatSettingLogic> {
               const SizedBox(height: 10),
               SizedBox(
                 child: CustomLabelValueButton(
-                  onTap: controller.selectPicture,
+                  onTap: () => controller.selectPicture(context),
                   child: const Text(
                     '设置当前聊天背景',
                     style: TextStyle(fontSize: 16, color: Colors.black87),

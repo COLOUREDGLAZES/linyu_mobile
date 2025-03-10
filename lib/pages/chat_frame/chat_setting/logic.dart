@@ -127,39 +127,63 @@ class ChatSettingLogic extends Logic<ChatSettingPage> {
     }
   }
 
-  Future cropChatPicture(ImageSource? type) async =>
+  Future _cropChatPicture(ImageSource? type) async =>
       cropPicture(type, _setChatBackground, isVariable: true);
 
   // 选择图片方式
-  void selectPicture() async {
+  void selectPicture(BuildContext context) async {
     if (chatInfo['type'] == 'group' && isDismissed) {
       CustomFlutterToast.showErrorToast('该群已解散，无法设置聊天背景~');
       return;
     }
-    Get.bottomSheet(
+    // Get.bottomSheet(
+    //   backgroundColor: Colors.white,
+    //   Wrap(
+    //     children: [
+    //       Center(
+    //         child: TextButton(
+    //           onPressed: () => cropChatPicture(null),
+    //           child: Text(
+    //             '图库',
+    //             style: TextStyle(color: theme.primaryColor),
+    //           ),
+    //         ),
+    //       ),
+    //       Center(
+    //         child: TextButton(
+    //           onPressed: () => cropChatPicture(ImageSource.camera),
+    //           child: Text(
+    //             '相机',
+    //             style: TextStyle(color: theme.primaryColor),
+    //           ),
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
+    showModalBottomSheet(
+      context: context,
       backgroundColor: Colors.white,
-      Wrap(
-        children: [
-          Center(
-            child: TextButton(
-              onPressed: () => cropChatPicture(null),
-              child: Text(
-                '图库',
-                style: TextStyle(color: theme.primaryColor),
-              ),
-            ),
-          ),
-          Center(
-            child: TextButton(
-              onPressed: () => cropChatPicture(ImageSource.camera),
-              child: Text(
-                '相机',
-                style: TextStyle(color: theme.primaryColor),
-              ),
-            ),
-          ),
-        ],
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
       ),
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo),
+              title: const Text('图库'),
+              onTap: () => _cropChatPicture(null),
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('拍照'),
+              onTap: () => _cropChatPicture(ImageSource.camera),
+            ),
+          ],
+        );
+      },
     );
   }
 
