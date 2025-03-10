@@ -11,7 +11,13 @@ class SystemMessage extends StatelessThemeWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<dynamic> systemMsgList = jsonDecode(value['content'] ?? '[]');
+    final Map<String, dynamic> msgContent =
+        value is String ? jsonDecode(value ?? '{}') : value;
+
+    List<dynamic> systemMsgList =
+        msgContent['no_more_flag'] != null && msgContent['no_more_flag']
+            ? []
+            : jsonDecode(msgContent['content'] ?? '[]');
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
       decoration: BoxDecoration(

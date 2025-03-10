@@ -50,6 +50,8 @@ class ChatGroupInformationLogic extends GetxController {
     update([const Key('chat_group_info')]);
   }
 
+  final arguments = Get.arguments;
+
   Future<void> _onGetGroupChatDetails() async {
     try {
       final res = await _chatGroupApi.details(_chatGroupId);
@@ -247,9 +249,8 @@ class ChatGroupInformationLogic extends GetxController {
             if (res['code'] == 0) {
               CustomFlutterToast.showSuccessToast('解散群聊成功~');
               Get.back(result: true);
-            } else {
+            } else
               CustomFlutterToast.showErrorToast('解散群聊失败: ${res['msg']}');
-            }
           } catch (error) {
             CustomFlutterToast.showErrorToast('解散群聊时发生错误: $error');
           }

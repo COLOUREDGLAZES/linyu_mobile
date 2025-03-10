@@ -10,13 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData, Color;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart'
-    show
-        ExtensionBottomSheet,
-        Get,
-        GetBuilder,
-        GetBuilderState,
-        GetNavigation,
-        Obx;
+    show ExtensionBottomSheet, Get, GetNavigation, Obx;
 import 'package:image_picker/image_picker.dart' show ImageSource;
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
@@ -26,8 +20,8 @@ import 'package:linyu_mobile/components/custom_voice_record_button/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/msg.dart';
 import 'package:linyu_mobile/pages/chat_frame/logic.dart';
 import 'package:linyu_mobile/utils/String.dart';
-import 'package:linyu_mobile/utils/emoji.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart' show CustomView;
+import 'package:linyu_mobile/utils/emoji.dart';
 
 enum PanelType {
   none,
@@ -41,9 +35,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
   ChatFramePage({super.key});
 
   final panelController = new ChatBottomPanelContainerController<PanelType>();
-
-  bool _isKeyboardVisible = false;
-  double _previousViewInsetsBottom = 0.0;
 
   Widget _buildPanelContainer() {
     try {
@@ -70,13 +61,14 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     }
   }
 
+  // 隐藏表情或更多操作面板
   void hidePanel() {
     if (controller.focusNode.hasFocus) controller.focusNode.unfocus();
     controller.isReadOnly.value = false;
     panelController.updatePanelType(ChatBottomPanelType.none);
-    controller.keyboardHeight = 0;
   }
 
+  // 构建表情面板内容
   Widget _buildEmoji() {
     double height = 300;
     final keyboardHeight = panelController.keyboardHeight;
@@ -149,6 +141,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     );
   }
 
+  // 构建更多操作面板内容
   Widget _buildMoreOperation() {
     double height = 300;
     final keyboardHeight = panelController.keyboardHeight;
@@ -212,6 +205,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     );
   }
 
+  // 按钮第一种格式
   Widget _buildIconButton1(iconData, onTap) => CustomIconButton(
         onTap: onTap,
         icon: iconData,
@@ -222,6 +216,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         color: Colors.transparent,
       );
 
+  // 按钮第二种格式
   Widget _buildIconButton2(text, iconData, onTap) => CustomIconButton(
         onTap: onTap,
         icon: iconData,
@@ -232,6 +227,39 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         text: text,
         color: Colors.white.withOpacity(0.9),
         iconColor: const Color(0xFF1F1F1F),
+      );
+
+  // 群聊解散底部提示构建
+  Widget _buildGroupDissolvedMessage() => Container(
+        color: const Color(0xFFEDF2F9),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('该群已解散',
+                style: TextStyle(fontSize: 14, color: Colors.grey)),
+            _buildIconButton1(
+                Icons.keyboard_arrow_down, () => controller.scrollBottom()),
+          ],
+        ),
+      );
+
+  // 不是好友时展示的组件
+  Widget _buildNotFriendMessage() => Container(
+        color: const Color(0xFFEDF2F9),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Ta已不是好友',
+                style: TextStyle(fontSize: 14, color: Colors.grey)),
+            if (!controller.isOnBottom && controller.isUpSroll)
+              _buildIconButton1(
+                  Icons.keyboard_arrow_down, () => controller.scrollBottom()),
+          ],
+        ),
       );
 
   //聊天记录展示
@@ -263,31 +291,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     );
     return widget;
   }
-
-  Widget _buildGroupDissolvedMessage() => Container(
-        color: const Color(0xFFEDF2F9),
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-        child: const Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('该群已解散', style: TextStyle(fontSize: 14, color: Colors.grey)),
-          ],
-        ),
-      );
-
-  // 不是好友时展示的组件
-  Widget _buildNotFriendMessage() => Container(
-        color: const Color(0xFFEDF2F9),
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-        child: const Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Ta已不是好友', style: TextStyle(fontSize: 14, color: Colors.grey)),
-          ],
-        ),
-      );
 
   // 输入框和按钮构建
   Widget _buildTextFieldAndButtons() => RepaintBoundary(
@@ -340,10 +343,9 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                 WidgetsBinding.instance.addPostFrameCallback(
                                     (_) => panelController.updatePanelType(
                                         ChatBottomPanelType.keyboard));
-                                controller.keyboardHeight = 300.8.h;
                               },
-                              onChanged: (value) => controller.isSend.value =
-                                  value.trim().isNotEmpty,
+                              onChanged: (value) =>
+                                  controller.isSend = value.trim().isNotEmpty,
                             ),
                           ),
                         ),
@@ -359,10 +361,9 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                 data: PanelType.emoji,
                                 forceHandleFocus:
                                     ChatBottomHandleFocus.requestFocus));
-                        controller.keyboardHeight = 300.8.h;
                       },
                     ),
-                  controller.isSend.value
+                  controller.isSend
                       ? CustomButton(
                           text: '发送',
                           onTap: controller.sendTextMsg,
@@ -370,16 +371,17 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                           textSize: 14,
                           height: 34,
                         )
-                      : _buildIconButton1(
-                          const IconData(0xe636, fontFamily: 'IconFont'),
-                          () {
-                            WidgetsBinding.instance.addPostFrameCallback((_) =>
-                                panelController.updatePanelType(
-                                    ChatBottomPanelType.other,
-                                    data: PanelType.tool));
-                            controller.keyboardHeight = 300.8.h;
-                          },
-                        ),
+                      : !controller.isOnBottom && controller.isUpSroll
+                          ? _buildIconButton1(Icons.keyboard_arrow_down,
+                              () => controller.scrollBottom())
+                          : _buildIconButton1(
+                              const IconData(0xe636, fontFamily: 'IconFont'),
+                              () {
+                              WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) => panelController.updatePanelType(
+                                      ChatBottomPanelType.other,
+                                      data: PanelType.tool));
+                            }),
                 ],
               ),
               _buildPanelContainer(),
@@ -466,52 +468,58 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
           );
 
     // 聊天内容展示构建
-    final Widget chatContent = Expanded(
-      child: GestureDetector(
-        onTap: hidePanel,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: GetBuilder<ChatFrameLogic>(
-            id: const Key('chat_frame'),
-            builder: (controller) {
-              return Stack(
-                children: [
-                  ListView.builder(
-                    itemCount: controller.msgList.length,
-                    controller: controller.scrollController,
-                    itemBuilder: _buildMsgRecord,
-                  ),
-                  if (controller.isLoading)
-                    const Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CupertinoActivityIndicator(),
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
+    final Widget chatContent = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Stack(
+        children: [
+          ListView.builder(
+            itemCount: controller.msgList.length,
+            controller: controller.scrollController,
+            itemBuilder: _buildMsgRecord,
           ),
-        ),
+          if (controller.isLoading)
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CupertinoActivityIndicator(),
+                ),
+              ),
+            ),
+        ],
       ),
-    );
+    ).onTap(hidePanel);
 
     // 底部输入框构建
-    final Widget bottomInput = Obx(() {
-      if (controller.chatInfo['name'] == null &&
-          controller.chatInfo['type'] == 'group') {
-        return _buildGroupDissolvedMessage();
-      } else if (!controller.isFriend) {
-        return _buildNotFriendMessage();
-      } else {
-        return _buildTextFieldAndButtons();
-      }
+    final Widget bottomInput = controller.chatInfo['name'] == null &&
+            controller.chatInfo['type'] == 'group'
+        ? _buildGroupDissolvedMessage()
+        : !controller.isFriend
+            ? _buildNotFriendMessage()
+            : _buildTextFieldAndButtons();
+
+    //加入黑名单按钮组件
+    final Widget blockUser = const Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.block_flipped, size: 18),
+        Text('加入黑名单'),
+      ],
+    ).onTap(() {
+      Fluttertoast.showToast(msg: "功能建设中，敬请期待！");
     });
+
+    // 添加好友按钮组件
+    final Widget addFriend = const Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.person_add_alt_1_outlined, size: 18),
+        Text('添加为好友'),
+      ],
+    ).onTap(controller.onTapAddFriend);
 
     // 不是好友时展示的组件构建
     final Widget notFriend = Container(
@@ -521,30 +529,11 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-            child: GestureDetector(
-              // onTap: controller.onBlockUser,
-              onTap: () {},
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.block_flipped, size: 18),
-                  Text('加入黑名单'),
-                ],
-              ),
-            ),
+            child: blockUser,
           ),
           const VerticalDivider(width: 1, color: Colors.grey),
           Expanded(
-            child: GestureDetector(
-              onTap: controller.onTapAddFriend,
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.person_add_alt_1_outlined, size: 18),
-                  Text('添加为好友'),
-                ],
-              ),
-            ),
+            child: addFriend,
           ),
         ],
       ),
@@ -563,35 +552,14 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
               decoration: chatBackground,
               child: Column(
                 children: <Widget>[
-                  chatContent,
+                  Expanded(
+                    child: chatContent,
+                  ),
                   bottomInput,
                 ],
               ),
             ),
             if (!controller.isLoading && !controller.isFriend) notFriend,
-            if (!controller.isOnBottom && controller.isUpSroll)
-              // Positioned(
-              AnimatedPositioned(
-                  duration: 300.milliseconds,
-                  curve: Curves.ease,
-                  bottom: 63.h + controller.keyboardHeight,
-                  right: 9.w,
-                  child: Column(
-                    children: [
-                      CustomIconButton(
-                        width: 32.w,
-                        height: 32.h,
-                        iconSize: 26.sp,
-                        onTap: () => controller.scrollBottom(),
-                        icon: Icons.keyboard_arrow_down,
-                      ),
-                      // SizedBox(
-                      //   // height: MediaQuery.of(context).viewInsets.bottom,
-                      //   // height: 329.h,
-                      //   height: controller.keyboardHeight,
-                      // ),
-                    ],
-                  )),
           ],
         ),
       ),

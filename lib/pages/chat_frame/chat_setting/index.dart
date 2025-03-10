@@ -38,7 +38,7 @@ class ChatSettingPage extends CustomView<ChatSettingLogic> {
                         width: 85.5,
                         height: 20,
                         child: Text(
-                          controller.chatInfo['name'],
+                          controller.chatInfo['name'] ?? '该群已解散',
                           style: const TextStyle(
                               fontSize: 14, color: Colors.black87),
                           overflow: TextOverflow.ellipsis,

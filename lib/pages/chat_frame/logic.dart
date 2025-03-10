@@ -64,7 +64,14 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   late dynamic chatInfo = {_targetId: ''};
 
   // 发送状态
-  late RxBool isSend = false.obs;
+  // late RxBool isSend = false.obs;
+
+  bool _isSend = false;
+  bool get isSend => _isSend;
+  set isSend(bool value) {
+    _isSend = value;
+    update([const Key('chat_frame')]);
+  }
 
   // 录制状态
   late RxBool isRecording = false.obs;
@@ -108,13 +115,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   bool get isUpSroll => _isUpSroll;
   set isUpSroll(bool value) {
     _isUpSroll = value;
-    update([const Key('chat_frame')]);
-  }
-
-  double _keyboardHeight = 0;
-  double get keyboardHeight => _keyboardHeight;
-  set keyboardHeight(double value) {
-    _keyboardHeight = value;
     update([const Key('chat_frame')]);
   }
 
@@ -294,6 +294,11 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         CustomFlutterToast.showErrorToast('Ta还不是好友哦');
         return;
       }
+      // 判断群是否已解散
+      if (chatInfo['type'] == 'group' && chatInfo['name'] == null) {
+        CustomFlutterToast.showErrorToast('该群已解散~');
+        return;
+      }
       final result = await Get.toNamed('/chat_setting', arguments: chatInfo);
       if (result != null) {
         if (kDebugMode) print('chat_setting result is: $result');
@@ -317,7 +322,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     try {
       final res = await _msgApi.send(msg);
       if (res['code'] == 0) {
-        isSend.value = false;
+        isSend = false;
         _msgListAddMsg(res['data']);
         await _onRead(null);
       } else
@@ -516,7 +521,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       if (result['code'] == 0) {
         msgContentController.text = result['data']['msgContent']['content'];
         isRecording.value = false;
-        isSend.value = true;
+        isSend = true;
         WidgetsBinding.instance
             .addPostFrameCallback((_) => focusNode.requestFocus());
         update([const Key('chat_frame')]);
@@ -673,7 +678,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
           offset: selection.start + emoji.length,
         ),
       );
-      isSend.value = true;
+      isSend = true;
     } catch (e) {
       CustomFlutterToast.showErrorToast('添加表情时发生错误: $e');
     } finally {
@@ -720,10 +725,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 点击头像查看用户详情
   void onTapChatPortrait(dynamic msg) async {
-    if (kDebugMode) print('onTapAvatar: $msg');
     try {
+      // 点击自己的头像查看个人信息
       if (globalData.currentUserId == msg['fromId']) {
-        // 点击自己的头像查看个人信息
         final result = await Get.toNamed('/friend_info', arguments: {
           'friendId': msg['fromId'],
           'isFromChatPage': true,
@@ -731,7 +735,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         if (result != null && result) await _onGetMsgRecode(index: 0);
         return;
       }
-
+      // 点击私聊中的头像查看用户详情
       if (msg['source'] == 'user' &&
           globalData.currentUserId != msg['fromId']) {
         // 先检查是否为好友
@@ -753,7 +757,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         // 先检查是否为好友
         final friendData = await _friendApi.details(msg['fromId']);
         if (kDebugMode) print('friend data: $friendData');
-        // 不是好友 先添加好友
+        // 不是好友先添加好友
         if (friendData['code'] != 0) {
           CustomFlutterToast.showErrorToast('Ta还不是好友');
           final friend = {
@@ -766,12 +770,11 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
           if (result != null && result) await _onGetMsgRecode(index: 0);
           return;
         }
-        // 点击用户头像查看用户详情
+        // 点击当前聊天框内好友头像查看好友详情
         final result = await Get.toNamed('/friend_info', arguments: {
           'friendId': msg['fromId'],
           'isFromChatGroupPage': true,
         });
-        if (kDebugMode) print('friend_info result: $result');
         if (result != null) {
           chatInfo = result;
           _targetId = chatInfo['fromId'];
@@ -780,7 +783,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
               sharedPreferences.getString('${_targetId}_chat_background') ?? '';
           // 若本地没有获取到则从网络获取聊天背景
           if (chatBackground.isEmpty) {
-            // chatInfo = result;
             chatBackground = chatInfo['chatBackground'] ?? '';
             // 保存聊天背景到本地
             if (chatBackground.isNotEmpty)
@@ -810,7 +812,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     }
     if (msgContentController.text.isEmpty) {
       update([const Key('chat_frame')]);
-      isSend.value = false;
+      isSend = false;
     }
   }
 
@@ -844,6 +846,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         noMore['isNoMore'] = true;
         noMore['isShowTime'] = false;
         noMore['msgContent'] = {
+          "no_more_flag": true,
           "formUserId": "b0fe7e5e-ac9e-45d0-badf-f940d73973c2",
           "formUserName": "1008",
           "formUserPortrait":
@@ -867,7 +870,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       } else
         CustomFlutterToast.showErrorToast('删除失败');
     } catch (e) {
-      // CustomFlutterToast.showErrorToast('删除消息时发生错误: $e');
       if (kDebugMode) print('删除消息时发生错误: $e');
     } finally {
       //判断websocket是否连接
@@ -875,37 +877,28 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     }
   }
 
-  // 加载更多消息
+  // 滑动监听
   void scrollListener() {
+    // 判断是否滑动到底部
     isOnBottom = scrollController.position.pixels ==
         scrollController.position.maxScrollExtent;
+    // 判断是否向上滑动
     final currentOffset = scrollController.offset;
-
     if (currentOffset > _previousOffset)
-      // setState(() {
-      //   _scrollDirection = "Down";
-      // });
       isUpSroll = true;
     else if (currentOffset < _previousOffset)
-      // setState(() {
-      //   _scrollDirection = "Up";
-      // });
       isUpSroll = false;
     else
-      // setState(() {
-      //   _scrollDirection = "Idle";
-      // });
       isUpSroll = false;
-
     _previousOffset = currentOffset;
-
+    // 判断是否加载更多
     if (scrollController.hasClients &&
         scrollController.position.pixels >=
             scrollController.position.minScrollExtent) _loadMore();
   }
 
   // 初始化数据
-  void initData() async {
+  void _initData() async {
     if (kDebugMode) print('view type is: ${view.runtimeType}');
     chatInfo = Get.arguments?['chatInfo'] ?? {};
     if (kDebugMode) print('chat_frame chatInfo: $chatInfo');
@@ -929,7 +922,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   @override
   void onInit() {
     try {
-      initData();
+      _initData();
       _onGetMsgRecode();
       _eventListen();
     } catch (e) {

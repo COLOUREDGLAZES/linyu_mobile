@@ -23,6 +23,15 @@ class ChatSettingLogic extends Logic<ChatSettingPage> {
     update([const Key('chat_setting')]);
   }
 
+  // 是否已解散群聊
+  bool _isDismissed = false;
+  bool get isDismissed => _isDismissed;
+  set isDismissed(bool value) {
+    _isDismissed = value;
+    _chatFrameLogic.chatInfo['name'] = null;
+    update([const Key('chat_setting')]);
+  }
+
   late File _chatBackground;
 
   final _chatListApi = new ChatListApi();
@@ -45,6 +54,10 @@ class ChatSettingLogic extends Logic<ChatSettingPage> {
 
   // 聊天对象详情页面
   void goToChatDetailPage() async {
+    if (chatInfo['type'] == 'group' && isDismissed) {
+      CustomFlutterToast.showErrorToast('该群已解散，无法查看详情~');
+      return;
+    }
     final route =
         chatInfo['type'] == 'group' ? '/chat_group_info' : '/friend_info';
     final arg = chatInfo['type'] == 'group'
@@ -56,11 +69,17 @@ class ChatSettingLogic extends Logic<ChatSettingPage> {
             'friendId': chatInfo['fromId'],
             'isFromChatSetting': true,
           };
-    await Get.toNamed(route, arguments: arg);
+    final result = await Get.toNamed(route, arguments: arg);
+    if (result != null && result) isDismissed = true;
   }
 
   // 设置聊天置顶
   void onSetChatTop(bool isTop) async {
+    if (chatInfo['type'] == 'group' && isDismissed) {
+      CustomFlutterToast.showErrorToast('该群已解散，无法设置置顶~');
+      return;
+    }
+
     final result = await _chatListApi.top(chatInfo['id'], isTop);
     if (result['code'] == 0) {
       CustomFlutterToast.showSuccessToast('设置成功~');
@@ -112,36 +131,40 @@ class ChatSettingLogic extends Logic<ChatSettingPage> {
       cropPicture(type, _setChatBackground, isVariable: true);
 
   // 选择图片方式
-  void selectPicture() async => Get.bottomSheet(
-        backgroundColor: Colors.white,
-        Wrap(
-          children: [
-            Center(
-              child: TextButton(
-                onPressed: () => cropChatPicture(null),
-                child: Text(
-                  '图库',
-                  style: TextStyle(color: theme.primaryColor),
-                ),
+  void selectPicture() async {
+    if (chatInfo['type'] == 'group' && isDismissed) {
+      CustomFlutterToast.showErrorToast('该群已解散，无法设置聊天背景~');
+      return;
+    }
+    Get.bottomSheet(
+      backgroundColor: Colors.white,
+      Wrap(
+        children: [
+          Center(
+            child: TextButton(
+              onPressed: () => cropChatPicture(null),
+              child: Text(
+                '图库',
+                style: TextStyle(color: theme.primaryColor),
               ),
             ),
-            Center(
-              child: TextButton(
-                onPressed: () => cropChatPicture(ImageSource.camera),
-                child: Text(
-                  '相机',
-                  style: TextStyle(color: theme.primaryColor),
-                ),
+          ),
+          Center(
+            child: TextButton(
+              onPressed: () => cropChatPicture(ImageSource.camera),
+              child: Text(
+                '相机',
+                style: TextStyle(color: theme.primaryColor),
               ),
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void onInit() {
-    if (kDebugMode) print('view type is:${view.runtimeType}');
-    if (kDebugMode) print('arguments is:$arguments');
     init();
     super.onInit();
   }

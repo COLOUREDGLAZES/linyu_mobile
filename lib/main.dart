@@ -34,11 +34,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // 获取屏幕尺寸
     Size screenSize = MediaQuery.of(context).size;
-
     if (kDebugMode)
       print(
           'screenWidth: ${screenSize.width}, screenHeight: ${screenSize.height}');
-
     return ScreenUtilInit(
       designSize: screenSize, // 直接使用screenSize
       minTextAdapt: true,

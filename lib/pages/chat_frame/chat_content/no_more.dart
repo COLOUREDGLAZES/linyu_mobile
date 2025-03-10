@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class NoMoreContent extends StatelessWidget {
-  final String value;
+  final String? value;
 
-  const NoMoreContent({super.key, required this.value});
+  const NoMoreContent({super.key, this.value});
 
   @override
   Widget build(BuildContext context) => const Padding(

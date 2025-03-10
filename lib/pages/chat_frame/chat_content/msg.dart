@@ -354,10 +354,7 @@ class ChatMessage extends StatelessThemeWidget {
     return Column(
       children: [
         const SizedBox(height: 10),
-        if (isNoMore)
-          NoMoreContent(
-            value: msg['msgContent'].toString(),
-          ),
+        if (isNoMore) const NoMoreContent(),
         // 时间组件
         if (isShowTime)
           TimeContent(value: DateUtil.formatTime(msg['createTime'])),
