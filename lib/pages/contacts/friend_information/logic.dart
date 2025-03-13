@@ -146,7 +146,10 @@ class FriendInformationLogic extends Logic {
           ? await _userApi.info()
           : friendId != '0'
               ? await _friendApi.details(friendId)
-              : {};
+              : {
+                  'code': -1,
+                  'msg': '',
+                };
 
       if (response['code'] == 0) {
         final data = response['data'];
@@ -170,12 +173,13 @@ class FriendInformationLogic extends Logic {
         update([const Key('friend_info')]);
         return data;
       } else {
-        CustomFlutterToast.showErrorToast(response['msg']);
+        if (response['code'] != -1)
+          CustomFlutterToast.showErrorToast(response['msg']);
         return {};
       }
     } catch (e) {
       if (kDebugMode) print('error: $e');
-      CustomFlutterToast.showErrorToast('发生错误，请稍后再试');
+      // CustomFlutterToast.showErrorToast('发生错误，请稍后再试~');
       return {};
     }
   }

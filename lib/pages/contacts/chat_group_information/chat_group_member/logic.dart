@@ -120,7 +120,7 @@ class ChatGroupMemberLogic extends Logic {
       }
     } catch (e) {
       // 适当的错误处理
-      CustomFlutterToast.showErrorToast("发生错误，请稍后重试");
+      CustomFlutterToast.showErrorToast("发生错误，请稍后重试~");
       if (kDebugMode) print('Error in onTapMember: $e');
     }
   }

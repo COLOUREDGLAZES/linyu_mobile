@@ -1,3 +1,5 @@
+import 'package:ducafe_ui_core/ducafe_ui_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
@@ -11,6 +13,64 @@ import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 class ContactsPage extends CustomWidget<ContactsLogic> {
   ContactsPage({super.key});
+
+  Widget _buildFriendItem(dynamic friend) {
+    final Widget friendItem = InkWell(
+      onLongPress: () => _showBottomSheet(friend),
+      onTap: () => controller.handlerFriendTapped(friend),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+          border: Border(
+            bottom: BorderSide(
+              color: Colors.grey[200]!,
+              width: 0.5,
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              CustomPortrait(url: friend['portrait']),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          friend['name'],
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        if (friend['remark'] != null &&
+                            friend['remark']?.toString().trim() != '')
+                          Text(
+                            '(${friend['remark']})',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).material(borderRadius: BorderRadius.circular(12), color: Colors.white);
+
+    return friendItem;
+  }
 
   Widget _getContent(String tab) {
     switch (tab) {
@@ -54,11 +114,7 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
           },
           child: ListView(
             children: [
-              ...controller.friendList.map(
-                (group) => GestureDetector(
-                  key: Key(group['name']),
-                  onLongPress: controller.onLongPressGroup,
-                  child: ExpansionTile(
+              ...controller.friendList.map((group) => ExpansionTile(
                     iconColor: theme.primaryColor,
                     visualDensity:
                         const VisualDensity(horizontal: 0, vertical: -4),
@@ -82,9 +138,10 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
                         ),
                       ),
                     ],
-                  ),
-                ),
-              ),
+                  ).onLongPress(controller.onLongPressGroup,
+                      key: Key(group['isCustom']
+                          ? group['groupId']
+                          : group['name']))),
             ],
           ),
         );
@@ -278,7 +335,8 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
         ),
       );
 
-  void _showDeleteGroupBottomSheet(dynamic friend) => showModalBottomSheet(
+  // 好友特别关心操作
+  void _showBottomSheet(dynamic friend) => showModalBottomSheet(
         context: Get.context!,
         backgroundColor: Colors.white,
         shape: const RoundedRectangleBorder(
@@ -298,64 +356,6 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
                   fontSize: 16),
             ),
           ],
-        ),
-      );
-
-  Widget _buildFriendItem(dynamic friend) => Material(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        child: InkWell(
-          onLongPress: () => _showDeleteGroupBottomSheet(friend),
-          onTap: () => controller.handlerFriendTapped(friend),
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.0),
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.grey[200]!,
-                  width: 0.5,
-                ),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                  CustomPortrait(url: friend['portrait']),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              friend['name'],
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            if (friend['remark'] != null &&
-                                friend['remark']?.toString().trim() != '')
-                              Text(
-                                '(${friend['remark']})',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ),
       );
 
@@ -536,94 +536,6 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
                         (index) => _getContent(controller.tabs[index])),
                   ),
                 ),
-              // if (controller.friendSearchList.isEmpty &&
-              //     controller.groupSearchList.isEmpty)
-              //   Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: List.generate(
-              //         controller.tabs.length,
-              //         (index) => Expanded(
-              //               child: Stack(
-              //                 clipBehavior: Clip.none,
-              //                 children: [
-              //                   AnimatedAlign(
-              //                     duration: const Duration(milliseconds: 300),
-              //                     alignment: Alignment.center,
-              //                     child: GestureDetector(
-              //                       onTap: () =>
-              //                           controller.handlerTabTapped(index),
-              //                       child: AnimatedContainer(
-              //                         duration:
-              //                             const Duration(milliseconds: 300),
-              //                         curve: Curves.easeInOut,
-              //                         padding: const EdgeInsets.all(5),
-              //                         margin: EdgeInsets.symmetric(
-              //                           horizontal:
-              //                               index == controller.selectedIndex
-              //                                   ? 4.0
-              //                                   : 0.0,
-              //                         ),
-              //                         decoration: BoxDecoration(
-              //                           borderRadius: BorderRadius.circular(1),
-              //                           color: Colors.transparent,
-              //                           border: Border(
-              //                             bottom: BorderSide(
-              //                               color: index ==
-              //                                       controller.selectedIndex
-              //                                   ? theme.primaryColor
-              //                                   : Colors.transparent,
-              //                               width: 2,
-              //                             ),
-              //                           ),
-              //                         ),
-              //                         child: Center(
-              //                           child: AnimatedDefaultTextStyle(
-              //                             duration:
-              //                                 const Duration(milliseconds: 300),
-              //                             style: TextStyle(
-              //                               color: index ==
-              //                                       controller.selectedIndex
-              //                                   ? theme.primaryColor
-              //                                   : Colors.black,
-              //                               fontSize: 16,
-              //                             ),
-              //                             child: GestureDetector(
-              //                               onLongPress: index == 1
-              //                                   ? controller.onLongPressGroup
-              //                                   : () {},
-              //                               child: Text(controller.tabs[index]),
-              //                             ),
-              //                           ),
-              //                         ),
-              //                       ),
-              //                     ),
-              //                   ),
-              //                   if (index == 2)
-              //                     Obx(() => globalData
-              //                                 .getUnreadCount('friendNotify') >
-              //                             0
-              //                         ? CustomTip(
-              //                             globalData
-              //                                 .getUnreadCount('friendNotify'),
-              //                             right: 7,
-              //                             top: -2)
-              //                         : const SizedBox.shrink()),
-              //                 ],
-              //               ),
-              //             )),
-              //   ),
-              // if (controller.friendSearchList.isEmpty &&
-              //     controller.groupSearchList.isEmpty)
-              //   const SizedBox(height: 5),
-              // if (controller.friendSearchList.isEmpty &&
-              //     controller.groupSearchList.isEmpty)
-              //   Expanded(
-              //     child: AnimatedSwitcher(
-              //       duration: const Duration(milliseconds: 300),
-              //       child:
-              //           _getContent(controller.tabs[controller.selectedIndex]),
-              //     ),
-              //   ),
             ],
           ),
         ),

@@ -10,15 +10,12 @@ import 'package:linyu_mobile/utils/api/notify_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 
-// class ContactsLogic extends GetxController
 class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
   final _friendApi = new FriendApi();
   final _chatGroupApi = new ChatGroupApi();
   final _notifyApi = new NotifyApi();
   final _chatListApi = new ChatListApi();
   final FocusNode focusNode = new FocusNode(skipTraversal: true);
-  // final GlobalData globalData = GetInstance().find<GlobalData>();
-  // final SharedPreferences sharedPreferences = Get.find<SharedPreferences>();
   List<String> tabs = ['我的群聊', '我的好友', '好友通知'];
   int selectedIndex = 1;
   String currentUserId = '';
@@ -29,11 +26,7 @@ class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
   List<dynamic> friendSearchList = [];
   late List<dynamic> groupSearchList = [];
   final TextEditingController searchBoxController = new TextEditingController();
-  // final _wsManager = new WebSocketUtil();
-  // final wsManager = Get.find<WebSocketUtil>();
   StreamSubscription? _subscription;
-
-  // GlobalData get globalData => GetInstance().find<GlobalData>();
 
   late TabController tabController;
 
@@ -160,12 +153,6 @@ class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
     if (selectedIndex != index) {
       selectedIndex = index;
       update([const Key("contacts")]);
-      // if (index == 2)
-      //   try {
-      //     onReadNotify();
-      //   } catch (e) {
-      //     CustomFlutterToast.showErrorToast("读取通知失败: $e");
-      //   }
     }
   }
 

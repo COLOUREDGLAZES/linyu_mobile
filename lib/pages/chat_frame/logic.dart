@@ -65,9 +65,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   late String _targetId = '';
   late dynamic chatInfo = {_targetId: ''};
 
-  // 发送状态
-  // late RxBool isSend = false.obs;
-
   bool _isSend = false;
   bool get isSend => _isSend;
   set isSend(bool value) {
@@ -104,6 +101,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     update([const Key('chat_frame')]);
   }
 
+  // 是否在底部
   bool _isOnBottom = false;
   bool get isOnBottom => _isOnBottom;
   set isOnBottom(bool value) {
@@ -123,7 +121,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // 心灵鸡汤
   Map<String, dynamic> lifeStr = {
     'data': {
-      'content': '承君此诺，必守一生~',
+      'content': '死生契阔，与子成说~',
       // 'content': '输入文字~',
     }
   };
@@ -133,12 +131,10 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     try {
       if (kDebugMode) print('onRead:$_targetId');
       targetId ??= _targetId;
-      // if (StringUtil.isNullOrEmpty(targetId)) return;
       await _chatListApi.read(targetId);
       await globalData.onGetUserUnreadInfo();
     } catch (e) {
       if (kDebugMode) print('onRead error: $e');
-      // CustomFlutterToast.showErrorToast('标记为已读时发生错误: $e');
       Get.delete<ChatFrameLogic>();
     } finally {
       //判断websocket是否连接
@@ -196,7 +192,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       if (kDebugMode) print('sqfliteHelper: $sqfliteHelper');
       List<dynamic> localMsgList = await sqfliteHelper.queryMessageByCondition(
           globalData.currentUserId, _targetId, index ?? _index, _num);
-      // }
       msgList = localMsgList.copy();
       if (kDebugMode) print('msgList :${msgList.length}');
       if (msgList.isEmpty) {
@@ -253,6 +248,8 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     } finally {
       isLoading = false;
       update([const Key('chat_frame')]);
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -289,16 +286,14 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // 进入聊天设置页面
   void toChatSetting() async {
     try {
-      // 检查聊天对象是否为好友
-      if (chatInfo['type'] == 'user' && !await _onCheckFriend(_targetId)) {
-        CustomFlutterToast.showErrorToast('Ta还不是好友哦');
+      // 检查聊天对象是否为好友或群是否已解散
+      if ((chatInfo['type'] == 'user' && !await _onCheckFriend(_targetId)) ||
+          (chatInfo['type'] == 'group' && chatInfo['name'] == null)) {
+        CustomFlutterToast.showErrorToast(
+            chatInfo['type'] == 'user' ? 'Ta还不是好友哦' : '该群已解散~');
         return;
       }
-      // 判断群是否已解散
-      if (chatInfo['type'] == 'group' && chatInfo['name'] == null) {
-        CustomFlutterToast.showErrorToast('该群已解散~');
-        return;
-      }
+
       final result = await Get.toNamed('/chat_setting', arguments: chatInfo);
       if (result != null) {
         if (kDebugMode) print('chat_setting result is: $result');
@@ -306,6 +301,10 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       }
     } catch (error) {
       CustomFlutterToast.showErrorToast('导航到详情页时发生错误: $error');
+      if (kDebugMode) print('导航到详情页时发生错误: $error');
+    } finally {
+      // 判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
@@ -328,7 +327,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       } else
         CustomFlutterToast.showErrorToast('发送失败: ${res['message'] ?? '未知错误'}');
     } catch (e) {
-      // CustomFlutterToast.showErrorToast('发送消息时发生错误: $e');
       if (kDebugMode) print('发送消息时发生错误: $e');
     }
   }
@@ -359,7 +357,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       } else
         CustomFlutterToast.showErrorToast('消息保存失败');
     } catch (e) {
-      // CustomFlutterToast.showErrorToast('添加消息时发生错误: $e');
       if (kDebugMode) print('添加消息时发生错误: $e');
     } finally {
       //判断websocket是否连接
@@ -462,7 +459,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       }
     } catch (e) {
       if (kDebugMode) print('发送语音消息时发生错误: $e');
-      // CustomFlutterToast.showErrorToast('发送语音消息时发生错误: $e');
     } finally {
       //判断websocket是否连接
       if (!wsManager.isConnected) wsManager.connect();
@@ -486,7 +482,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
           onInviteVideoChat(content['type'] != 'video');
       } catch (e) {
         if (kDebugMode) print('解析消息内容时发生错误: $e');
-        // CustomFlutterToast.showErrorToast('解析消息内容时发生错误: $e');
       } finally {
         //判断websocket是否连接
         if (!wsManager.isConnected) wsManager.connect();

@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData, Color;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart'
-    show ExtensionBottomSheet, Get, GetNavigation, Obx;
+    show ExtensionBottomSheet, Get, GetNavigation, Obx, WidgetPaddingX;
 import 'package:image_picker/image_picker.dart' show ImageSource;
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
@@ -390,6 +390,38 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         ),
       );
 
+  void _buildBottomSheet() => Get.bottomSheet(
+        backgroundColor: Colors.white,
+        Wrap(
+          children: [
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  controller.onInviteVideoChat(true);
+                  Get.back();
+                },
+                child: Text(
+                  '语音通话',
+                  style: TextStyle(color: theme.primaryColor),
+                ),
+              ),
+            ),
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  controller.onInviteVideoChat(false);
+                  Get.back();
+                },
+                child: Text(
+                  '视频通话',
+                  style: TextStyle(color: theme.primaryColor),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
   @override
   void init(BuildContext context) {
     WidgetsBinding.instance.addObserver(this);
@@ -399,6 +431,12 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
   @override
   Widget buildView(BuildContext context) {
     controller.hasBeenLoaded();
+
+    // 聊天页面拨号图标按钮
+    final Widget callImage =
+        Image.asset('assets/images/call.png', height: 24, width: 24)
+            .onTap(_buildBottomSheet);
+
     // appBar 构建
     final PreferredSizeWidget appBar = AppBar(
       centerTitle: true,
@@ -409,41 +447,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
       ),
       backgroundColor: const Color(0xFFF9FBFF),
       actions: [
-        if (controller.chatInfo['type'] != 'group')
-          IconButton(
-            onPressed: () => Get.bottomSheet(
-              backgroundColor: Colors.white,
-              Wrap(
-                children: [
-                  Center(
-                    child: TextButton(
-                      onPressed: () {
-                        controller.onInviteVideoChat(true);
-                        Get.back();
-                      },
-                      child: Text(
-                        '语音通话',
-                        style: TextStyle(color: theme.primaryColor),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: TextButton(
-                      onPressed: () {
-                        controller.onInviteVideoChat(false);
-                        Get.back();
-                      },
-                      child: Text(
-                        '视频通话',
-                        style: TextStyle(color: theme.primaryColor),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            icon: Image.asset('assets/images/call.png', height: 24, width: 24),
-          ),
+        if (controller.chatInfo['type'] != 'group') callImage,
         IconButton(
           onPressed: controller.toChatSetting,
           icon: Image.asset(
@@ -453,6 +457,38 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
           ),
         ),
       ],
+    );
+
+    //加入黑名单按钮组件
+    final Widget blockUser = const Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.block_flipped, size: 18),
+        Text('加入黑名单'),
+      ],
+    ).onTap(() => Fluttertoast.showToast(msg: "功能建设中，敬请期待！")).expanded();
+
+    // 添加好友按钮组件
+    final Widget addFriend = const Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.person_add_alt_1_outlined, size: 18),
+        Text('添加为好友'),
+      ],
+    ).onTap(controller.onTapAddFriend).expanded();
+
+    // 不是好友时展示的组件构建
+    final Widget notFriend = Container(
+      height: 35,
+      color: Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          blockUser,
+          const VerticalDivider(width: 1, color: Colors.grey),
+          addFriend,
+        ],
+      ),
     );
 
     // 聊天背景构建
@@ -468,30 +504,25 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
           );
 
     // 聊天内容展示构建
-    final Widget chatContent = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Stack(
-        children: [
-          ListView.builder(
-            itemCount: controller.msgList.length,
-            controller: controller.scrollController,
-            itemBuilder: _buildMsgRecord,
-          ),
-          if (controller.isLoading)
-            const Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: CupertinoActivityIndicator(),
-                ),
+    final Widget chatMsgContent = Stack(
+      children: [
+        ListView.builder(
+          itemCount: controller.msgList.length,
+          controller: controller.scrollController,
+          itemBuilder: _buildMsgRecord,
+        ).paddingHorizontal(16),
+        if (controller.isLoading)
+          const CupertinoActivityIndicator()
+              .paddingAll(8.0)
+              .center()
+              .positioned(
+                top: 0,
+                left: 0,
+                right: 0,
               ),
-            ),
-        ],
-      ),
-    ).onTap(() => controller.hidePanel(panelController));
+        if (!controller.isLoading && !controller.isFriend) notFriend,
+      ],
+    ).onTap(() => controller.hidePanel(panelController)).expanded();
 
     // 底部输入框构建
     final Widget bottomInput = controller.chatInfo['name'] == null &&
@@ -501,69 +532,21 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
             ? _buildNotFriendMessage()
             : _buildTextFieldAndButtons();
 
-    //加入黑名单按钮组件
-    final Widget blockUser = const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.block_flipped, size: 18),
-        Text('加入黑名单'),
-      ],
-    ).onTap(() {
-      Fluttertoast.showToast(msg: "功能建设中，敬请期待！");
-    });
-
-    // 添加好友按钮组件
-    final Widget addFriend = const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.person_add_alt_1_outlined, size: 18),
-        Text('添加为好友'),
-      ],
-    ).onTap(controller.onTapAddFriend);
-
-    // 不是好友时展示的组件构建
-    final Widget notFriend = Container(
-      height: 35,
-      color: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: blockUser,
-          ),
-          const VerticalDivider(width: 1, color: Colors.grey),
-          Expanded(
-            child: addFriend,
-          ),
-        ],
-      ),
-    );
-
     // 整体布局构建
-    final Widget view = GestureDetector(
-      onTap: () => controller.panelType.value = 'none',
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: const Color(0xFFF9FBFF),
-        appBar: appBar,
-        body: Stack(
-          children: [
-            Container(
-              decoration: chatBackground,
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: chatContent,
-                  ),
-                  bottomInput,
-                ],
-              ),
-            ),
-            if (!controller.isLoading && !controller.isFriend) notFriend,
+    final Widget view = Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: const Color(0xFFF9FBFF),
+      appBar: appBar,
+      body: Container(
+        decoration: chatBackground,
+        child: Column(
+          children: <Widget>[
+            chatMsgContent,
+            bottomInput,
           ],
         ),
       ),
-    );
+    ).onTap(() => controller.panelType.value = 'none');
     return view;
   }
 
