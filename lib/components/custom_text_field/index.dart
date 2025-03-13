@@ -23,6 +23,7 @@ class CustomTextField extends StatelessThemeWidget {
   final Color? fillColor;
   final bool? showCursor;
   final void Function()? onEditingComplete;
+  final ValueChanged<String>? onSubmitted;
 
   const CustomTextField({
     super.key,
@@ -46,6 +47,7 @@ class CustomTextField extends StatelessThemeWidget {
     this.fillColor,
     this.showCursor,
     this.onEditingComplete,
+    this.onSubmitted,
   });
 
   @override
@@ -79,6 +81,11 @@ class CustomTextField extends StatelessThemeWidget {
               Expanded(
                 child: TextField(
                   autofocus: false,
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (value) {
+                    onSubmitted?.call(value);
+                  },
                   onEditingComplete: () {
                     onEditingComplete?.call();
                   }, //焦点付给密码输入框

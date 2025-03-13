@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 
 import 'package:chat_bottom_container/panel_container.dart'
     show ChatBottomPanelContainer, ChatBottomPanelContainerController;
@@ -346,6 +347,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                               },
                               onChanged: (value) =>
                                   controller.isSend = value.trim().isNotEmpty,
+                              onSubmitted: (text) => controller.sendTextMsg(),
                             ),
                           ),
                         ),
@@ -363,7 +365,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                                     ChatBottomHandleFocus.requestFocus));
                       },
                     ),
-                  controller.isSend
+                  controller.isSend && !Platform.isIOS
                       ? CustomButton(
                           text: '发送',
                           onTap: controller.sendTextMsg,
