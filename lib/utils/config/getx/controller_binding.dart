@@ -58,13 +58,6 @@ class ControllerBinding extends Bindings {
     Get.put<GlobalThemeConfig>(GlobalThemeConfig(), permanent: true);
     Get.put<WebSocketUtil>(WebSocketUtil(), permanent: true);
     Get.put<SqfliteHelper>(SqfliteHelper(), permanent: true);
-    // Get.putAsync<SharedPreferences>(() async {
-    //   final sp = await SharedPreferences.getInstance();
-    //   return sp;
-    // }, permanent: true);
-    // Get.putAsync<SharedPreferences>(
-    //     () async => await SharedPreferences.getInstance(),
-    //     permanent: true);
     //页面业务逻辑依赖注入
     Get.lazyPut<NavigationLogic>(() => NavigationLogic(), fenix: true);
     Get.lazyPut<LoginPageLogic>(() => LoginPageLogic(), fenix: true);

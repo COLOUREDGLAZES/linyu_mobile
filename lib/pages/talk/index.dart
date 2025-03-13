@@ -5,6 +5,7 @@ import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_image_group/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
@@ -19,34 +20,77 @@ import 'logic.dart';
 class TalkPage extends CustomWidget<TalkLogic> {
   TalkPage({super.key});
 
-  Widget _buildFooter() {
-    if (controller.isLoading)
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Center(
-          child: SizedBox(
-            width: 30.0,
-            height: 30.0,
-            child: CircularProgressIndicator(
-              strokeWidth: 4,
-              color: theme.primaryColor,
-            ),
-          ),
+  void bottomSheet(
+          BuildContext context, Function(ImageSource? type) cropChatPicture) =>
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
         ),
-      );
-    else if (!controller.hasMore)
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 30),
-        child: Center(
-          child: Text(
-            '没有更多内容了~',
-            style: TextStyle(color: Colors.grey[600], fontSize: 12),
-          ),
-        ),
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text('图库'),
+                onTap: () => cropChatPicture(null),
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('拍照'),
+                onTap: () => cropChatPicture(ImageSource.camera),
+              ),
+            ],
+          );
+        },
       );
 
-    return const SizedBox.shrink();
-  }
+  // 构建appbar
+  List<Widget> _buildAppBar(BuildContext context) => [
+        SliverAppBar(
+          floating: false,
+          pinned: true,
+          centerTitle: true,
+          leading: !controller.isNotShowLeading
+              ? Obx(() => Opacity(
+                    opacity: controller.opacity.value,
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 13.2, top: 10.8),
+                      child: CustomPortrait(
+                        url: globalData.currentAvatarUrl ?? '',
+                        size: 40,
+                        radius: 20,
+                        onTap: () => Scaffold.of(context).openDrawer(),
+                        onLongPress: controller.onLongPressPortrait,
+                      ),
+                    ),
+                  ))
+              : null,
+          title: Obx(() => Opacity(
+                opacity: controller.opacity.value,
+                child: AppBarTitle(controller.title),
+              )),
+          backgroundColor: const Color(0xFFF9FBFF),
+          expandedHeight: Size.fromHeight(
+                  MediaQuery.of(context).size.width * 10.7 / 16.0 -
+                      MediaQueryData.fromWindow(window).padding.top +
+                      10)
+              .height,
+          flexibleSpace: LayoutBuilder(
+            builder: buildFlexibleSpace,
+          ),
+          actions: [
+            if (StringUtil.isNullOrEmpty(controller.targetUserId))
+              CustomTextButton('发表',
+                  onTap: () => Get.toNamed('/talk_create'),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 5.0),
+                  fontSize: 14),
+          ],
+        ),
+      ];
 
   Widget _buildTalkItem(context, dynamic talk) => Container(
         margin: const EdgeInsets.only(bottom: 15.0),
@@ -209,12 +253,13 @@ class TalkPage extends CustomWidget<TalkLogic> {
     );
 
     // 背景图片组件
-    final Widget backgroundImageWidget = Image.network(
+    // final Widget backgroundImageWidget = Image.network(
+    final Widget backgroundImageWidget = CachedNetworkImage(
       key: ValueKey(globalData.currentBackGroundUrl ??
           "http://114.96.70.115:19000/linyu/default-portrait.jpg"),
-      globalData.currentBackGroundUrl ??
-          "http://114.96.70.115:19000/linyu/default-portrait.jpg",
       fit: BoxFit.cover,
+      imageUrl: globalData.currentBackGroundUrl ??
+          "http://114.96.70.115:19000/linyu/default-portrait.jpg",
     ).onTap(
       () => !controller.isExpanded
           ? controller.scrollToTop()
@@ -267,50 +312,34 @@ class TalkPage extends CustomWidget<TalkLogic> {
     );
   }
 
-  // 构建appbar
-  List<Widget> _buildAppBar(BuildContext context) => [
-        SliverAppBar(
-          floating: false,
-          pinned: true,
-          centerTitle: true,
-          leading: !controller.isNotShowLeading
-              ? Obx(() => Opacity(
-                    opacity: controller.opacity.value,
-                    child: Container(
-                      margin: const EdgeInsets.only(left: 13.2, top: 10.8),
-                      child: CustomPortrait(
-                        url: globalData.currentAvatarUrl ?? '',
-                        size: 40,
-                        radius: 20,
-                        onTap: () => Scaffold.of(context).openDrawer(),
-                        onLongPress: controller.onLongPressPortrait,
-                      ),
-                    ),
-                  ))
-              : null,
-          title: Obx(() => Opacity(
-                opacity: controller.opacity.value,
-                child: AppBarTitle(controller.title),
-              )),
-          backgroundColor: const Color(0xFFF9FBFF),
-          expandedHeight: Size.fromHeight(
-                  MediaQuery.of(context).size.width * 10.7 / 16.0 -
-                      MediaQueryData.fromWindow(window).padding.top +
-                      10)
-              .height,
-          flexibleSpace: LayoutBuilder(
-            builder: buildFlexibleSpace,
+  Widget _buildFooter() {
+    if (controller.isLoading)
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: SizedBox(
+            width: 30.0,
+            height: 30.0,
+            child: CircularProgressIndicator(
+              strokeWidth: 4,
+              color: theme.primaryColor,
+            ),
           ),
-          actions: [
-            if (StringUtil.isNullOrEmpty(controller.targetUserId))
-              CustomTextButton('发表',
-                  onTap: () => Get.toNamed('/talk_create'),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 5.0),
-                  fontSize: 14),
-          ],
         ),
-      ];
+      );
+    else if (!controller.hasMore)
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 30),
+        child: Center(
+          child: Text(
+            '没有更多内容了~',
+            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+          ),
+        ),
+      );
+
+    return const SizedBox.shrink();
+  }
 
   @override
   Widget buildWidget(BuildContext context) => NestedScrollView(
@@ -327,6 +356,7 @@ class TalkPage extends CustomWidget<TalkLogic> {
               onRefresh: controller.refreshData,
               color: theme.primaryColor,
               child: ListView.builder(
+                padding: EdgeInsets.only(top: 23.0.h),
                 itemCount: controller.talkList.length + 1,
                 itemBuilder: (context, index) =>
                     index < controller.talkList.length

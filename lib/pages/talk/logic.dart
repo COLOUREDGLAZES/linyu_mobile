@@ -5,19 +5,19 @@ import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
-    show Colors, Icons, ListTile, TextButton, showModalBottomSheet;
-import 'package:get/get.dart' as GetX;
+    show Colors, Icons, ListTile, showModalBottomSheet;
+import 'package:get/get.dart'
+    show DoubleExtension, Get, GetNavigation, RxDouble;
 import 'package:image_picker/image_picker.dart';
+import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
+import 'package:linyu_mobile/pages/talk/index.dart';
 import 'package:linyu_mobile/utils/api/talk_api.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
-import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/crop_picture.dart';
-import 'package:palette_generator/palette_generator.dart';
 
-// class TalkLogic extends GetxController {
-class TalkLogic extends Logic {
+class TalkLogic extends Logic<TalkPage> {
   final _talkApi = TalkApi();
   final _userApi = UserApi();
   String currentUserId = '';
@@ -26,8 +26,6 @@ class TalkLogic extends Logic {
   bool isNotShowLeading = false;
   late dynamic currentUserInfo = {};
   List<dynamic> talkList = [];
-  // final _wsManager = new WebSocketUtil();
-  // final wsManager = Get.find<WebSocketUtil>();
   int index = 0;
   bool hasMore = true;
   bool isLoading = false;
@@ -47,22 +45,22 @@ class TalkLogic extends Logic {
     update([const Key("talk")]);
   }
 
-  GetX.RxDouble opacity = 0.0.obs;
+  RxDouble opacity = 0.0.obs;
 
   Future<void> init() async {
-    // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     currentUserInfo['name'] = sharedPreferences.getString('username');
     currentUserInfo['portrait'] = sharedPreferences.getString('portrait');
     currentUserInfo['account'] = sharedPreferences.getString('account');
     currentUserInfo['sex'] = sharedPreferences.getString('sex');
-    if (GetX.Get.arguments != null) {
-      targetUserId = GetX.Get.arguments['userId'] ?? '';
-      title = GetX.Get.arguments['title'] ?? '说说';
-      isNotShowLeading = GetX.Get.arguments['isNotShowLeading'] ?? false;
+    if (Get.arguments != null) {
+      targetUserId = Get.arguments['userId'] ?? '';
+      title = Get.arguments['title'] ?? '说说';
+      isNotShowLeading = Get.arguments['isNotShowLeading'] ?? false;
     }
     await refreshData();
     scrollController.addListener(scrollListener);
     currentUserId = sharedPreferences.getString('userId') ?? '';
+    textColor = globalData.currentTalkBackgroundTextColor ?? Colors.black;
   }
 
   void scrollToTop() {
@@ -133,14 +131,6 @@ class TalkLogic extends Logic {
     }
   }
 
-  // Future<void> refreshData() async {
-  //   talkList.clear();
-  //   index = 0;
-  //   hasMore = true;
-  //   update([const Key("talk")]);
-  //   onTalkList();
-  // }
-
   void updateTalkLikeOrCommentCount(String key, int num, String talkId) =>
       talkList.forEach((talk) {
         if (talk['talkId'] == talkId) {
@@ -148,12 +138,6 @@ class TalkLogic extends Logic {
           return;
         }
       });
-  // for (var talk in talkList)
-  //   if (talk['talkId'] == talkId) {
-  //     talk[key] = num;
-  //     update([const Key("talk")]);
-  //     return;
-  //   }
 
   void onDeleteTalk(talkId) => _talkApi.delete(talkId).then((res) {
         if (res['code'] == 0) {
@@ -184,32 +168,10 @@ class TalkLogic extends Logic {
   }
 
   void onLongPressPortrait() async {
-    final result = await GetX.Get.toNamed('/edit_mine');
+    final result = await Get.toNamed('/edit_mine');
     if (result != null)
       init().then((_) => theme.changeThemeMode(
           sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
-  }
-
-  Future<Color> updateTextColor(String imageUrl) async {
-    // accept imageUrl parameter
-    final PaletteGenerator paletteGenerator =
-        await PaletteGenerator.fromImageProvider(
-            NetworkImage(imageUrl)); // Use imageUrl here
-    Color? dominantColor = paletteGenerator.dominantColor?.color;
-
-    if (dominantColor != null) {
-      // Calculate brightness
-      double brightness = (0.299 * dominantColor.red +
-              0.587 * dominantColor.green +
-              0.114 * dominantColor.blue) /
-          255;
-      // Choose text color based on brightness
-      // textColor = brightness > 0.5 ? Colors.white : Colors.black;
-      textColor = brightness > 0.5 ? Colors.black : Colors.white;
-    } else
-      textColor = Colors.black;
-
-    return textColor;
   }
 
   //上传背景图片
@@ -226,12 +188,11 @@ class TalkLogic extends Logic {
       });
       final result = await _userApi.uploadTalkBackground(formData);
       if (result['code'] == 0) {
-        GetX.Get.back();
+        Get.back();
         final data = result['data'];
         await sharedPreferences.setString(
             'talkBackground', data['talkBackground']);
-        globalData.currentBackGroundUrl = data['talkBackground'];
-        await updateTextColor(data['talkBackground']);
+        textColor = await globalData.updateTextColor(data['talkBackground']);
         CustomFlutterToast.showSuccessToast('说说背景上传成功');
       } else
         CustomFlutterToast.showErrorToast(result['msg']);
@@ -245,43 +206,13 @@ class TalkLogic extends Logic {
       cropPicture(type, _uploadPicture, isVariable: true);
 
   //更换说说背景
-  void changeTalkBackground(BuildContext context) => showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.white,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
-        ),
-        builder: (BuildContext context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.photo),
-                title: const Text('图库'),
-                onTap: () => _cropChatPicture(null),
-              ),
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('拍照'),
-                onTap: () => _cropChatPicture(ImageSource.camera),
-              ),
-            ],
-          );
-        },
-      );
+  void changeTalkBackground(BuildContext context) =>
+      view?.bottomSheet(context, _cropChatPicture);
 
   @override
   void onInit() {
     init();
     super.onInit();
-  }
-
-  @override
-  void onReady() {
-    updateTextColor(globalData.currentBackGroundUrl ??
-        // globalData.currentAvatarUrl ??
-        'http://114.96.70.115:19000/linyu/default-portrait.jpg');
-    super.onReady();
   }
 
   @override

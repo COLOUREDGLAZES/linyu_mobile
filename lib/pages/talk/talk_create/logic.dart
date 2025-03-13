@@ -77,80 +77,34 @@ class TalkCreateLogic extends GetxController {
     }
   }
 
-  // Future<Map<String, dynamic>> onUploadImg(String talkId, File img) async {
-  //   Map<String, dynamic> map = {};
-  //   final file = await MultipartFile.fromFile(img.path,
-  //       filename: img.path.split('/').last);
-  //   map['talkId'] = talkId;
-  //   map['name'] = img.path.split('/').last;
-  //   map['size'] = img.lengthSync();
-  //   map["file"] = file;
-  //   FormData formData = FormData.fromMap(map);
-  //   return await _talkApi.uploadImg(formData);
-  // }
-
-  void onCreateTalk() async {
-    if (contentController.text.isEmpty && selectedImages.isEmpty) {
+  void onCreateTalk() {
+    if (contentController.text.isEmpty) {
       CustomFlutterToast.showSuccessToast('内容不能为空~');
       return;
     }
     List permission = selectedUsers.map((user) => user['friendId']).toList();
     try {
-      final res = await _talkApi.create(contentController.text, permission);
-      if (res['code'] == 0) {
-        if (selectedImages.isNotEmpty) {
-          List result = await Future.wait(
-            selectedImages.map((img) => onUploadImg(res['data']['id'], img)),
-          );
-          // 只在有有效结果时才显示成功提示
+      _talkApi.create(contentController.text, permission).then((res) async {
+        if (res['code'] == 0) {
+          List result = [];
+          for (var img in selectedImages)
+            result.add(await onUploadImg(res['data']['id'], img));
           if (result.isNotEmpty) {
             CustomFlutterToast.showSuccessToast('发表成功~');
-            if (talkLogic.initialized) talkLogic.refreshData();
             Get.back(result: {
               'msg': '发表成功',
               'refresh': true,
             });
+            if (talkLogic.initialized) talkLogic.refreshData();
           } else
             CustomFlutterToast.showErrorToast('发表失败·请稍后再试~');
-        } else {
-          CustomFlutterToast.showSuccessToast('发表成功~');
-          Get.back(result: {
-            'msg': '发表成功，未上传图片',
-            'refresh': true,
-          });
-          if (talkLogic.initialized) talkLogic.refreshData();
         }
-      } else
-        CustomFlutterToast.showErrorToast('创建失败·请稍后再试~');
-    } catch (e) {
-      if (kDebugMode) print('发生错误：${e.toString()}');
-      // CustomFlutterToast.showErrorToast('发生错误：${e.toString()}');
+      });
+    } on Exception catch (e) {
+      if (kDebugMode) print('发表失败：${e.toString()}');
+      CustomFlutterToast.showErrorToast('发表失败·网络错误~');
     }
   }
-
-  // void onCreateTalk() {
-  //   if (contentController.text.isEmpty) {
-  //     CustomFlutterToast.showSuccessToast('内容不能为空~');
-  //     return;
-  //   }
-  //   List permission = selectedUsers.map((user) => user['friendId']).toList();
-  //   _talkApi.create(contentController.text, permission).then((res) async {
-  //     if (res['code'] == 0) {
-  //       List result = [];
-  //       for (var img in selectedImages)
-  //         result.add(await onUploadImg(res['data']['id'], img));
-  //       if (result.length > 0) {
-  //         CustomFlutterToast.showSuccessToast('发表成功~');
-  //         Get.back(result: {
-  //           'msg': '发表成功',
-  //           'refresh': true,
-  //         });
-  //         if (talkLogic.initialized) talkLogic.refreshData();
-  //       } else
-  //         CustomFlutterToast.showErrorToast('发表失败·请稍后再试~');
-  //     }
-  //   });
-  // }
 
   Future<void> handlerToUserSelect() async {
     var result = await Get.toNamed('/user_select',

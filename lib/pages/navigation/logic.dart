@@ -64,29 +64,31 @@ class NavigationLogic extends GetxController {
 
   // 监听消息
   void _eventListen() => _subscription = _wsManager.eventStream.listen((event) {
-        if (event['type'] == 'on-receive-video') {
-          var data = event['content'];
-          if (data['type'] == "invite")
-            Get.toNamed('/video_chat', arguments: {
-              'userId': data['fromId'],
-              'isSender': false,
-              'isOnlyAudio': data['isOnlyAudio'],
-            });
-          return;
+        try {
+          if (event['type'] == 'on-receive-video') {
+            final data = event['content'];
+            if (data['type'] == "invite")
+              Get.toNamed('/video_chat', arguments: {
+                'userId': data['fromId'],
+                'isSender': false,
+                'isOnlyAudio': data['isOnlyAudio'],
+              });
+          } else if (event['type'] == 'on-receive-notify') {
+            final data = event['content'];
+            if (kDebugMode) print('event notify data: $data');
+            if (data == 'login=>success') {
+              CustomFlutterToast.showErrorToast('您的账号已在其他设备登录，请重新登录~');
+              _sharedPreferences.clear();
+              _wsManager.disconnect();
+              globalData.currentToken = null;
+              Get.offAndToNamed('/login');
+            } else
+              globalData.onGetUserUnreadInfo();
+          } else
+            globalData.onGetUserUnreadInfo();
+        } catch (e) {
+          if (kDebugMode) print('监听WebSocket事件时发生错误: $e');
         }
-        if (event['type'] == 'on-receive-notify') {
-          var data = event['content'];
-          if (kDebugMode) print('event notify data: $data');
-          if (data == 'login=>success') {
-            CustomFlutterToast.showErrorToast('您的账号已在其他设备登录，请重新登录~');
-            _sharedPreferences.clear();
-            _wsManager.disconnect();
-            globalData.currentToken = null;
-            Get.offAndToNamed('/login');
-            return;
-          }
-        }
-        globalData.onGetUserUnreadInfo();
       });
 
   Future<bool> _onBackPressed() async {
@@ -126,13 +128,18 @@ class NavigationLogic extends GetxController {
 
   @override
   void onInit() {
-    super.onInit();
-    _initializeServices().catchError((error) {
-      // 适当处理错误，例如记录日志或显示提示
-      if (kDebugMode) print('初始化过程中发生错误: $error');
-    });
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) async => await _initThemeData());
+    try {
+      _initializeServices().catchError((error) {
+        // 适当处理错误，例如记录日志或显示提示
+        if (kDebugMode) print('初始化过程中发生错误: $error');
+      });
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) async => await _initThemeData());
+    } on Exception catch (e) {
+      if (kDebugMode) print('初始化过程中发生错误: $e');
+    } finally {
+      super.onInit();
+    }
   }
 
   @override

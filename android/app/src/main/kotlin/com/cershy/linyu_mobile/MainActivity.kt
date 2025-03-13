@@ -1,20 +1,37 @@
 package com.cershy.linyu_mobile
 
+import android.content.Intent
+import com.cershy.linyu_mobile.service.BackgroundService
+import com.cershy.linyu_mobile.service.OverlayService
 import io.flutter.embedding.android.FlutterActivity
-//import io.flutter.embedding.engine.FlutterEngine
-//import io.flutter.plugin.common.MethodChannel
-//import io.flutter.plugins.GeneratedPluginRegistrant.registerWith
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
 
-class MainActivity: FlutterActivity()
-//class MainActivity: FlutterActivity(){
-//    private val CHANNEL = "android/back/desktop"
-//    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
-//        registerWith(flutterEngine)
-//        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { methodCall, result ->
-//            if (methodCall.method == "backDesktop") {
-//                result.success(true)
-//                moveTaskToBack(false)
-//            }
-//        }
-//    }
-//}
+class MainActivity : FlutterActivity() {
+    private val CHANNEL = "com.cershy.linyu/android/service"
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "startService" -> {
+                    startService(Intent(this, BackgroundService::class.java))
+                    result.success("Service started")
+                }
+                "stopService" -> {
+                    stopService(Intent(this, BackgroundService::class.java))
+                    result.success("Service stopped")
+                }
+                "startOverlay" -> {
+                    startService(Intent(this, OverlayService::class.java))
+                    result.success(true)
+                }
+                "stopOverlay" -> {
+                    stopService(Intent(this, OverlayService::class.java))
+                    result.success(true)
+                }
+                else -> result.notImplemented()
+            }
+        }
+    }
+}

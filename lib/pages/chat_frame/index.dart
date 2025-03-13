@@ -61,12 +61,12 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     }
   }
 
-  // 隐藏表情或更多操作面板
-  void hidePanel() {
-    if (controller.focusNode.hasFocus) controller.focusNode.unfocus();
-    controller.isReadOnly.value = false;
-    panelController.updatePanelType(ChatBottomPanelType.none);
-  }
+  // // 隐藏表情或更多操作面板
+  // void hidePanel() {
+  //   if (controller.focusNode.hasFocus) controller.focusNode.unfocus();
+  //   controller.isReadOnly.value = false;
+  //   panelController.updatePanelType(ChatBottomPanelType.none);
+  // }
 
   // 构建表情面板内容
   Widget _buildEmoji() {
@@ -316,7 +316,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                           const IconData(0xe7e2, fontFamily: 'IconFont'),
                           () {
                             controller.isRecording.value = true;
-                            hidePanel();
+                            controller.hidePanel(panelController);
                           },
                         ),
                   const SizedBox(width: 5),
@@ -491,7 +491,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
             ),
         ],
       ),
-    ).onTap(hidePanel);
+    ).onTap(() => controller.hidePanel(panelController));
 
     // 底部输入框构建
     final Widget bottomInput = controller.chatInfo['name'] == null &&

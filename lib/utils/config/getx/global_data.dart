@@ -1,7 +1,11 @@
+import 'package:flutter/cupertino.dart' show NetworkImage;
 import 'package:flutter/foundation.dart' show kDebugMode;
-import 'package:get/get.dart' show GetxController, MapExtension;
+import 'package:flutter/material.dart' show Colors;
+import 'package:flutter/services.dart';
+import 'package:get/get.dart' show GetInstance, GetxController, MapExtension;
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/app_badger.dart';
+import 'package:palette_generator/palette_generator.dart' show PaletteGenerator;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
@@ -13,12 +17,42 @@ class GlobalData extends GetxController {
   late String? currentUserName;
   late String? currentAvatarUrl =
       'http://114.96.70.115:19000/linyu/default-portrait.jpg';
-  late String? currentToken;
-  late String? currentBackGroundUrl;
+  String? currentToken;
+  String? currentBackGroundUrl;
+  Color? currentTalkBackgroundTextColor;
+
+  SharedPreferences get prefs => GetInstance().find<SharedPreferences>();
+
+  Future<Color> updateTextColor(String imageUrl) async {
+    if (currentBackGroundUrl != imageUrl) currentBackGroundUrl = imageUrl;
+    try {
+      final PaletteGenerator paletteGenerator =
+          await PaletteGenerator.fromImageProvider(NetworkImage(imageUrl));
+      Color? dominantColor = paletteGenerator.dominantColor?.color;
+
+      // 如果 dominantColor 存在，计算亮度并选择合适的文本颜色
+      if (dominantColor != null) {
+        double brightness = (0.299 * dominantColor.red +
+                0.587 * dominantColor.green +
+                0.114 * dominantColor.blue) /
+            255;
+        currentTalkBackgroundTextColor =
+            brightness > 0.5 ? Colors.white : Colors.black;
+      } else
+        // 如果无法获取 dominantColor，则默认使用黑色文本颜色
+        currentTalkBackgroundTextColor = Colors.black;
+    } catch (e) {
+      // 增加错误处理
+      if (kDebugMode) print('更新文本颜色失败: $e');
+      // 默认返回黑色文本颜色
+      currentTalkBackgroundTextColor = Colors.black;
+    }
+
+    return currentTalkBackgroundTextColor!;
+  }
 
   Future<void> init() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('x-token');
       if (token == null) return;
       currentToken = token;
@@ -27,7 +61,8 @@ class GlobalData extends GetxController {
       currentUserName = prefs.getString('username');
       currentAvatarUrl = prefs.getString('portrait') ??
           'http://114.96.70.115:19000/linyu/default-portrait.jpg';
-      currentBackGroundUrl = prefs.getString('talkBackground');
+      currentBackGroundUrl = prefs.getString('talkBackground') ??
+          'http://114.96.70.115:19000/linyu/default-portrait.jpg';
       // 仅当用户 ID 不为空时才获取未读信息
       if (currentUserId.isNotEmpty) await onGetUserUnreadInfo();
     } catch (e) {
@@ -57,13 +92,19 @@ class GlobalData extends GetxController {
   }
 
   int getUnreadCount(String type) {
-    if (unread.value.containsKey(type)) return unread.value[type]!;
+    if (unread.containsKey(type)) return unread[type]!;
     return 0;
   }
 
   @override
   void onInit() {
-    super.onInit();
     init();
+    super.onInit();
+  }
+
+  @override
+  void onReady() {
+    if (currentBackGroundUrl != null) updateTextColor(currentBackGroundUrl!);
+    super.onReady();
   }
 }

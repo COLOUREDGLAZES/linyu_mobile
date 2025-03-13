@@ -2,6 +2,8 @@ import 'dart:async' show Future, StreamSubscription;
 import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:io' show File;
 
+import 'package:chat_bottom_container/panel_container.dart';
+import 'package:chat_bottom_container/typedef.dart';
 import 'package:dio/dio.dart' show FormData, MultipartFile;
 import 'package:file_picker/file_picker.dart' show FilePicker, FilePickerResult;
 import 'package:flutter/cupertino.dart'
@@ -121,8 +123,8 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // 心灵鸡汤
   Map<String, dynamic> lifeStr = {
     'data': {
-      // 'content': '承君此诺，必守一生~',
-      'content': '输入文字~',
+      'content': '承君此诺，必守一生~',
+      // 'content': '输入文字~',
     }
   };
 
@@ -205,18 +207,14 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
           msgList = res['data'];
           _index += msgList.length;
           hasMore = msgList.isNotEmpty; // 判断是否还有更多数据
-          // update([const Key('chat_frame')]);
-          // scrollBottom();
         } else if (kDebugMode) print('获取消息记录失败: ${res['message'] ?? '未知错误'}');
       }
       if (kDebugMode) print('msgList the first:${msgList[0]}');
     } catch (e) {
       if (kDebugMode) print('onGetMsgRecode error: $e');
-      // CustomFlutterToast.showErrorToast('获取消息记录时发生错误: $e');
     } finally {
       isLoading = false;
       scrollBottom();
-      update([const Key('chat_frame')]);
     }
   }
 
@@ -227,28 +225,30 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     update([const Key('chat_frame')]);
     try {
       final res = await _msgApi.record(_targetId, _index, _num);
-      if (res['code'] == 0) if (res['data'].isEmpty)
-        hasMore = false;
-      else {
-        final double previousScrollOffset = scrollController.position.pixels;
-        final double previousMaxScrollExtent =
-            scrollController.position.maxScrollExtent;
-        msgList.insertAll(0, res['data']);
-        _index = msgList.length;
-        hasMore = res['data'].length >= 0;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final double newMaxScrollExtent =
+      if (res['code'] == 0) {
+        if (res['data'].isEmpty)
+          hasMore = false;
+        else {
+          final double previousScrollOffset = scrollController.position.pixels;
+          final double previousMaxScrollExtent =
               scrollController.position.maxScrollExtent;
-          final double newOffset = previousScrollOffset +
-              (newMaxScrollExtent - previousMaxScrollExtent) -
-              10;
-          scrollController.animateTo(
-            newOffset,
-            // 0,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.fastOutSlowIn,
-          );
-        });
+          msgList.insertAll(0, res['data']);
+          _index = msgList.length;
+          hasMore = res['data'].length >= 0;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final double newMaxScrollExtent =
+                scrollController.position.maxScrollExtent;
+            final double newOffset = previousScrollOffset +
+                (newMaxScrollExtent - previousMaxScrollExtent) -
+                10;
+            scrollController.animateTo(
+              newOffset,
+              // 0,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.fastOutSlowIn,
+            );
+          });
+        }
       }
     } finally {
       isLoading = false;
@@ -471,7 +471,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 点击消息记录
   void onTapMsg(dynamic msg) {
-    view?.hidePanel();
+    hidePanel(view?.panelController as ChatBottomPanelContainerController);
     final Map<String, dynamic> msgContent;
     if (msg['msgContent'] is String)
       msgContent = jsonDecode(msg['msgContent']);
@@ -895,6 +895,13 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     if (scrollController.hasClients &&
         scrollController.position.pixels >=
             scrollController.position.minScrollExtent) _loadMore();
+  }
+
+  // 隐藏表情或更多操作面板
+  void hidePanel(ChatBottomPanelContainerController panelController) {
+    if (focusNode.hasFocus) focusNode.unfocus();
+    isReadOnly.value = false;
+    panelController.updatePanelType(ChatBottomPanelType.none);
   }
 
   // 初始化数据
