@@ -66,7 +66,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   late dynamic chatInfo = {_targetId: ''};
 
   bool _isSend = false;
+
   bool get isSend => _isSend;
+
   set isSend(bool value) {
     _isSend = value;
     update([const Key('chat_frame')]);
@@ -76,7 +78,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // late RxBool isRecording = false.obs;
 
   bool _isRecording = false;
+
   bool get isRecording => _isRecording;
+
   set isRecording(bool value) {
     _isRecording = value;
     update([const Key('chat_frame')]);
@@ -85,7 +89,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // late RxBool isReadOnly = false.obs;
 
   bool _isReadOnly = false;
+
   bool get isReadOnly => _isReadOnly;
+
   set isReadOnly(bool value) {
     _isReadOnly = value;
     update([const Key('chat_frame')]);
@@ -96,7 +102,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 聊天背景
   String _chatBackground = '';
+
   String get chatBackground => _chatBackground;
+
   set chatBackground(String value) {
     _chatBackground = value;
     update([const Key('chat_frame')]);
@@ -110,7 +118,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 是否为好友
   bool _isFriend = true;
+
   bool get isFriend => _isFriend;
+
   set isFriend(bool value) {
     _isFriend = value;
     update([const Key('chat_frame')]);
@@ -118,7 +128,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 是否在底部
   bool _isOnBottom = false;
+
   bool get isOnBottom => _isOnBottom;
+
   set isOnBottom(bool value) {
     _isOnBottom = value;
     update([const Key('chat_frame')]);
@@ -127,7 +139,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   double _previousOffset = 0.0;
 
   bool _isUpSroll = false;
+
   bool get isUpSroll => _isUpSroll;
+
   set isUpSroll(bool value) {
     _isUpSroll = value;
     update([const Key('chat_frame')]);
@@ -209,16 +223,16 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       //     globalData.currentUserId, _targetId, index ?? _index, _num);
       // msgList = localMsgList.copy();
       // if (kDebugMode) print('msgList :${msgList.length}');
-      if (msgList.isEmpty) {
-        // 本地消息记录为空，从服务器获取
-        final res = await _msgApi.record(_targetId, index ?? _index, _num);
-        if (res['code'] == 0 && res['data'] is List) {
-          // 确认返回的数据类型
-          msgList = res['data'];
-          _index += msgList.length;
-          hasMore = msgList.isNotEmpty; // 判断是否还有更多数据
-        } else if (kDebugMode) print('获取消息记录失败: ${res['message'] ?? '未知错误'}');
-      }
+      // if (msgList.isEmpty) {
+      // 本地消息记录为空，从服务器获取
+      final res = await _msgApi.record(_targetId, index ?? _index, _num);
+      if (res['code'] == 0 && res['data'] is List) {
+        // 确认返回的数据类型
+        msgList = res['data'];
+        _index += msgList.length;
+        hasMore = msgList.isNotEmpty; // 判断是否还有更多数据
+      } else if (kDebugMode) print('获取消息记录失败: ${res['message'] ?? '未知错误'}');
+      // }
       if (kDebugMode) print('msgList the first:${msgList[0]}');
     } catch (e) {
       if (kDebugMode) print('onGetMsgRecode error: $e');
