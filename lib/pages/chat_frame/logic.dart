@@ -73,8 +73,23 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   }
 
   // 录制状态
-  late RxBool isRecording = false.obs;
-  late RxBool isReadOnly = false.obs;
+  // late RxBool isRecording = false.obs;
+
+  bool _isRecording = false;
+  bool get isRecording => _isRecording;
+  set isRecording(bool value) {
+    _isRecording = value;
+    update([const Key('chat_frame')]);
+  }
+
+  // late RxBool isReadOnly = false.obs;
+
+  bool _isReadOnly = false;
+  bool get isReadOnly => _isReadOnly;
+  set isReadOnly(bool value) {
+    _isReadOnly = value;
+    update([const Key('chat_frame')]);
+  }
 
   // 用于信息监听
   StreamSubscription? _subscription;
@@ -189,11 +204,11 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     isLoading = true;
     try {
       //先获取本地消息记录
-      if (kDebugMode) print('sqfliteHelper: $sqfliteHelper');
-      List<dynamic> localMsgList = await sqfliteHelper.queryMessageByCondition(
-          globalData.currentUserId, _targetId, index ?? _index, _num);
-      msgList = localMsgList.copy();
-      if (kDebugMode) print('msgList :${msgList.length}');
+      // if (kDebugMode) print('sqfliteHelper: $sqfliteHelper');
+      // List<dynamic> localMsgList = await sqfliteHelper.queryMessageByCondition(
+      //     globalData.currentUserId, _targetId, index ?? _index, _num);
+      // msgList = localMsgList.copy();
+      // if (kDebugMode) print('msgList :${msgList.length}');
       if (msgList.isEmpty) {
         // 本地消息记录为空，从服务器获取
         final res = await _msgApi.record(_targetId, index ?? _index, _num);
@@ -259,7 +274,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       if (scrollController.hasClients)
         WidgetsBinding.instance
             .addPostFrameCallback((_) => scrollController.animateTo(
-                  scrollController.position.maxScrollExtent + 10,
+                  scrollController.position.maxScrollExtent,
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.fastOutSlowIn,
                 ));
@@ -309,7 +324,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   }
 
   // 发送文本消息
-  void sendTextMsg() async {
+  void sendTextMsg({String? text}) async {
     if (StringUtil.isNullOrEmpty(msgContentController.text)) return;
     final String content = msgContentController.text;
     dynamic msg = {
@@ -348,14 +363,14 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         if (kDebugMode) print('onClose lastMsgContent: $lastMsgContent');
         msg['lastMsgContent'] = lastMsgContent;
       }
-      final int? insertMsg = await sqfliteHelper.insert(msg);
-      if (insertMsg != null) {
-        msgList.add(msg);
-        _index = msgList.length;
-        update([const Key('chat_frame')]);
-        scrollBottom();
-      } else
-        CustomFlutterToast.showErrorToast('消息保存失败');
+      // final int? insertMsg = await sqfliteHelper.insert(msg);
+      // if (insertMsg != null) {
+      msgList.add(msg);
+      _index = msgList.length;
+      update([const Key('chat_frame')]);
+      scrollBottom();
+      // } else
+      //   CustomFlutterToast.showErrorToast('消息保存失败');
     } catch (e) {
       if (kDebugMode) print('添加消息时发生错误: $e');
     } finally {
@@ -494,6 +509,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       final result = await _msgApi.retract(msg['id'], _targetId);
       if (result['code'] == 0) {
         msgList = msgList.replace(oldValue: msg, newValue: result['data']);
+        update([const Key('chat_frame')]);
         CustomFlutterToast.showSuccessToast('撤回成功');
       } else
         CustomFlutterToast.showErrorToast(
@@ -515,7 +531,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       final result = await _msgApi.reEdit(msg['id']);
       if (result['code'] == 0) {
         msgContentController.text = result['data']['msgContent']['content'];
-        isRecording.value = false;
+        isRecording = false;
         isSend = true;
         WidgetsBinding.instance
             .addPostFrameCallback((_) => focusNode.requestFocus());
@@ -895,7 +911,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   // 隐藏表情或更多操作面板
   void hidePanel(ChatBottomPanelContainerController panelController) {
     if (focusNode.hasFocus) focusNode.unfocus();
-    isReadOnly.value = false;
+    isReadOnly = false;
     panelController.updatePanelType(ChatBottomPanelType.none);
   }
 
@@ -954,16 +970,16 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   @override
   void onClose() {
-    try {
-      saveMsgToLocal();
-    } catch (e) {
-      if (kDebugMode) print('onClose过程中发生错误: $e');
-    } finally {
-      msgContentController.dispose();
-      scrollController.dispose();
-      _subscription?.cancel();
-      focusNode.dispose();
-      super.onClose();
-    }
+    // try {
+    //   saveMsgToLocal();
+    // } catch (e) {
+    //   if (kDebugMode) print('onClose过程中发生错误: $e');
+    // } finally {
+    msgContentController.dispose();
+    scrollController.dispose();
+    _subscription?.cancel();
+    focusNode.dispose();
+    super.onClose();
+    // }
   }
 }

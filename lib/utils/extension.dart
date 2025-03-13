@@ -1,3 +1,5 @@
+import 'package:flutter/gestures.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 
 extension ListExtension<E extends Map<String, dynamic>> on List {
@@ -56,5 +58,41 @@ extension ListExtension<E extends Map<String, dynamic>> on List {
       if (kDebugMode) print('替换值时发生错误: $e'); // 输出错误信息
     }
     return sourceList; // 返回处理后的列表
+  }
+}
+
+extension WidgetExtension on Widget {
+  Widget toRepaintBoundary({key}) {
+    return RepaintBoundary(key: key, child: this);
+  }
+
+  Widget toSingleChildScrollView({
+    key,
+    scrollDirection = Axis.vertical,
+    reverse = false,
+    padding,
+    primary,
+    physics,
+    controller,
+    dragStartBehavior = DragStartBehavior.start,
+    clipBehavior = Clip.hardEdge,
+    hitTestBehavior = HitTestBehavior.opaque,
+    restorationId,
+    keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+  }) {
+    return SingleChildScrollView(
+        key: key,
+        scrollDirection: scrollDirection,
+        reverse: reverse,
+        padding: padding,
+        primary: primary,
+        physics: physics,
+        controller: controller,
+        dragStartBehavior: dragStartBehavior,
+        clipBehavior: clipBehavior,
+        hitTestBehavior: hitTestBehavior,
+        restorationId: restorationId,
+        keyboardDismissBehavior: keyboardDismissBehavior,
+        child: this);
   }
 }
