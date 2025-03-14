@@ -150,6 +150,8 @@ dependencies:
 
   palette_generator: 0.3.3+6
 
+  video_player: 2.9.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

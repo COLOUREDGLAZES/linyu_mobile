@@ -31,15 +31,14 @@
 
 ## flutter环境安装
 
-    [√] Flutter (Channel stable, 3.29.0, on Microsoft Windows [版本 10.0.19045.5487], locale zh-CN) [1,306ms]
-    • Flutter version 3.29.0 on channel stable at C:\SDK\FLUTTER\flutter_windows_3.29.0-stable\flutter
-    • Upstream repository https://github.com/flutter/flutter.git
-    • Framework revision 35c388afb5 (2 weeks ago), 2025-02-10 12:48:41 -0800
-    • Engine revision f73bfc4522
-    • Dart version 3.7.0
-    • DevTools version 2.42.2
+    Flutter (Channel stable, 3.29.2, on Microsoft Windows [版本 10.0.19045.5555], locale zh-CN) [1,154ms]
+    • Flutter version 3.29.2 on channel stable at C:\SDK\FLUTTER\flutter_windows_3.29.2-stable\flutter
+    • Engine revision 18b71d647a
+    • Dart version 3.7.2
+    • DevTools version 2.42.3
     • Pub download mirror https://pub.flutter-io.cn
     • Flutter download mirror https://storage.flutter-io.cn
+    • If those were intentional, you can disregard the above warnings; however it is recommended to use "git" directly to perform update checks and upgrades.
     
     [√] Windows Version (10 专业版 64 位, 22H2, 2009) [5.3s]
     

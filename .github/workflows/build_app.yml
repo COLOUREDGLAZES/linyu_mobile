@@ -39,7 +39,8 @@ jobs:
         with:
 #          flutter-version: 3.24.0
 #          flutter-version: 3.27.0
-          flutter-version: 3.29.0
+#          flutter-version: 3.29.0
+          flutter-version: 3.29.2
           channel: any
 
       - name: 下载项目依赖
@@ -73,7 +74,8 @@ jobs:
           cache: true
 #          flutter-version: 3.24.0
 #          flutter-version: 3.27.0
-          flutter-version: 3.29.0
+#          flutter-version: 3.29.0
+          flutter-version: 3.29.2
 
       - name: 下载项目依赖
         run: flutter pub get

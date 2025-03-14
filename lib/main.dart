@@ -30,17 +30,12 @@ void main() async {
       initialRoute: token != null ? '/?sex=$sex' : '/login'));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   final String? initialRoute;
   final Widget? initialPage;
 
   const MyApp({super.key, this.initialPage, this.initialRoute});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   static const _androidPlatform =
       MethodChannel('com.cershy.linyu/android/service');
 
@@ -64,20 +59,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
-  void initState() {
-    try {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-          overlays: [SystemUiOverlay.top]);
-      initPlatformState();
-      _requestOverlayPermission();
-    } catch (e) {
-      if (kDebugMode) print('initPlatformState error: $e');
-    } finally {
-      super.initState();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     // 获取屏幕尺寸
     Size screenSize = MediaQuery.of(context).size;
@@ -88,54 +69,46 @@ class _MyAppState extends State<MyApp> {
       designSize: screenSize, // 直接使用screenSize
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (context, child) {
-        return GetMaterialApp(
-          key: UniqueKey(),
-          navigatorKey: Get.key,
-          smartManagement: SmartManagement.keepFactory,
-          title: '林语',
-          // 国际化
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('zh', 'CH'),
-            Locale('en', 'US'),
-          ],
-          locale: const Locale('zh'),
-          // 依赖注入
-          initialBinding: ControllerBinding(),
-          enableLog: true,
-          // 路由配置
-          getPages: pageRoute,
-          // 路由从右侧向左滑入（对GetX有效）
-          defaultTransition: Transition.rightToLeft,
-          // 路由监听
-          routingCallback: routingCallback,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF4C9BFF),
-              surface: const Color(0xFFFFFFFF),
-              onSurface: const Color(0xFF1F1F1F),
-              primary: const Color(0xFF4C9BFF),
-              onPrimary: Colors.white,
-            ),
-            splashColor: const Color(0x80EAEAEA),
-            highlightColor: const Color(0x80EAEAEA),
-            useMaterial3: true,
+      builder: (context, child) => GetMaterialApp(
+        key: UniqueKey(),
+        navigatorKey: Get.key,
+        smartManagement: SmartManagement.keepFactory,
+        title: '林语',
+        // 国际化
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('zh', 'CH'),
+          Locale('en', 'US'),
+        ],
+        locale: const Locale('zh'),
+        // 依赖注入
+        initialBinding: ControllerBinding(),
+        enableLog: true,
+        // 路由配置
+        getPages: pageRoute,
+        // 路由从右侧向左滑入（对GetX有效）
+        defaultTransition: Transition.rightToLeft,
+        // 路由监听
+        routingCallback: routingCallback,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF4C9BFF),
+            surface: const Color(0xFFFFFFFF),
+            onSurface: const Color(0xFF1F1F1F),
+            primary: const Color(0xFF4C9BFF),
+            onPrimary: Colors.white,
           ),
-          home: widget.initialPage,
-          initialRoute: widget.initialRoute,
-        );
-      },
+          splashColor: const Color(0x80EAEAEA),
+          highlightColor: const Color(0x80EAEAEA),
+          useMaterial3: true,
+        ),
+        home: initialPage,
+        initialRoute: initialRoute,
+      ),
     );
-  }
-
-  @override
-  void dispose() {
-    _androidPlatform.invokeMethod('stopService');
-    super.dispose();
   }
 }
