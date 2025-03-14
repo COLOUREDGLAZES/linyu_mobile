@@ -288,7 +288,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                         forceHandleFocus: ChatBottomHandleFocus.requestFocus));
               },
             ),
-          controller.isSend && !Platform.isIOS
+          controller.isSend
               ? CustomButton(
                   text: '发送',
                   onTap: controller.sendTextMsg,

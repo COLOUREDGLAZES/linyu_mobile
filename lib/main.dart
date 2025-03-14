@@ -3,8 +3,7 @@ import 'dart:io' show Platform;
 import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'
-    show MethodChannel, SystemChrome, SystemUiMode, SystemUiOverlay;
+import 'package:flutter/services.dart' show MethodChannel;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart'
     show Get, GetMaterialApp, GetNavigation, Inst, SmartManagement, Transition;
