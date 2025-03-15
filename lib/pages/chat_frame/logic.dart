@@ -224,9 +224,8 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         msgList = res['data'];
         _index += msgList.length;
         hasMore = msgList.isNotEmpty; // 判断是否还有更多数据
-      } else if (kDebugMode) print('获取消息记录失败: ${res['message'] ?? '未知错误'}');
+      }
       // }
-      if (kDebugMode) print('msgList the first:${msgList[0]}');
     } catch (e) {
       if (kDebugMode) print('onGetMsgRecode error: $e');
     } finally {
@@ -260,7 +259,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
                 10;
             scrollController.animateTo(
               newOffset,
-              // 0,
               duration: const Duration(milliseconds: 500),
               curve: Curves.fastOutSlowIn,
             );
@@ -865,10 +863,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         noMore['isShowTime'] = false;
         noMore['msgContent'] = {
           "no_more_flag": true,
-          "formUserId": "b0fe7e5e-ac9e-45d0-badf-f940d73973c2",
-          "formUserName": "1008",
-          "formUserPortrait":
-              "http://114.96.70.115:19000/linyu/default-portrait.jpg",
+          "formUserId": "xxx",
+          "formUserName": "xxx",
+          "formUserPortrait": "xxx",
           "type": "no_more",
           "content": "没有更多消息了"
         };
@@ -893,26 +890,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       //判断websocket是否连接
       if (!wsManager.isConnected) wsManager.connect();
     }
-  }
-
-  // 滑动监听
-  void scrollListener() {
-    // 判断是否滑动到底部
-    isOnBottom = scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent;
-    // 判断是否向上滑动
-    final currentOffset = scrollController.offset;
-    if (currentOffset > _previousOffset)
-      isUpSroll = true;
-    else if (currentOffset < _previousOffset)
-      isUpSroll = false;
-    else
-      isUpSroll = false;
-    _previousOffset = currentOffset;
-    // 判断是否加载更多
-    if (scrollController.hasClients &&
-        scrollController.position.pixels >=
-            scrollController.position.minScrollExtent) _loadMore();
   }
 
   // 隐藏表情或更多操作面板
@@ -940,38 +917,49 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         sharedPreferences.setString(
             '${_targetId}_chat_background', chatBackground);
     }
-    // 添加滚动监听
-    scrollController.addListener(scrollListener);
   }
 
   @override
   void onInit() {
-    try {
-      _initData();
-      _onGetMsgRecode();
-      _eventListen();
-    } catch (e) {
-      if (kDebugMode) print('onInit过程中发生错误: $e');
-      // 可以在这里调用错误处理方法，例如：showErrorToast()
-      CustomFlutterToast.showErrorToast('初始化聊天界面时发生错误: $e');
-    } finally {
-      super.onInit();
-      //判断websocket是否连接
-      if (!wsManager.isConnected) wsManager.connect();
-    }
+    _initData();
+    _onGetMsgRecode().catchError((error) {
+      // 适当处理错误，例如记录日志或显示提示
+      if (kDebugMode) print('初始化过程中发生错误: $error');
+    });
+    _eventListen();
+    super.onInit();
   }
 
   @override
   void onReady() {
+    // 判断是否是好友
+    if (chatInfo['type'] == 'user') _onCheckFriend(_targetId);
     try {
-      // 判断是否是好友
-      if (chatInfo['type'] == 'user') _onCheckFriend(_targetId);
       _onGetMembers();
-      _onRead(null);
     } on Exception catch (e) {
       if (kDebugMode) print('onReady过程中发生错误: $e');
     } finally {
+      _onRead(null);
       super.onReady();
+      // 添加滚动监听
+      scrollController.addListener(() {
+        // 判断是否更新消息列表
+        if (scrollController.hasClients &&
+            scrollController.position.pixels ==
+                scrollController.position.minScrollExtent) _loadMore();
+        // 判断是否滑动到底部
+        isOnBottom = scrollController.position.pixels ==
+            scrollController.position.maxScrollExtent;
+        // 判断是否向上滑动
+        final currentOffset = scrollController.offset;
+        if (currentOffset > _previousOffset)
+          isUpSroll = true;
+        else if (currentOffset < _previousOffset)
+          isUpSroll = false;
+        else
+          isUpSroll = false;
+        _previousOffset = currentOffset;
+      });
     }
   }
 
