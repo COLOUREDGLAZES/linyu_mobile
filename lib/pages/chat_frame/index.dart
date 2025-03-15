@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
-
 import 'package:chat_bottom_container/panel_container.dart'
     show ChatBottomPanelContainer, ChatBottomPanelContainerController;
 import 'package:chat_bottom_container/typedef.dart';
@@ -11,6 +9,7 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData, Color;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart'
     show ExtensionBottomSheet, Get, GetNavigation, WidgetPaddingX;
+import 'package:get/utils.dart';
 import 'package:image_picker/image_picker.dart' show ImageSource;
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
@@ -323,17 +322,21 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
               .textColor(theme.primaryColor)
               .fontSize(18)
               .onTap(() {
-            controller.onInviteVideoChat(true);
-            Get.back();
-          }).center(),
+                controller.onInviteVideoChat(true);
+                Get.back();
+              })
+              .center()
+              .marginOnly(top: 15.h),
           const Text('视频通话')
               .textColor(theme.primaryColor)
               .fontSize(18)
               .onTap(() {
-            controller.onInviteVideoChat(false);
-            Get.back();
-          }).center(),
-        ].toWrap(),
+                controller.onInviteVideoChat(false);
+                Get.back();
+              })
+              .center()
+              .marginOnly(bottom: 15.h),
+        ].toWrap(spacing: 10, runSpacing: 10),
       );
 
   @override
@@ -351,6 +354,12 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         Image.asset('assets/images/call.png', height: 24, width: 24)
             .onTap(_buildBottomSheet);
 
+    final moreImage = Image.asset(
+      'assets/images/more.png',
+      height: 24,
+      width: 24,
+    ).onTap(controller.toChatSetting).marginOnly(left: 10.w, right: 10.w);
+
     // appBar 构建
     final PreferredSizeWidget appBar = AppBar(
       centerTitle: true,
@@ -362,14 +371,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
       backgroundColor: const Color(0xFFF9FBFF),
       actions: [
         if (controller.chatInfo['type'] != 'group') callImage,
-        IconButton(
-          onPressed: controller.toChatSetting,
-          icon: Image.asset(
-            'assets/images/more.png',
-            height: 24,
-            width: 24,
-          ),
-        ),
+        moreImage,
       ],
     );
 

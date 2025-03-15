@@ -19,14 +19,7 @@ import 'package:flutter/cupertino.dart'
         WidgetsBinding;
 import 'package:flutter/foundation.dart' show Key, kDebugMode;
 import 'package:get/get.dart'
-    show
-        BoolExtension,
-        Get,
-        GetNavigation,
-        Inst,
-        RxBool,
-        RxString,
-        StringExtension;
+    show Get, GetNavigation, Inst, RxString, StringExtension;
 import 'package:image_picker/image_picker.dart' show ImageSource;
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/String.dart';

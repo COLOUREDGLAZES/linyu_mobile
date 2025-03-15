@@ -101,11 +101,9 @@ class ChatMessage extends StatelessThemeWidget {
 
   // 处理群聊消息的显示名称
   String _handlerGroupDisplayName() {
-    Map<String, dynamic>? msgContent;
-    if (msg['msgContent'] is String)
-      msgContent = jsonDecode(msg['msgContent']);
-    else
-      msgContent = msg['msgContent'];
+    Map<String, dynamic>? msgContent = msg['msgContent'] is String
+        ? jsonDecode(msg['msgContent'])
+        : msg['msgContent'];
 
     // 检查 member 是否为 null
     // if (member == null) return msg['msgContent']?['formUserName'] ?? '';
@@ -133,16 +131,13 @@ class ChatMessage extends StatelessThemeWidget {
     Widget? chatPortraitWidget;
 
     try {
-      if (msg['msgContent'] is String)
-        msgContent = jsonDecode(msg['msgContent']);
-      else
-        msgContent = msg['msgContent'];
-
+      msgContent = msg['msgContent'] is String
+          ? jsonDecode(msg['msgContent'])
+          : msg['msgContent'];
       // 获取头像 URL
       avatarUrl = isRight
           ? globalData.currentAvatarUrl
           : isGroup && !isRight
-              // ? msg['msgContent']['formUserPortrait']
               ? msgContent['formUserPortrait']
               : chatPortrait;
 
@@ -171,9 +166,7 @@ class ChatMessage extends StatelessThemeWidget {
         onLongPressChatPortrait?.call(msg);
       },
     );
-
     if (msgContent['type'] == 'no_more') chatPortraitWidget = Container();
-
     return chatPortraitWidget;
   }
 
@@ -269,15 +262,11 @@ class ChatMessage extends StatelessThemeWidget {
 
   // 根据消息类型获取组件
   Widget _getComponentByType(Map<String, dynamic> msg, bool isRight) {
-    Map<String, dynamic> msgContent;
-    if (msg['msgContent'] is String)
-      msgContent = jsonDecode(msg['msgContent']);
-    else
-      msgContent = msg['msgContent'];
-    // String? type = msg['msgContent']['type'];
+    Map<String, dynamic> msgContent = msg['msgContent'] is String
+        ? jsonDecode(msg['msgContent'])
+        : msg['msgContent'];
     String? type = msgContent['type'];
     Map<String, dynamic>? content;
-    // if (type == 'voice') content = jsonDecode(msg['msgContent']['content']);
     if (type == 'voice') content = jsonDecode(msgContent['content']);
     final messageMap = {
       'no_more': (String? username) => Container(),
@@ -293,20 +282,15 @@ class ChatMessage extends StatelessThemeWidget {
     };
 
     if (messageMap.containsKey(type)) {
-      Map<String, dynamic> msgContent;
-      if (msg['msgContent'] is String)
-        msgContent = jsonDecode(msg['msgContent']);
-      else
-        msgContent = msg['msgContent'];
-      final messageWidget =
-          // messageMap[type]!(msg['msgContent']['formUserName']);
-          messageMap[type]!(msgContent['formUserName']);
+      Map<String, dynamic> msgContent = msg['msgContent'] is String
+          ? jsonDecode(msg['msgContent'])
+          : msg['msgContent'];
+      final messageWidget = messageMap[type]!(msgContent['formUserName']);
 
       return type == 'retraction' || chatInfo['name'] == null
           ? messageWidget
           : QuickPopUpMenu(
               showArrow: true,
-              // useGridView: false,
               useGridView: true,
               darkMode: true,
               pressType: PressType.longPress,
@@ -315,14 +299,10 @@ class ChatMessage extends StatelessThemeWidget {
                       ? content['text'] == null || content['text'].isEmpty
                       : false),
               dataObj: messageWidget,
-              // position: PreferredPosition.bottom,
-              child: GestureDetector(
-                onTap: () {
-                  if (kDebugMode) print('点击消息 :$msg');
-                  onTapMsg?.call();
-                },
-                child: messageWidget,
-              ),
+              child: messageWidget.onTap(() {
+                if (kDebugMode) print('点击消息 :$msg');
+                onTapMsg?.call();
+              }),
             );
     } else
       // 异常处理
@@ -334,136 +314,105 @@ class ChatMessage extends StatelessThemeWidget {
     bool isNoMore = msg['isNoMore'] == true;
     bool isRight = msg['fromId'] == globalData.currentUserId;
     Map<String, dynamic> msgContent;
-    // if (kDebugMode) print('msg content is: ${msg['msgContent']}');
     bool isRetract;
     if (msg['msgContent'] is String) {
       msgContent = jsonDecode(msg['msgContent']);
       isRetract = msgContent['type'] == 'retraction';
     } else {
       msgContent = msg['msgContent'];
-      // isRetract = msg['msgContent']['type'] == 'retraction';
       isRetract = msgContent['type'] == 'retraction';
     }
-    // bool isRetract = msg['msgContent']['type'] == 'retraction';
     bool isShowTime = msg['isShowTime'] == true;
     bool isGroupChat = chatInfo['type'] == 'group';
     bool isUserChat = chatInfo['type'] == 'user';
     bool isSystemMsg = msg['type'] == 'system';
     String displayName = isGroupChat ? _handlerGroupDisplayName() : '';
 
-    return Column(
-      children: [
-        const SizedBox(height: 10),
-        if (isNoMore) const NoMoreContent(),
-        // 时间组件
-        if (isShowTime)
-          TimeContent(value: DateUtil.formatTime(msg['createTime'])),
-        // 系统消息
-        if (isSystemMsg) SystemMessage(value: msg['msgContent'] ?? ''),
-        // 群聊消息
-        if (isGroupChat && !isSystemMsg)
-          Align(
-            alignment: isRight ? Alignment.centerRight : Alignment.centerLeft,
-            child: Row(
+    return [
+      const SizedBox(height: 10),
+      if (isNoMore) const NoMoreContent(),
+      // 时间组件
+      if (isShowTime)
+        TimeContent(value: DateUtil.formatTime(msg['createTime'])),
+      // 系统消息
+      if (isSystemMsg) SystemMessage(value: msg['msgContent'] ?? ''),
+      // 群聊消息
+      if (isGroupChat && !isSystemMsg)
+        [
+          if (!isRight && !isRetract) _buildChatPortrait(msg, isRight, true),
+          const SizedBox(width: 5),
+          [
+            if (!isRetract && !isNoMore)
+              Text(displayName).textColor(const Color(0xFF969696)).fontSize(12),
+            if (!isNoMore) const SizedBox(height: 5),
+            // 消息组件
+            _getComponentByType(msg, isRight),
+          ].toColumn(
+              crossAxisAlignment:
+                  isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start),
+          if (isRetract && isRight && msgContent['ext'] == 'text') ...[
+            const SizedBox(width: 1.2),
+            [
+              const SizedBox(height: 6),
+              CustomTextButton(
+                '重新编辑',
+                fontSize: 12,
+                onTap: () {
+                  if (kDebugMode) print("重新编辑");
+                  reEdit?.call();
+                },
+              ),
+            ].toColumn(),
+          ],
+          const SizedBox(width: 5),
+          if (isRight && !isRetract) _buildChatPortrait(msg, isRight, true),
+        ]
+            .toRow(
+                mainAxisAlignment: isRetract
+                    ? MainAxisAlignment.center
+                    : isRight
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start)
+            .align(isRight ? Alignment.centerRight : Alignment.centerLeft),
+
+      // 私聊消息
+      if (isUserChat)
+        [
+          if (!isRight && !isRetract) _buildChatPortrait(msg, isRight, false),
+          const SizedBox(width: 5),
+          [
+            const SizedBox(height: 10),
+            // 消息组件
+            _getComponentByType(msg, isRight),
+          ].toColumn(
+              crossAxisAlignment:
+                  isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start),
+          if (isRetract && isRight && msgContent['ext'] == 'text') ...[
+            const SizedBox(width: 1),
+            [
+              SizedBox(height: 12.4.h),
+              CustomTextButton(
+                '重新编辑',
+                fontSize: 12,
+                onTap: () {
+                  if (kDebugMode) print("重新编辑");
+                  reEdit?.call();
+                },
+              ),
+            ].toColumn(),
+          ],
+          const SizedBox(width: 5),
+          if (isRight && !isRetract) _buildChatPortrait(msg, isRight, false),
+        ]
+            .toRow(
               mainAxisAlignment: isRetract
                   ? MainAxisAlignment.center
                   : (isRight ? MainAxisAlignment.end : MainAxisAlignment.start),
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (!isRight && !isRetract)
-                  _buildChatPortrait(msg, isRight, true),
-                const SizedBox(width: 5),
-                Column(
-                  crossAxisAlignment: isRight
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
-                  children: [
-                    if (!isRetract && !isNoMore)
-                      Text(
-                        displayName,
-                        style: const TextStyle(
-                            color: Color(0xFF969696), fontSize: 12),
-                      ),
-                    if (!isNoMore) const SizedBox(height: 5),
-                    // 消息组件
-                    _getComponentByType(msg, isRight),
-                  ],
-                ),
-                if (isRetract &&
-                    isRight &&
-                    // msg['msgContent']['ext'] == 'text') ...[
-                    msgContent['ext'] == 'text') ...[
-                  const SizedBox(width: 1.2),
-                  Column(
-                    children: [
-                      const SizedBox(height: 6),
-                      CustomTextButton(
-                        '重新编辑',
-                        fontSize: 12,
-                        onTap: () {
-                          if (kDebugMode) print("重新编辑");
-                          reEdit?.call();
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-                const SizedBox(width: 5),
-                if (isRight && !isRetract)
-                  _buildChatPortrait(msg, isRight, true),
-              ],
-            ),
-          ),
-        // 私聊消息
-        if (isUserChat)
-          Align(
-            alignment: isRight ? Alignment.centerRight : Alignment.centerLeft,
-            child: Row(
-              mainAxisAlignment: isRetract
-                  ? MainAxisAlignment.center
-                  : (isRight ? MainAxisAlignment.end : MainAxisAlignment.start),
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (!isRight && !isRetract)
-                  _buildChatPortrait(msg, isRight, false),
-                const SizedBox(width: 5),
-                Column(
-                  crossAxisAlignment: isRight
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 10),
-                    // 消息组件
-                    _getComponentByType(msg, isRight),
-                  ],
-                ),
-                if (isRetract &&
-                    isRight &&
-                    // msg['msgContent']['ext'] == 'text') ...[
-                    msgContent['ext'] == 'text') ...[
-                  const SizedBox(width: 1),
-                  Column(
-                    children: [
-                      SizedBox(height: 12.4.h),
-                      CustomTextButton(
-                        '重新编辑',
-                        fontSize: 12,
-                        onTap: () {
-                          if (kDebugMode) print("重新编辑");
-                          reEdit?.call();
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-                const SizedBox(width: 5),
-                if (isRight && !isRetract)
-                  _buildChatPortrait(msg, isRight, false),
-              ],
-            ),
-          ),
-        if (!isNoMore) const SizedBox(height: 15),
-      ],
-    );
+            )
+            .align(isRight ? Alignment.centerRight : Alignment.centerLeft),
+      if (!isNoMore) const SizedBox(height: 15),
+    ].toColumn();
   }
 }
