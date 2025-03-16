@@ -59,7 +59,8 @@ class Http {
       onRequest: (options, handler) async {
         // 从本地存储获取token
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        final token = prefs.getString('x-token');
+        final String currentUserId = prefs.getString('currentUserId') ?? '';
+        final token = prefs.getString('x-token_$currentUserId');
         if (token != null) options.headers['x-token'] = token;
         return handler.next(options);
       },

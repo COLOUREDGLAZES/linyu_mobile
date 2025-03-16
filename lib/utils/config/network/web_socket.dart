@@ -27,8 +27,6 @@ class WebSocketUtil extends GetxController {
     String wsIp = '27.25.159.46';
     String port = '9100';
     // String port = '19100';
-    // _websocketIp =
-    //     _preferences.getString('websocket_ip') ?? 'ws://$wsIp:$port';
     _websocketIp = websocketUrl ?? 'ws://$wsIp:$port';
   }
 
