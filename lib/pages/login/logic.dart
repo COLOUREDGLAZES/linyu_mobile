@@ -2,15 +2,12 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/config/network/web_socket.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/encrypt.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class LoginPageLogic extends GetxController {
-  final SharedPreferences _sharedPreferences = Get.find<SharedPreferences>();
-  final _wsManager = Get.find<WebSocketUtil>();
+class LoginPageLogic extends Logic {
   final _useApi = UserApi();
   late final TextEditingController usernameController;
   late final TextEditingController passwordController;
@@ -87,16 +84,21 @@ class LoginPageLogic extends GetxController {
 
           if (kDebugMode)
             print('userData talkBackground is: ${userData['talkBackground']}');
-
+          final String currentUserId = userData['userId'];
           final List<bool> setSharedPreferencesResult = await Future.wait([
-            _sharedPreferences.setString('x-token', userData['token']),
-            _sharedPreferences.setString('username', userData['username']),
-            _sharedPreferences.setString('userId', userData['userId']),
-            _sharedPreferences.setString('account', userData['account']),
-            _sharedPreferences.setString('portrait', userData['portrait']),
-            _sharedPreferences.setString('sex', userData['sex'] ?? '男'),
-            _sharedPreferences.setString(
-                'talkBackground',
+            sharedPreferences.setString('currentUserId', currentUserId),
+            sharedPreferences.setString(
+                'x-token_$currentUserId', userData['token']),
+            sharedPreferences.setString(
+                'username_$currentUserId', userData['username']),
+            sharedPreferences.setString(
+                'account_$currentUserId', userData['account']),
+            sharedPreferences.setString(
+                'portrait_$currentUserId', userData['portrait']),
+            sharedPreferences.setString(
+                'sex_$currentUserId', userData['sex'] ?? '男'),
+            sharedPreferences.setString(
+                'talkBackground_$currentUserId',
                 userData['talkBackground'] ??
                     'http://114.96.70.115:19000/linyu/default-portrait.jpg'),
           ]);
@@ -106,7 +108,21 @@ class LoginPageLogic extends GetxController {
               isLoggingIn = false;
               return;
             }
-          await Get.offAndToNamed('/?sex=${userData['sex'] ?? '男'}');
+          // globalData.currentUserId = currentUserId;
+          // globalData.currentToken = userData['token'];
+          // globalData.currentUserName = userData['username'];
+          // globalData.currentAccount = userData['account'];
+          // globalData.currentPortrait = userData['portrait'];
+          // globalData.currentSex = userData['sex'] ?? '男';
+          // globalData.currentTalkBackground = userData['talkBackground'] ??
+          //     'http://114.96.70.115:19000/linyu/default-portrait.jpg';
+          final bool setCurrentUserInfoResult =
+              await globalData.setCurrentUserInfo(userData);
+          // await Get.offAndToNamed('/?sex=${globalData.currentSex ?? '男'}');
+          if (setCurrentUserInfoResult)
+            await Get.offAndToNamed('/');
+          else
+            _dialog("登录失败，请稍后再试~", context);
         } else
           isLoggingIn = false;
         _dialog("用户名或密码错误，请重试尝试~", context);
@@ -148,7 +164,7 @@ class LoginPageLogic extends GetxController {
       // 处理导航到设置页面时可能出现的错误
       _dialog("导航到设置页面时出现错误：$e，请稍后再试~", Get.context!);
     } finally {
-      if (!_wsManager.isConnected) _wsManager.connect();
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 

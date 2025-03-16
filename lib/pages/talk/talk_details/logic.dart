@@ -6,9 +6,10 @@ import 'package:linyu_mobile/utils/api/talk_comment_api.dart';
 import 'package:linyu_mobile/utils/api/talk_like_api.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class TalkDetailsLogic extends GetxController {
+class TalkDetailsLogic extends Logic {
   final _talkApi = TalkApi();
   final _talkLikeApi = TalkLikeApi();
   final _talkCommentApi = TalkCommentApi();
@@ -27,7 +28,7 @@ class TalkDetailsLogic extends GetxController {
     'likeNum': 0,
     'commentNum': 0,
   };
-  String currentUserId = '';
+  // String currentUserId = '';
   List<dynamic> talkLikeList = [];
   List<dynamic> talkCommentList = [];
   late bool isLiked = false;
@@ -36,8 +37,6 @@ class TalkDetailsLogic extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    SharedPreferences.getInstance()
-        .then((prefs) => currentUserId = prefs.getString('userId') ?? '');
     talkId = Get.arguments['talkId'];
     _onGetTalkDetails();
     _onGetTalkLikeList();
@@ -58,7 +57,7 @@ class TalkDetailsLogic extends GetxController {
       if (res['code'] == 0) {
         talkLikeList = res['data'];
         for (var item in talkLikeList) {
-          if (item['userId'] == currentUserId) {
+          if (item['userId'] == globalData.currentUserId) {
             isLiked = true;
             break;
           }

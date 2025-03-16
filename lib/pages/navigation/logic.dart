@@ -6,14 +6,13 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/global_data.dart';
-import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/notification.dart';
 import 'package:linyu_mobile/utils/permission_handler.dart';
 import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class NavigationLogic extends GetxController {
+class NavigationLogic extends Logic {
   late RxInt currentIndex = 0.obs;
   final _wsManager = Get.find<WebSocketUtil>();
   final _sharedPreferences = Get.find<SharedPreferences>();
@@ -47,10 +46,8 @@ class NavigationLogic extends GetxController {
     update([const Key('main')]);
   }
 
-  Future<void> _initThemeData() async {
-    late String sex = Get.parameters['sex'] ?? "男";
-    GlobalThemeConfig theme = GetInstance().find<GlobalThemeConfig>();
-    theme.changeThemeMode(sex == "女" ? 'pink' : 'blue');
+  void _initThemeData() {
+    theme.changeThemeMode(globalData.currentSex == "女" ? 'pink' : 'blue');
   }
 
   Future<void> _initializeServices() async {
@@ -133,8 +130,8 @@ class NavigationLogic extends GetxController {
         // 适当处理错误，例如记录日志或显示提示
         if (kDebugMode) print('初始化过程中发生错误: $error');
       });
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) async => await _initThemeData());
+      WidgetsBinding.instance.addPostFrameCallback((_) => theme
+          .changeThemeMode(globalData.currentSex == "女" ? 'pink' : 'blue'));
     } on Exception catch (e) {
       if (kDebugMode) print('初始化过程中发生错误: $e');
     } finally {

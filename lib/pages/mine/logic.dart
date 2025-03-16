@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show BuildContext;
 import 'package:flutter/foundation.dart' show Key, kDebugMode;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart' show Get, GetNavigation, Inst;
@@ -7,25 +8,23 @@ import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
-class MineLogic extends Logic {
-  late dynamic currentUserInfo = {};
-  final _wsManager = Get.find<WebSocketUtil>();
-  final _globalData = Get.find<GlobalData>();
-  final SharedPreferences _prefs = Get.find<SharedPreferences>();
+import 'index.dart';
 
+class MineLogic extends Logic<MinePage> {
+  late dynamic currentUserInfo = {};
   Future<void> init() async {
-    currentUserInfo['name'] = _prefs.getString('username');
-    currentUserInfo['portrait'] = _prefs.getString('portrait');
-    currentUserInfo['account'] = _prefs.getString('account');
-    currentUserInfo['sex'] = _prefs.getString('sex');
+    currentUserInfo['name'] = globalData.currentUserName;
+    currentUserInfo['portrait'] = globalData.currentPortrait;
+    currentUserInfo['account'] = globalData.currentAccount;
+    currentUserInfo['sex'] = globalData.currentSex;
     update([const Key("mine")]);
   }
 
   void handlerLogout() async {
     try {
-      await _prefs.clear();
-      _globalData.currentToken = null;
-      _wsManager.disconnect();
+      await sharedPreferences.clear();
+      globalData.currentToken = null;
+      wsManager.disconnect();
       if (kDebugMode) print('logout success');
       Get.back();
     } catch (e) {
@@ -37,7 +36,7 @@ class MineLogic extends Logic {
 
   void toSetting() async {
     final result = await Get.toNamed('/setting');
-    if (!_wsManager.isConnected) _wsManager.connect();
+    if (!wsManager.isConnected) wsManager.connect();
     if (result != null) {
       init();
     }
@@ -47,16 +46,16 @@ class MineLogic extends Logic {
     try {
       final result = await Get.toNamed('/edit_mine');
       if (result != null && result == true)
-        init().then((_) => theme.changeThemeMode(
-            sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
+        init().then((_) => theme
+            .changeThemeMode(globalData.currentSex == "女" ? "pink" : "blue"));
     } catch (e) {
       if (kDebugMode) print(e);
     } finally {
-      if (!_wsManager.isConnected) _wsManager.connect();
+      if (!wsManager.isConnected) wsManager.connect();
     }
   }
 
-  void toChangeAccount() async {
+  void toChangeAccount(BuildContext context) async {
     // final result = await Get.toNamed('/change_accounts');
     Fluttertoast.showToast(msg: "功能建设中，敬请期待！");
   }
@@ -64,7 +63,7 @@ class MineLogic extends Logic {
   @override
   void onInit() {
     init().then((_) {
-      if (kDebugMode) print('currentToken: ${_globalData.currentToken}');
+      if (kDebugMode) print('currentToken: ${globalData.currentToken}');
     });
     super.onInit();
   }

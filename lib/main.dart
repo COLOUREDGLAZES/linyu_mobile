@@ -20,13 +20,18 @@ void main() async {
   SharedPreferences prefs = await Get.putAsync<SharedPreferences>(
       () async => await SharedPreferences.getInstance(),
       permanent: true);
-  String? token = prefs.getString('x-token');
-  String? sex = prefs.getString('sex');
+  String? currentUserId = prefs.getString('currentUserId');
+  // String? token = prefs.getString('x-token');
+  String? token = prefs.getString('x-token_$currentUserId');
+  // String? sex = prefs.getString('sex');
+  String? sex = prefs.getString('sex_$currentUserId');
   http.baseUrl = prefs.getString("httpUrl");
   websocket.websocketUrl = prefs.getString("websocket_ip");
   runApp(MyApp(
       key: const Key('MyApp'),
-      initialRoute: token != null ? '/?sex=$sex' : '/login'));
+      // initialRoute: token != null ? '/?sex=$sex' : '/login'));
+      initialRoute:
+          currentUserId != null && token != null ? '/?sex=$sex' : '/login'));
 }
 
 class MyApp extends StatelessWidget {

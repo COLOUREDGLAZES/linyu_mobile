@@ -151,7 +151,7 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
   }
 
   Widget _buildNotifyFriendItem(dynamic notify) {
-    bool isFromCurrentUser = controller.currentUserId == notify['fromId'];
+    bool isFromCurrentUser = globalData.currentUserId == notify['fromId'];
     return Material(
       borderRadius: BorderRadius.circular(12),
       color: Colors.white,
@@ -379,7 +379,7 @@ class ContactsPage extends CustomWidget<ContactsLogic> {
           leading: Container(
             margin: const EdgeInsets.only(left: 13.2, top: 10.8),
             child: CustomPortrait(
-              url: globalData.currentAvatarUrl ?? '',
+              url: globalData.currentPortrait ?? '',
               size: 40,
               radius: 20,
               onTap: () => Scaffold.of(context).openDrawer(),

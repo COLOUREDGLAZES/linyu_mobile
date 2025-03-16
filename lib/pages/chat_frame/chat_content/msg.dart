@@ -136,7 +136,7 @@ class ChatMessage extends StatelessThemeWidget {
           : msg['msgContent'];
       // 获取头像 URL
       avatarUrl = isRight
-          ? globalData.currentAvatarUrl
+          ? globalData.currentPortrait
           : isGroup && !isRight
               ? msgContent['formUserPortrait']
               : chatPortrait;

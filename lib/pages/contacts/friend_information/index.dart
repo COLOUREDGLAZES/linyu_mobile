@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
@@ -24,6 +25,36 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
           color: Colors.grey[200],
         ),
       );
+
+  void _showCupertinoSheet() {
+    showCupertinoModalPopup(
+      context: Get.context!,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        title: const Text('选择操作'),
+        message: const Text('请从以下选项中选择一项'),
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context); // 关闭弹窗
+              controller.onVideoChat(isOnlyAudio: true);
+            },
+            child: const Text('语音通话'),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              controller.onVideoChat();
+            },
+            child: const Text('视频通话'),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('取消'),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget buildWidget(BuildContext context) => GestureDetector(
@@ -310,34 +341,7 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                       Expanded(
                         child: CustomButton(
                           text: '音视通话',
-                          onTap: () => Get.bottomSheet(
-                            backgroundColor: Colors.white,
-                            Wrap(
-                              children: [
-                                Center(
-                                  child: TextButton(
-                                    onPressed: () => controller.onVideoChat(
-                                        isOnlyAudio: true),
-                                    child: Text(
-                                      '语音通话',
-                                      style:
-                                          TextStyle(color: theme.primaryColor),
-                                    ),
-                                  ),
-                                ),
-                                Center(
-                                  child: TextButton(
-                                    onPressed: () => controller.onVideoChat(),
-                                    child: Text(
-                                      '视频通话',
-                                      style:
-                                          TextStyle(color: theme.primaryColor),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          onTap: () => _showCupertinoSheet(),
                           type: 'minor',
                         ),
                       ),

@@ -124,7 +124,7 @@ class MyTalkPage extends CustomView<MyTalkLogic> {
                                 style: const TextStyle(fontSize: 12)),
                           ],
                         ),
-                        if (controller.currentUserId == talk['userId'])
+                        if (globalData.currentUserId == talk['userId'])
                           CustomTextButton('删除',
                               onTap: () => controller.handlerDeleteTalkTip(
                                   context, talk['talkId'])),
@@ -151,7 +151,7 @@ class MyTalkPage extends CustomView<MyTalkLogic> {
               ? Container(
                   margin: const EdgeInsets.only(left: 13.2, top: 10.8),
                   child: CustomPortrait(
-                    url: globalData.currentAvatarUrl ?? '',
+                    url: globalData.currentPortrait ?? '',
                     size: 40,
                     radius: 20,
                     onTap: () => Scaffold.of(context).openDrawer(),

@@ -4,8 +4,7 @@ import 'package:dio/dio.dart' show FormData, MultipartFile;
 import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart'
-    show Colors, Icons, ListTile, showModalBottomSheet;
+import 'package:flutter/material.dart' show Colors;
 import 'package:get/get.dart'
     show DoubleExtension, Get, GetNavigation, RxDouble;
 import 'package:image_picker/image_picker.dart';
@@ -24,7 +23,7 @@ class TalkLogic extends Logic<TalkPage> {
   String targetUserId = '';
   String title = '说说';
   bool isNotShowLeading = false;
-  late dynamic currentUserInfo = {};
+  // late dynamic currentUserInfo = {};
   List<dynamic> talkList = [];
   int index = 0;
   bool hasMore = true;
@@ -48,10 +47,10 @@ class TalkLogic extends Logic<TalkPage> {
   RxDouble opacity = 0.0.obs;
 
   Future<void> init() async {
-    currentUserInfo['name'] = sharedPreferences.getString('username');
-    currentUserInfo['portrait'] = sharedPreferences.getString('portrait');
-    currentUserInfo['account'] = sharedPreferences.getString('account');
-    currentUserInfo['sex'] = sharedPreferences.getString('sex');
+    // currentUserInfo['name'] = globalData.currentUserName ?? '';
+    // currentUserInfo['portrait'] = globalData.currentPortrait ?? '';
+    // currentUserInfo['account'] = globalData.currentAccount;
+    // currentUserInfo['sex'] = globalData.currentSex;
     if (Get.arguments != null) {
       targetUserId = Get.arguments['userId'] ?? '';
       title = Get.arguments['title'] ?? '说说';
@@ -59,7 +58,7 @@ class TalkLogic extends Logic<TalkPage> {
     }
     await refreshData();
     scrollController.addListener(scrollListener);
-    currentUserId = sharedPreferences.getString('userId') ?? '';
+    currentUserId = globalData.currentUserId;
     textColor = globalData.currentTalkBackgroundTextColor ?? Colors.black;
   }
 
@@ -170,8 +169,8 @@ class TalkLogic extends Logic<TalkPage> {
   void onLongPressPortrait() async {
     final result = await Get.toNamed('/edit_mine');
     if (result != null)
-      init().then((_) => theme.changeThemeMode(
-          sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
+      init().then((_) => theme
+          .changeThemeMode(globalData.currentSex == "女" ? "pink" : "blue"));
   }
 
   //上传背景图片

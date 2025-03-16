@@ -10,11 +10,10 @@ import 'package:linyu_mobile/utils/config/getx/config.dart';
 class MyTalkLogic extends Logic<MyTalkPage> {
   final _talkApi = TalkApi();
   final _userApi = UserApi();
-  String currentUserId = '';
   String targetUserId = '';
   String title = '说说';
   bool isNotShowLeading = false;
-  late dynamic currentUserInfo = {};
+  // late dynamic currentUserInfo = {};
   List<dynamic> talkList = [];
   int index = 0;
   bool hasMore = true;
@@ -22,10 +21,6 @@ class MyTalkLogic extends Logic<MyTalkPage> {
   final ScrollController scrollController = ScrollController();
 
   void init() async {
-    currentUserInfo['name'] = sharedPreferences.getString('username');
-    currentUserInfo['portrait'] = sharedPreferences.getString('portrait');
-    currentUserInfo['account'] = sharedPreferences.getString('account');
-    currentUserInfo['sex'] = sharedPreferences.getString('sex');
     if (Get.arguments != null) {
       targetUserId = Get.arguments['userId'] ?? '';
       title = Get.arguments['title'] ?? '说说';
@@ -33,7 +28,6 @@ class MyTalkLogic extends Logic<MyTalkPage> {
     }
     refreshData();
     scrollController.addListener(scrollListener);
-    currentUserId = sharedPreferences.getString('userId') ?? '';
   }
 
   void scrollListener() {

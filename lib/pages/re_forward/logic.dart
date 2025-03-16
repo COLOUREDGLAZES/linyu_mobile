@@ -27,8 +27,6 @@ class ReForwardLogic extends Logic<ReForwardPage> {
   late List<dynamic> groupSearchList = [];
   // 其他用户列表
   late List<dynamic> otherList = [];
-  //当前用户信息
-  late dynamic currentUserInfo = {};
 
   // 搜索好友
   void onSearchFriend(String friendInfo) async {
@@ -37,12 +35,6 @@ class ReForwardLogic extends Logic<ReForwardPage> {
       update([const Key("repost")]);
       return;
     }
-    // _friendApi.search(friendInfo).then((res) {
-    //   if (res['code'] == 0) {
-    //     searchList = res['data'];
-    //     update([const Key("repost")]);
-    //   }
-    // });
     final res = await _chatListApi.search(friendInfo);
     if (res['code'] == 0) {
       if (kDebugMode) print('searchList is: ${res['data']}');
@@ -55,14 +47,6 @@ class ReForwardLogic extends Logic<ReForwardPage> {
   // 获取聊天列表
   void onGetChatList() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      currentUserInfo = {
-        'name': prefs.getString('username'),
-        'portrait': prefs.getString('portrait'),
-        'account': prefs.getString('account'),
-        'sex': prefs.getString('sex'),
-      };
-
       final res = await _chatListApi.list();
       if (res['code'] == 0) {
         otherList = res['data']['others'];

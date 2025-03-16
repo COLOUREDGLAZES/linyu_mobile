@@ -11,20 +11,30 @@ import 'package:shared_preferences/shared_preferences.dart'
 
 class GlobalData extends GetxController {
   final _userApi = UserApi();
+  SharedPreferences get prefs => GetInstance().find<SharedPreferences>();
   var unread = <String, int>{}.obs;
   var currentUserId = '';
-  var currentUserAccount = '';
+  var currentAccount = '';
   late String? currentUserName;
-  late String? currentAvatarUrl =
+  late String? currentPortrait =
       'http://114.96.70.115:19000/linyu/default-portrait.jpg';
   String? currentToken;
-  String? currentBackGroundUrl;
+  String? currentTalkBackground;
   Color? currentTalkBackgroundTextColor;
+  String? currentSex;
+  String? currentBirthday;
+  String? currentSignature;
 
-  SharedPreferences get prefs => GetInstance().find<SharedPreferences>();
+  List<String> userIds = [];
+
+  Future<bool> addUserId(String userId) async {
+    if (userIds.contains(userId)) return true;
+    userIds.add(userId);
+    return await prefs.setStringList('userIds', userIds);
+  }
 
   Future<Color> updateTextColor(String imageUrl) async {
-    if (currentBackGroundUrl != imageUrl) currentBackGroundUrl = imageUrl;
+    if (currentTalkBackground != imageUrl) currentTalkBackground = imageUrl;
     try {
       final PaletteGenerator paletteGenerator =
           await PaletteGenerator.fromImageProvider(NetworkImage(imageUrl));
@@ -51,27 +61,6 @@ class GlobalData extends GetxController {
     return currentTalkBackgroundTextColor!;
   }
 
-  Future<void> init() async {
-    try {
-      String? token = prefs.getString('x-token');
-      if (token == null) return;
-      currentToken = token;
-      currentUserId = prefs.getString('userId') ?? '';
-      currentUserAccount = prefs.getString('account') ?? '';
-      currentUserName = prefs.getString('username');
-      currentAvatarUrl = prefs.getString('portrait') ??
-          'http://114.96.70.115:19000/linyu/default-portrait.jpg';
-      currentBackGroundUrl = prefs.getString('talkBackground') ??
-          'http://114.96.70.115:19000/linyu/default-portrait.jpg';
-      // 仅当用户 ID 不为空时才获取未读信息
-      if (currentUserId.isNotEmpty) await onGetUserUnreadInfo();
-    } catch (e) {
-      // 增加错误处理
-      if (kDebugMode) print('初始化失败: $e');
-      // 根据需求可以添加其他处理逻辑，比如记录日志等
-    }
-  }
-
   Future<void> onGetUserUnreadInfo() async {
     try {
       final result = await _userApi.unread();
@@ -96,6 +85,76 @@ class GlobalData extends GetxController {
     return 0;
   }
 
+  Future<bool> setCurrentUserInfo(Map<String, dynamic> userInfo) async {
+    currentUserId = userInfo['userId'];
+    currentToken = userInfo['token'];
+    currentUserName = userInfo['username'];
+    currentAccount = userInfo['account'];
+    currentPortrait = userInfo['portrait'];
+    currentSex = userInfo['sex'];
+    currentBirthday = userInfo['birthday'] ?? '';
+    currentSignature = userInfo['signature'] ?? '';
+    currentTalkBackground = userInfo['talkBackground'];
+    if (currentTalkBackground != null) updateTextColor(currentTalkBackground!);
+    List<bool>? result;
+    // 仅当用户 ID 不为空时才更新本地缓存
+    if (currentUserId.isNotEmpty) {
+      result = await Future.wait([
+        prefs.setString('currentUserId', currentUserId),
+        prefs.setString('account_$currentUserId', currentAccount),
+        prefs.setString('username_$currentUserId', currentUserName ?? ''),
+        prefs.setString('portrait_$currentUserId', currentPortrait ?? ''),
+        prefs.setString('sex_$currentUserId', currentSex ?? ''),
+        prefs.setString('birthday_$currentUserId', currentBirthday ?? ''),
+        prefs.setString('signature_$currentUserId', currentSignature ?? ''),
+        prefs.setString(
+            'talkBackground_$currentUserId', currentTalkBackground ?? ''),
+      ]);
+    }
+    addUserId(currentUserId);
+    return result != null && result.every((element) => element);
+  }
+
+  Future<void> init() async {
+    try {
+      if (userIds.isEmpty) {
+        userIds = prefs.getStringList('userIds') ?? [];
+      }
+      if (currentUserId.isNotEmpty && currentToken != null) {
+        await onGetUserUnreadInfo();
+        return;
+      }
+      final userInfo = await _userApi.info();
+      currentUserId = prefs.getString('currentUserId') ?? '';
+      String? token = prefs.getString('x-token_$currentUserId');
+      if (token == null) return;
+      currentToken = token;
+      currentAccount = prefs.getString('account_$currentUserId') ?? '';
+      currentUserName = prefs.getString('username_$currentUserId');
+      currentPortrait = prefs.getString('portrait_$currentUserId') ??
+          'http://114.96.70.115:19000/linyu/default-portrait.jpg';
+      currentTalkBackground =
+          prefs.getString('talkBackground_$currentUserId') ??
+              'http://114.96.70.115:19000/linyu/default-portrait.jpg';
+      currentSex = prefs.getString('sex_$currentUserId');
+      currentBirthday = prefs.getString('birthday_$currentUserId') ?? '';
+      if (currentBirthday == null || currentBirthday!.isEmpty) {
+        currentBirthday =
+            DateTime.parse(userInfo['data']['birthday']).toLocal().toString();
+        prefs.setString('birthday_$currentUserId', currentBirthday!);
+      }
+      currentSignature = prefs.getString('signature_$currentUserId') ?? '';
+      if (currentSignature == null || currentSignature!.isEmpty) {
+        currentSignature = userInfo['data']['signature'];
+        prefs.setString('signature_$currentUserId', currentSignature!);
+      }
+    } catch (e) {
+      // 增加错误处理
+      if (kDebugMode) print('初始化失败: $e');
+      // 根据需求可以添加其他处理逻辑，比如记录日志等
+    }
+  }
+
   @override
   void onInit() {
     init();
@@ -104,7 +163,7 @@ class GlobalData extends GetxController {
 
   @override
   void onReady() {
-    if (currentBackGroundUrl != null) updateTextColor(currentBackGroundUrl!);
+    if (currentTalkBackground != null) updateTextColor(currentTalkBackground!);
     super.onReady();
   }
 }

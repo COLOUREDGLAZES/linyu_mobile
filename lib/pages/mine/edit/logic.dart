@@ -11,7 +11,6 @@ import 'package:intl/intl.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
 
 import 'index.dart';
@@ -19,7 +18,7 @@ import 'index.dart';
 //个人资料编辑页面逻辑
 class EditMineLogic extends Logic<EditMinePage> {
   //用户API
-  final _useApi = UserApi();
+  final _userApi = UserApi();
 
   //用户名输入框控制器
   final TextEditingController nameController = new TextEditingController();
@@ -137,21 +136,20 @@ class EditMineLogic extends Logic<EditMinePage> {
         'file': file,
       });
 
-      final result = await _useApi.upload(formData);
+      final result = await _userApi.upload(formData);
 
       if (result['code'] == 0) {
         currentUserInfo['portrait'] = result['data'];
-        final sharedPreferences = await SharedPreferences.getInstance();
         await sharedPreferences.setString(
-            'portrait', currentUserInfo['portrait']);
-        globalData.currentAvatarUrl = currentUserInfo['portrait'];
+            'portrait_${globalData.currentUserId}',
+            currentUserInfo['portrait']);
+        globalData.currentPortrait = currentUserInfo['portrait'];
         update([const Key("edit_mine")]);
         CustomFlutterToast.showSuccessToast('头像修改成功');
       } else
         CustomFlutterToast.showErrorToast(result['msg']);
     } catch (e) {
       if (kDebugMode) print('头像上传失败: $e');
-      // CustomFlutterToast.showErrorToast('头像上传失败: $e');
     }
   }
 
@@ -253,7 +251,7 @@ class EditMineLogic extends Logic<EditMinePage> {
       String signature = signatureController.text;
       String birthday = this.birthday.toString();
       String portrait = currentUserInfo['portrait'];
-      final updateResult = await _useApi.update(
+      final updateResult = await _userApi.update(
           name: name,
           sex: sex,
           birthday: birthday,
@@ -261,12 +259,21 @@ class EditMineLogic extends Logic<EditMinePage> {
           portrait: portrait);
       if (updateResult['code'] == 0) {
         CustomFlutterToast.showSuccessToast('资料修改成功~');
-        sharedPreferences.setString('username', name);
-        sharedPreferences.setString('portrait', portrait);
-        sharedPreferences.setString('sex', sex);
-        sharedPreferences.setString('birthday', birthday);
-        sharedPreferences.setString('signature', signature);
+        sharedPreferences.setString(
+            'username_${globalData.currentUserId}', name);
+        sharedPreferences.setString(
+            'portrait_${globalData.currentUserId}', portrait);
+        sharedPreferences.setString('sex_${globalData.currentUserId}', sex);
+        sharedPreferences.setString(
+            'birthday_${globalData.currentUserId}', birthday);
+        sharedPreferences.setString(
+            'signature_${globalData.currentUserId}', signature);
         isEdit = false;
+        globalData.currentUserName = name;
+        globalData.currentPortrait = portrait;
+        globalData.currentSex = sex;
+        globalData.currentBirthday = birthday;
+        globalData.currentSignature = signature;
         return;
       } else
         CustomFlutterToast.showErrorToast(updateResult['msg']);
@@ -275,32 +282,38 @@ class EditMineLogic extends Logic<EditMinePage> {
   }
 
   void initData() async {
-    final userInfo = await _useApi.info();
+    final userInfo = await _userApi.info();
     try {
       // 更新用户名信息
       currentUserInfo['name'] =
-          sharedPreferences.getString('username') ?? userInfo['data']['name'];
+          globalData.currentUserName ?? userInfo['data']['name'];
+
       nameController.text = currentUserInfo['name'];
       nameTextLength =
           nameController.text.length.clamp(0, 30); // 直接设置长度，并确保不超过30
 
-      currentUserInfo['portrait'] = sharedPreferences.getString('portrait') ??
-          userInfo['data']['portrait'];
+      currentUserInfo['portrait'] =
+          globalData.currentPortrait ?? userInfo['data']['portrait'];
 
       // 更新性别信息
-      currentUserInfo['sex'] =
-          sharedPreferences.getString('sex') ?? userInfo['data']['sex'];
+      currentUserInfo['sex'] = globalData.currentSex ?? userInfo['data']['sex'];
       sex = currentUserInfo['sex'];
       _setSexValue(sex);
 
       // 更新生日信息
-      birthday = DateTime.parse(userInfo['data']['birthday']).toLocal();
+      if (kDebugMode) print('生日信息: ${globalData.currentBirthday}');
+      birthday = globalData.currentBirthday != null &&
+              globalData.currentBirthday!.isNotEmpty
+          ? DateTime.parse(globalData.currentBirthday!).toLocal()
+          : DateTime.parse(userInfo['data']['birthday']).toLocal();
       birthdayController.text = DateFormat('yyyy-MM-dd').format(birthday);
       currentUserInfo['birthday'] = birthday;
 
       // 更新个性签名信息
-      final signature = sharedPreferences.getString('signature') ??
-          userInfo['data']['signature'];
+      final signature = globalData.currentSignature != null &&
+              globalData.currentSignature!.isNotEmpty
+          ? globalData.currentSignature!
+          : userInfo['data']['signature'];
       if (signature != null && signature.isNotEmpty) {
         signatureController.text = signature;
         signatureTextLength =

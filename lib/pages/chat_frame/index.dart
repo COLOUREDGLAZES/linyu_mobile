@@ -339,6 +339,34 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         ].toWrap(spacing: 10, runSpacing: 10),
       );
 
+  void _showCupertinoSheet() => showCupertinoModalPopup(
+        context: Get.context!,
+        builder: (BuildContext context) => CupertinoActionSheet(
+          title: const Text('选择操作'),
+          message: const Text('请从以下选项中选择一项'),
+          actions: [
+            CupertinoActionSheetAction(
+              onPressed: () {
+                Navigator.pop(context); // 关闭弹窗
+                controller.onInviteVideoChat(true);
+              },
+              child: const Text('语音通话'),
+            ),
+            CupertinoActionSheetAction(
+              onPressed: () {
+                Navigator.pop(context);
+                controller.onInviteVideoChat(false);
+              },
+              child: const Text('视频通话'),
+            ),
+          ],
+          cancelButton: CupertinoActionSheetAction(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+        ),
+      );
+
   @override
   void init(BuildContext context) {
     WidgetsBinding.instance.addObserver(this);
@@ -352,7 +380,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     // 聊天页面拨号图标按钮
     final Widget callImage =
         Image.asset('assets/images/call.png', height: 24, width: 24)
-            .onTap(_buildBottomSheet);
+            .onTap(_showCupertinoSheet);
 
     final moreImage = Image.asset(
       'assets/images/more.png',

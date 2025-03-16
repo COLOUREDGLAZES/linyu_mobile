@@ -152,7 +152,6 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              // if (!controller.isLoggingIn)
                               TextButton(
                                 onPressed: () =>
                                     controller.toRetrievePassword(),
@@ -181,7 +180,6 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                                   width: MediaQuery.of(context).size.width,
                                 ),
                           const SizedBox(height: 5.0),
-                          // if (!controller.isLoggingIn)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

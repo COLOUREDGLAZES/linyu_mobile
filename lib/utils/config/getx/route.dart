@@ -47,6 +47,8 @@ import 'package:linyu_mobile/pages/talk/talk_create/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_details/index.dart';
 import 'package:linyu_mobile/pages/video_chat/index.dart';
 
+import '../../../main.dart';
+
 class AppRoutes {
   static List<dynamic> routeConfig = pageRoute();
 
@@ -55,6 +57,7 @@ class AppRoutes {
       GetPage(
         name: '/',
         page: () => NavigationPage(key: const Key('main')),
+        // page: () => const HomePage(key: Key('main')),
         transition: Transition.fade,
         children: [
           GetPage(

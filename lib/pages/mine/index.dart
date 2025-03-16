@@ -1,10 +1,11 @@
+import 'package:flutter/cupertino.dart'
+    show CupertinoPageScaffold, showCupertinoSheet;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_material_button/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_shadow_text/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
-
 import 'logic.dart';
 
 class MinePage extends CustomWidget<MineLogic> {
@@ -137,7 +138,6 @@ class MinePage extends CustomWidget<MineLogic> {
                 child: Row(
                   children: [
                     GestureDetector(
-                      // onTap: () => Get.toNamed('/edit_mine'),
                       onTap: controller.toEditMien,
                       child: Container(
                         width: 70,
@@ -150,7 +150,7 @@ class MinePage extends CustomWidget<MineLogic> {
                           borderRadius: BorderRadius.circular(35),
                         ),
                         child: CustomPortrait(
-                            url: globalData.currentAvatarUrl ?? '',
+                            url: globalData.currentPortrait ?? '',
                             size: 70,
                             radius: 35),
                       ),
@@ -220,7 +220,8 @@ class MinePage extends CustomWidget<MineLogic> {
                       _minorSelectButton(
                           '设置', 'mine-set.png', controller.toSetting),
                       const SizedBox(height: 30),
-                      _leastSelectButton('切换账号', controller.toChangeAccount),
+                      _leastSelectButton(
+                          '切换账号', () => controller.toChangeAccount(context)),
                       const SizedBox(height: 2),
                       _leastSelectButton('退出', controller.handlerLogout,
                           color: theme.errorColor),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:linyu_mobile/utils/config/network/http.dart';
 
 class UserApi {
@@ -167,10 +168,11 @@ class UserApi {
         throw Exception('加载未读信息失败，状态码: ${response.statusCode}');
       }
     } on DioException catch (e) {
-      print('获取未读信息时发生错误: ${e.message}');
+      if (kDebugMode) print('获取未读信息时发生错误: ${e.message}');
+
       rethrow; // 重新抛出异常以便上层处理
     } catch (e) {
-      print('发生了未知错误: $e');
+      if (kDebugMode) print('发生了未知错误: $e');
       throw Exception('发生了未知错误');
     }
   }

@@ -137,8 +137,8 @@ class ChatListLogic extends Logic {
   void onLongPressPortrait() async {
     final result = await Get.toNamed('/edit_mine');
     if (result != null)
-      onGetChatList().then((_) => theme.changeThemeMode(
-          sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
+      onGetChatList().then((_) => theme
+          .changeThemeMode(globalData.currentSex == "女" ? "pink" : "blue"));
   }
 
   @override

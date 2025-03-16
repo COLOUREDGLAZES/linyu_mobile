@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:linyu_mobile/utils/api/qr_api.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
 
-class MineQRCodeLogic extends GetxController {
+// class MineQRCodeLogic extends GetxController {
+class MineQRCodeLogic extends Logic {
   final _qrApi = QrApi();
   late dynamic currentUserInfo = {};
   late String qrCode = '';
@@ -11,11 +11,10 @@ class MineQRCodeLogic extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    currentUserInfo['name'] = prefs.getString('username');
-    currentUserInfo['portrait'] = prefs.getString('portrait');
-    currentUserInfo['account'] = prefs.getString('account');
-    currentUserInfo['sex'] = prefs.getString('sex');
+    currentUserInfo['name'] = globalData.currentUserName;
+    currentUserInfo['portrait'] = globalData.currentPortrait;
+    currentUserInfo['account'] = globalData.currentAccount;
+    currentUserInfo['sex'] = globalData.currentSex;
     update([const Key("mine_qr_code")]);
     onQrCode();
   }

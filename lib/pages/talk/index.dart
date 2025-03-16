@@ -59,7 +59,7 @@ class TalkPage extends CustomWidget<TalkLogic> {
                     child: Container(
                       margin: const EdgeInsets.only(left: 13.2, top: 10.8),
                       child: CustomPortrait(
-                        url: globalData.currentAvatarUrl ?? '',
+                        url: globalData.currentPortrait ?? '',
                         size: 40,
                         radius: 20,
                         onTap: () => Scaffold.of(context).openDrawer(),
@@ -221,7 +221,7 @@ class TalkPage extends CustomWidget<TalkLogic> {
     // 头像组件
     final Widget avatarWidget = CachedNetworkImage(
       fit: BoxFit.cover,
-      imageUrl: globalData.currentAvatarUrl ??
+      imageUrl: globalData.currentPortrait ??
           'https://avatars.githubusercontent.com/u/66918811?v=4',
     ).onTap(
       () => Get.toNamed('/my_talk_page', arguments: {
@@ -241,8 +241,8 @@ class TalkPage extends CustomWidget<TalkLogic> {
 
     // 账号信息组件
     final Widget accountTextWidget = Text(
-      key: ValueKey(globalData.currentUserAccount),
-      globalData.currentUserAccount,
+      key: ValueKey(globalData.currentAccount),
+      globalData.currentAccount,
       style: TextStyle(
         fontSize: 12,
         color: controller.textColor,
@@ -255,10 +255,10 @@ class TalkPage extends CustomWidget<TalkLogic> {
     // 背景图片组件
     // final Widget backgroundImageWidget = Image.network(
     final Widget backgroundImageWidget = CachedNetworkImage(
-      key: ValueKey(globalData.currentBackGroundUrl ??
+      key: ValueKey(globalData.currentTalkBackground ??
           "http://114.96.70.115:19000/linyu/default-portrait.jpg"),
       fit: BoxFit.cover,
-      imageUrl: globalData.currentBackGroundUrl ??
+      imageUrl: globalData.currentTalkBackground ??
           "http://114.96.70.115:19000/linyu/default-portrait.jpg",
     ).onTap(
       () => !controller.isExpanded

@@ -43,7 +43,7 @@ class FileDetailsLogic extends GetxController {
 
   Future<String> getLocalFilePath() async {
     final directory = await getTemporaryDirectory();
-    return '${directory.path}/${globalData.currentUserAccount}/$fileName';
+    return '${directory.path}/${globalData.currentAccount}/$fileName';
   }
 
   Future<void> startDownload() async {

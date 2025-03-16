@@ -18,11 +18,11 @@ class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
   final FocusNode focusNode = new FocusNode(skipTraversal: true);
   List<String> tabs = ['我的群聊', '我的好友', '好友通知'];
   int selectedIndex = 1;
-  String currentUserId = '';
+  // String currentUserId = '';
   List<dynamic> friendList = [];
   List<dynamic> chatGroupList = [];
   List<dynamic> notifyFriendList = [];
-  late dynamic currentUserInfo = {};
+  // late dynamic currentUserInfo = {};
   List<dynamic> friendSearchList = [];
   late List<dynamic> groupSearchList = [];
   final TextEditingController searchBoxController = new TextEditingController();
@@ -102,14 +102,6 @@ class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
 
   Future<void> init() async {
     try {
-      currentUserId = sharedPreferences.getString('userId') ?? '';
-      // 批量获取用户信息
-      currentUserInfo = {
-        'name': sharedPreferences.getString('username'),
-        'portrait': sharedPreferences.getString('portrait'),
-        'account': sharedPreferences.getString('account'),
-        'sex': sharedPreferences.getString('sex'),
-      };
       // 并行执行网络请求
       await Future.wait([
         onNotifyFriendList(),
@@ -124,17 +116,6 @@ class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
       if (!wsManager.isConnected) wsManager.connect();
     }
   }
-
-  // Future<void> init() async {
-  //   currentUserInfo['name'] = sharedPreferences.getString('username');
-  //   currentUserInfo['portrait'] = sharedPreferences.getString('portrait');
-  //   currentUserInfo['account'] = sharedPreferences.getString('account');
-  //   currentUserInfo['sex'] = sharedPreferences.getString('sex');
-  //   currentUserId = sharedPreferences.getString('userId') ?? '';
-  //   onNotifyFriendList();
-  //   onChatGroupList();
-  //   onFriendList();
-  // }
 
   void onReadNotify() async {
     try {
@@ -306,8 +287,8 @@ class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
   void onLongPressPortrait() async {
     final result = await Get.toNamed('/edit_mine');
     if (result != null)
-      init().then((_) => theme.changeThemeMode(
-          sharedPreferences.getString('sex') == "女" ? "pink" : "blue"));
+      init().then((_) => theme
+          .changeThemeMode(globalData.currentSex == "女" ? "pink" : "blue"));
   }
 
   @override

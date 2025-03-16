@@ -59,7 +59,7 @@ class ChatGroupInformationLogic extends GetxController {
         if (kDebugMode) print("chatGroupDetails is: ${res['data'].toString()}");
         chatGroupDetails = res['data'];
         final prefs = await SharedPreferences.getInstance();
-        _currentUserId = prefs.getString('userId');
+        _currentUserId = prefs.getString('currentUserId');
         isOwner = _currentUserId == chatGroupDetails['ownerUserId'];
         update([const Key('chat_group_info')]);
       } else {
@@ -206,7 +206,7 @@ class ChatGroupInformationLogic extends GetxController {
   void onGroupMemberPress(dynamic member) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? currentUser = prefs.getString('userId'); // 修改为String?
+      String? currentUser = prefs.getString('currentUserId');
       if (currentUser == null) {
         CustomFlutterToast.showErrorToast('当前用户ID获取失败');
         return; // 如果用户ID为null，直接返回，不继续执行

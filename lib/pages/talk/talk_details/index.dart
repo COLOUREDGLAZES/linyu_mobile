@@ -68,7 +68,7 @@ class TalkDetailsPage extends CustomWidget<TalkDetailsLogic> {
                               ),
                             ],
                           ),
-                          if (controller.currentUserId ==
+                          if (globalData.currentUserId ==
                               controller.talkDetails['userId'])
                             CustomTextButton('删除',
                                 onTap: () =>
@@ -211,7 +211,7 @@ class TalkDetailsPage extends CustomWidget<TalkDetailsLogic> {
                   ),
                 ],
               ),
-              if (controller.currentUserId == comment['userId'])
+              if (globalData.currentUserId == comment['userId'])
                 CustomTextButton('删除',
                     onTap: () => controller.onDeleteTalkComment(comment['id'])),
             ],
