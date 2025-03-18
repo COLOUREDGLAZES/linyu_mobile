@@ -265,6 +265,8 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
           });
         }
       }
+    } catch (e) {
+      if (kDebugMode) print('loadMore error: $e');
     } finally {
       isLoading = false;
       update([const Key('chat_frame')]);
@@ -907,15 +909,17 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     _targetId = chatInfo['fromId'] ?? '';
     if (kDebugMode) print('chat_frame targetId: $chatInfo');
     // 聊天背景本地获取
-    chatBackground =
-        sharedPreferences.getString('${_targetId}_chat_background') ?? '';
+    chatBackground = sharedPreferences.getString(
+            '${_targetId}_chat_background_${globalData.currentUserId}') ??
+        '';
     // 若本地没有获取到则从网络获取聊天背景
     if (chatBackground.isEmpty) {
       chatBackground = chatInfo['chatBackground'] ?? '';
       // 保存聊天背景到本地
       if (chatBackground.isNotEmpty)
         sharedPreferences.setString(
-            '${_targetId}_chat_background', chatBackground);
+            '${_targetId}_chat_background_${globalData.currentUserId}',
+            chatBackground);
     }
   }
 

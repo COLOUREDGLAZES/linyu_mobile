@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart' show Key, Widget, debugPrint;
+import 'package:flutter/widgets.dart' show Key, Widget;
 import 'package:get/get.dart' show GetPage, Transition;
-import 'package:linyu_mobile/pages/change_accounts/index.dart';
+import 'package:linyu_mobile/pages/add_friend/friend_info/index.dart';
+import 'package:linyu_mobile/pages/add_friend/friend_request/index.dart';
+import 'package:linyu_mobile/pages/add_friend/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_setting/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/index.dart';
 import 'package:linyu_mobile/pages/chat_list/index.dart';
@@ -22,11 +24,9 @@ import 'package:linyu_mobile/pages/contacts/user_select/index.dart';
 import 'package:linyu_mobile/pages/file_details/index.dart';
 import 'package:linyu_mobile/pages/image_viewer/image_viewer_update/index.dart';
 import 'package:linyu_mobile/pages/image_viewer/index.dart';
-import 'package:linyu_mobile/pages/add_friend/friend_info/index.dart';
-import 'package:linyu_mobile/pages/add_friend/friend_request/index.dart';
-import 'package:linyu_mobile/pages/add_friend/index.dart';
 import 'package:linyu_mobile/pages/login/index.dart';
 import 'package:linyu_mobile/pages/mine/about/index.dart';
+import 'package:linyu_mobile/pages/mine/change_account/index.dart';
 import 'package:linyu_mobile/pages/mine/edit/index.dart';
 import 'package:linyu_mobile/pages/mine/index.dart';
 import 'package:linyu_mobile/pages/mine/mine_qr_code/index.dart';
@@ -46,8 +46,6 @@ import 'package:linyu_mobile/pages/talk/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_create/index.dart';
 import 'package:linyu_mobile/pages/talk/talk_details/index.dart';
 import 'package:linyu_mobile/pages/video_chat/index.dart';
-
-import '../../../main.dart';
 
 class AppRoutes {
   static List<dynamic> routeConfig = pageRoute();
@@ -245,9 +243,8 @@ class AppRoutes {
         page: () => MyTalkPage(key: const Key('my_talk_page')),
       ),
       GetPage(
-        name: '/change_accounts',
-        page: () => ChangeAccountsPage(key: const Key('change_accounts')),
-        transition: Transition.downToUp,
+        name: '/change_account',
+        page: () => ChangeAccountPage(key: const Key('change_account')),
       ),
     ];
     final Map<Type, Widget> widgetMap = {};

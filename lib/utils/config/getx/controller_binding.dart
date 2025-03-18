@@ -1,5 +1,4 @@
 import 'package:get/get.dart' show Bindings, Get, Inst;
-import 'package:linyu_mobile/pages/change_accounts/logic.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_setting/logic.dart';
 import 'package:linyu_mobile/pages/chat_frame/logic.dart';
 import 'package:linyu_mobile/pages/chat_list/logic.dart';
@@ -25,6 +24,7 @@ import 'package:linyu_mobile/pages/add_friend/friend_request/logic.dart';
 import 'package:linyu_mobile/pages/add_friend/logic.dart';
 import 'package:linyu_mobile/pages/login/logic.dart';
 import 'package:linyu_mobile/pages/mine/about/logic.dart';
+import 'package:linyu_mobile/pages/mine/change_account/logic.dart';
 import 'package:linyu_mobile/pages/mine/edit/logic.dart';
 import 'package:linyu_mobile/pages/mine/logic.dart';
 import 'package:linyu_mobile/pages/mine/mine_qr_code/logic.dart';
@@ -113,6 +113,6 @@ class ControllerBinding extends Bindings {
     Get.lazyPut<ChatSettingLogic>(() => ChatSettingLogic(), fenix: true);
     Get.lazyPut<SettingLogic>(() => SettingLogic(), fenix: true);
     Get.lazyPut<MyTalkLogic>(() => MyTalkLogic(), fenix: true);
-    Get.lazyPut<ChangeAccountsLogic>(() => ChangeAccountsLogic(), fenix: true);
+    Get.lazyPut<ChangeAccountLogic>(() => ChangeAccountLogic(), fenix: true);
   }
 }

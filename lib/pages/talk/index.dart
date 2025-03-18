@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ducafe_ui_core/ducafe_ui_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -253,7 +254,8 @@ class TalkPage extends CustomWidget<TalkLogic> {
     );
 
     // 背景图片组件
-    // final Widget backgroundImageWidget = Image.network(
+    if (kDebugMode)
+      print('currentTalkBackground: ${globalData.currentTalkBackground}');
     final Widget backgroundImageWidget = CachedNetworkImage(
       key: ValueKey(globalData.currentTalkBackground ??
           "http://114.96.70.115:19000/linyu/default-portrait.jpg"),

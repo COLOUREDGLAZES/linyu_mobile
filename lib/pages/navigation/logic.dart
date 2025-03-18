@@ -5,21 +5,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/getx/global_data.dart';
+import 'package:linyu_mobile/pages/chat_list/logic.dart';
+import 'package:linyu_mobile/pages/contacts/logic.dart';
+import 'package:linyu_mobile/pages/talk/logic.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/notification.dart';
 import 'package:linyu_mobile/utils/permission_handler.dart';
-import 'package:linyu_mobile/utils/config/network/web_socket.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class NavigationLogic extends Logic {
   late RxInt currentIndex = 0.obs;
-  final _wsManager = Get.find<WebSocketUtil>();
-  final _sharedPreferences = Get.find<SharedPreferences>();
   final List<GetPage> pages = pageRoute[0].children;
 
   StreamSubscription? _subscription;
-  GlobalData get globalData => GetInstance().find<GlobalData>();
 
   final List<String> selectedIcons = [
     'chat',
@@ -46,6 +43,8 @@ class NavigationLogic extends Logic {
     update([const Key('main')]);
   }
 
+  String _userId = '';
+
   void _initThemeData() {
     theme.changeThemeMode(globalData.currentSex == "女" ? 'pink' : 'blue');
   }
@@ -55,12 +54,13 @@ class NavigationLogic extends Logic {
     await NotificationUtil.initialize();
     await NotificationUtil.createNotificationChannel();
     await PermissionHandler.permissionRequest();
-    await _wsManager.connect();
+    await wsManager.connect();
     _eventListen();
+    _userId = globalData.currentUserId;
   }
 
   // 监听消息
-  void _eventListen() => _subscription = _wsManager.eventStream.listen((event) {
+  void _eventListen() => _subscription = wsManager.eventStream.listen((event) {
         try {
           if (event['type'] == 'on-receive-video') {
             final data = event['content'];
@@ -75,8 +75,8 @@ class NavigationLogic extends Logic {
             if (kDebugMode) print('event notify data: $data');
             if (data == 'login=>success') {
               CustomFlutterToast.showErrorToast('您的账号已在其他设备登录，请重新登录~');
-              _sharedPreferences.clear();
-              _wsManager.disconnect();
+              sharedPreferences.clear();
+              wsManager.disconnect();
               globalData.currentToken = null;
               Get.offAndToNamed('/login');
             } else
@@ -100,6 +100,19 @@ class NavigationLogic extends Logic {
         return true;
       }
       Get.back(result: true);
+      if (_userId != globalData.currentUserId) {
+        if (currentIndex.value == 0) {
+          final ChatListLogic chatListLogic = Get.find<ChatListLogic>();
+          chatListLogic.onGetChatList();
+        } else if (currentIndex.value == 1) {
+          final ContactsLogic contactsLogic = Get.find<ContactsLogic>();
+          contactsLogic.init();
+        } else {
+          final TalkLogic talkLogic = Get.find<TalkLogic>();
+          talkLogic.init();
+        }
+        _userId = globalData.currentUserId;
+      }
       return false;
     } catch (e) {
       // 错误处理，例如记录日志
@@ -112,7 +125,7 @@ class NavigationLogic extends Logic {
     if (didPop) return;
     _onBackPressed().then((value) {
       if (value == true) {
-        _wsManager.disconnect();
+        wsManager.disconnect();
         SystemChannels.platform.invokeMethod('SystemNavigator.pop');
       }
     });
@@ -142,7 +155,7 @@ class NavigationLogic extends Logic {
   @override
   void onClose() {
     try {
-      _wsManager.disconnect();
+      wsManager.disconnect();
       _subscription?.cancel();
     } on Exception catch (e) {
       if (kDebugMode) print('关闭WebSocket时发生错误: $e');

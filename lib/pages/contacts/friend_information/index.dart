@@ -157,9 +157,16 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
                                   borderRadius: BorderRadius.circular(35),
                                 ),
                                 child: CustomPortrait(
-                                    url: controller.friendPortrait,
-                                    size: 70,
-                                    radius: 35),
+                                  url: controller.friendPortrait,
+                                  size: 70,
+                                  radius: 35,
+                                  onTap: () => Get.toNamed(
+                                      '/image_viewer_update',
+                                      arguments: {
+                                        'imageUrl': controller.friendPortrait,
+                                        'isUpdate': false,
+                                      }),
+                                ),
                               ),
                               const SizedBox(width: 20),
                               Expanded(

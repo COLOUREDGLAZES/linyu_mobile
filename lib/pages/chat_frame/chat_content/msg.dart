@@ -128,7 +128,7 @@ class ChatMessage extends StatelessThemeWidget {
   Widget _buildChatPortrait(dynamic msg, bool isRight, bool isGroup) {
     String? avatarUrl;
     Map<String, dynamic> msgContent = {};
-    Widget? chatPortraitWidget;
+    final Widget? chatPortraitWidget;
 
     try {
       msgContent = msg['msgContent'] is String
@@ -150,23 +150,25 @@ class ChatMessage extends StatelessThemeWidget {
       CustomFlutterToast.showErrorToast('获取头像出错: $e');
       avatarUrl = chatPortrait; // 使用默认头像作为后备
     }
-    chatPortraitWidget = CustomPortrait(
-      url: avatarUrl!,
-      size: 40,
-      onTap: () {
-        if (kDebugMode) print('点击头像 :$msg');
-        onTapChatPortrait?.call(msg);
-      },
-      onDoubleTap: () {
-        if (kDebugMode) print('双击头像 :$msg');
-        onDoubleTapChatPortrait?.call(msg);
-      },
-      onLongPress: () {
-        if (kDebugMode) print('长按头像 :$msg');
-        onLongPressChatPortrait?.call(msg);
-      },
-    );
-    if (msgContent['type'] == 'no_more') chatPortraitWidget = Container();
+    if (msgContent['type'] == 'no_more')
+      chatPortraitWidget = Container();
+    else
+      chatPortraitWidget = CustomPortrait(
+        url: avatarUrl!,
+        size: 40,
+        onTap: () {
+          if (kDebugMode) print('点击头像 :$msg');
+          onTapChatPortrait?.call(msg);
+        },
+        onDoubleTap: () {
+          if (kDebugMode) print('双击头像 :$msg');
+          onDoubleTapChatPortrait?.call(msg);
+        },
+        onLongPress: () {
+          if (kDebugMode) print('长按头像 :$msg');
+          onLongPressChatPortrait?.call(msg);
+        },
+      );
     return chatPortraitWidget;
   }
 

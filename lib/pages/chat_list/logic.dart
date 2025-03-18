@@ -40,7 +40,7 @@ class ChatListLogic extends Logic {
   }
 
   // 监听消息
-  void eventListen() => _subscription = _wsManager.eventStream.listen((event) {
+  void _eventListen() => _subscription = _wsManager.eventStream.listen((event) {
         if (event['type'] == 'on-receive-msg') {
           onGetChatList();
         }
@@ -143,7 +143,7 @@ class ChatListLogic extends Logic {
 
   @override
   void onInit() {
-    eventListen();
+    _eventListen();
     super.onInit();
   }
 

@@ -12,6 +12,9 @@ class LoginPageLogic extends Logic {
   late final TextEditingController usernameController;
   late final TextEditingController passwordController;
   final DeviceInfoPlugin _deviceInfoPlugin = new DeviceInfoPlugin();
+
+  late final Map<String, dynamic>? userData;
+
   RxInt accountTextLength = 0.obs;
 
   RxInt passwordTextLength = 0.obs;
@@ -26,6 +29,8 @@ class LoginPageLogic extends Logic {
     _isLoggingIn = value;
     update([const Key('login')]);
   }
+
+  bool _isAddAccount = false;
 
   //用户账号输入长度
   void onAccountTextChanged(String value) {
@@ -108,21 +113,13 @@ class LoginPageLogic extends Logic {
               isLoggingIn = false;
               return;
             }
-          // globalData.currentUserId = currentUserId;
-          // globalData.currentToken = userData['token'];
-          // globalData.currentUserName = userData['username'];
-          // globalData.currentAccount = userData['account'];
-          // globalData.currentPortrait = userData['portrait'];
-          // globalData.currentSex = userData['sex'] ?? '男';
-          // globalData.currentTalkBackground = userData['talkBackground'] ??
-          //     'http://114.96.70.115:19000/linyu/default-portrait.jpg';
-          final bool setCurrentUserInfoResult =
-              await globalData.setCurrentUserInfo(userData);
-          // await Get.offAndToNamed('/?sex=${globalData.currentSex ?? '男'}');
-          if (setCurrentUserInfoResult)
-            await Get.offAndToNamed('/');
+          this.userData = userData;
+
+          if (_isAddAccount)
+            Get.back(result: this.userData);
           else
-            _dialog("登录失败，请稍后再试~", context);
+            await Get.offAndToNamed('/');
+          return;
         } else
           isLoggingIn = false;
         _dialog("用户名或密码错误，请重试尝试~", context);
@@ -168,12 +165,22 @@ class LoginPageLogic extends Logic {
     }
   }
 
+  void init() async {
+    try {
+      _isAddAccount = Get.arguments['isAddAccount'] ?? false;
+    } catch (e) {
+      if (kDebugMode) print('init error: $e');
+    } finally {
+      usernameController = new TextEditingController();
+      passwordController = new TextEditingController();
+      accountFocusNode = new FocusNode();
+      passwordFocusNode = new FocusNode();
+    }
+  }
+
   @override
   void onInit() {
-    usernameController = new TextEditingController();
-    passwordController = new TextEditingController();
-    accountFocusNode = new FocusNode();
-    passwordFocusNode = new FocusNode();
+    init();
     super.onInit();
   }
 
@@ -184,6 +191,7 @@ class LoginPageLogic extends Logic {
       passwordController.dispose();
       accountFocusNode.dispose();
       passwordFocusNode.dispose();
+      if (userData != null) globalData.setCurrentUserInfo(userData!);
     } catch (e) {
       if (kDebugMode) print('onClose error: $e');
     } finally {

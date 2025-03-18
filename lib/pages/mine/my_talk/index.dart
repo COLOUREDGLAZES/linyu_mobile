@@ -68,7 +68,14 @@ class MyTalkPage extends CustomView<MyTalkLogic> {
                   children: [
                     Row(
                       children: [
-                        CustomPortrait(url: talk['portrait'] ?? ''),
+                        CustomPortrait(
+                          url: talk['portrait'] ?? '',
+                          onTap: () =>
+                              Get.toNamed('/image_viewer_update', arguments: {
+                            'imageUrl': talk['portrait'],
+                            'isUpdate': false,
+                          }),
+                        ),
                         const SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

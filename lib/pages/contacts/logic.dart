@@ -31,7 +31,7 @@ class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
   late TabController tabController;
 
   // 监听消息
-  void eventListen() => _subscription = wsManager.eventStream.listen(
+  void _eventListen() => _subscription = wsManager.eventStream.listen(
         (event) {
           if (kDebugMode) print("收到事件: $event");
           if (event['type'] == 'on-receive-msg') {
@@ -70,6 +70,7 @@ class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
     try {
       globalData.onGetUserUnreadInfo();
       _chatGroupApi.list().then((res) {
+        if (kDebugMode) print('获取群聊列表 : ${res.toString()}');
         if (res['code'] == 0) {
           if (kDebugMode) print('获取群聊列表 : ${res['data'][0].toString()}');
           chatGroupList = res['data'];
@@ -293,7 +294,7 @@ class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
 
   @override
   void onInit() {
-    eventListen();
+    _eventListen();
     tabController = TabController(
       initialIndex: 1,
       length: tabs.length,

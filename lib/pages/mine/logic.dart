@@ -1,12 +1,7 @@
 import 'package:flutter/cupertino.dart' show BuildContext;
 import 'package:flutter/foundation.dart' show Key, kDebugMode;
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart' show Get, GetNavigation, Inst;
+import 'package:get/get.dart' show Get, GetNavigation;
 import 'package:linyu_mobile/utils/config/getx/config.dart';
-import 'package:linyu_mobile/utils/config/getx/global_data.dart';
-import 'package:linyu_mobile/utils/config/network/web_socket.dart';
-import 'package:shared_preferences/shared_preferences.dart'
-    show SharedPreferences;
 
 import 'index.dart';
 
@@ -22,8 +17,9 @@ class MineLogic extends Logic<MinePage> {
 
   void handlerLogout() async {
     try {
-      await sharedPreferences.clear();
-      globalData.currentToken = null;
+      // await sharedPreferences.clear();
+      // globalData.currentToken = null;
+      globalData.clearUserInfo();
       wsManager.disconnect();
       if (kDebugMode) print('logout success');
       Get.back();
@@ -56,8 +52,12 @@ class MineLogic extends Logic<MinePage> {
   }
 
   void toChangeAccount(BuildContext context) async {
-    // final result = await Get.toNamed('/change_accounts');
-    Fluttertoast.showToast(msg: "功能建设中，敬请期待！");
+    final result = await Get.toNamed('/change_account');
+    if (result != null && result == true) {
+      init().then((_) {
+        if (kDebugMode) print('currentAccount: ${globalData.currentAccount}');
+      });
+    }
   }
 
   @override

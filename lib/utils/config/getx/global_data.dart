@@ -13,7 +13,14 @@ class GlobalData extends GetxController {
   final _userApi = UserApi();
   SharedPreferences get prefs => GetInstance().find<SharedPreferences>();
   var unread = <String, int>{}.obs;
-  var currentUserId = '';
+
+  String _currentUserId = '';
+  String get currentUserId => _currentUserId;
+  set currentUserId(String value) {
+    _currentUserId = value;
+    prefs.setString('currentUserId', value);
+  }
+
   var currentAccount = '';
   late String? currentUserName;
   late String? currentPortrait =
@@ -100,7 +107,6 @@ class GlobalData extends GetxController {
     // 仅当用户 ID 不为空时才更新本地缓存
     if (currentUserId.isNotEmpty) {
       result = await Future.wait([
-        prefs.setString('currentUserId', currentUserId),
         prefs.setString('account_$currentUserId', currentAccount),
         prefs.setString('username_$currentUserId', currentUserName ?? ''),
         prefs.setString('portrait_$currentUserId', currentPortrait ?? ''),
@@ -117,9 +123,6 @@ class GlobalData extends GetxController {
 
   Future<void> init() async {
     try {
-      if (userIds.isEmpty) {
-        userIds = prefs.getStringList('userIds') ?? [];
-      }
       if (currentUserId.isNotEmpty && currentToken != null) {
         await onGetUserUnreadInfo();
         return;
@@ -155,6 +158,23 @@ class GlobalData extends GetxController {
     }
   }
 
+  void clearUserInfo() {
+    currentUserId = '';
+    currentToken = null;
+    currentUserName = null;
+    currentAccount = '';
+    currentPortrait = null;
+    currentSex = null;
+    currentBirthday = null;
+    currentSignature = null;
+    currentTalkBackground = null;
+    currentTalkBackgroundTextColor = null;
+    unread.clear();
+    userIds.clear();
+    AppBadger.setCount(0, 0);
+    prefs.clear();
+  }
+
   @override
   void onInit() {
     init();
@@ -163,6 +183,7 @@ class GlobalData extends GetxController {
 
   @override
   void onReady() {
+    if (userIds.isEmpty) userIds = prefs.getStringList('userIds') ?? [];
     if (currentTalkBackground != null) updateTextColor(currentTalkBackground!);
     super.onReady();
   }
