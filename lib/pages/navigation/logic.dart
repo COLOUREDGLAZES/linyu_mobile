@@ -41,6 +41,19 @@ class NavigationLogic extends Logic {
   set isOpenDrawer(bool value) {
     _isOpenDrawer = value;
     update([const Key('main')]);
+    if (_userId != globalData.currentUserId && value == false) {
+      if (currentIndex.value == 0) {
+        final ChatListLogic chatListLogic = Get.find<ChatListLogic>();
+        chatListLogic.onGetChatList();
+      } else if (currentIndex.value == 1) {
+        final ContactsLogic contactsLogic = Get.find<ContactsLogic>();
+        contactsLogic.init();
+      } else {
+        final TalkLogic talkLogic = Get.find<TalkLogic>();
+        talkLogic.init();
+      }
+      _userId = globalData.currentUserId;
+    }
   }
 
   String _userId = '';
