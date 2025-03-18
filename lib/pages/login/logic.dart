@@ -13,7 +13,7 @@ class LoginPageLogic extends Logic {
   late final TextEditingController passwordController;
   final DeviceInfoPlugin _deviceInfoPlugin = new DeviceInfoPlugin();
 
-  late final Map<String, dynamic>? userData;
+  late Map<String, dynamic>? userData;
 
   RxInt accountTextLength = 0.obs;
 
@@ -30,7 +30,7 @@ class LoginPageLogic extends Logic {
     update([const Key('login')]);
   }
 
-  bool _isAddAccount = false;
+  bool isAddAccount = false;
 
   //用户账号输入长度
   void onAccountTextChanged(String value) {
@@ -115,7 +115,7 @@ class LoginPageLogic extends Logic {
             }
           this.userData = userData;
 
-          if (_isAddAccount)
+          if (isAddAccount)
             Get.back(result: this.userData);
           else
             await Get.offAndToNamed('/');
@@ -167,7 +167,7 @@ class LoginPageLogic extends Logic {
 
   void init() async {
     try {
-      _isAddAccount = Get.arguments['isAddAccount'] ?? false;
+      isAddAccount = Get.arguments['isAddAccount'] ?? false;
     } catch (e) {
       if (kDebugMode) print('init error: $e');
     } finally {

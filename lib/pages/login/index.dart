@@ -171,14 +171,23 @@ class LoginPage extends CustomWidget<LoginPageLogic> {
                                   // backgroundColor: Colors.black,
                                   color: theme.primaryColor,
                                 )
-                              : CustomButton(
-                                  text: '立即登录',
-                                  type: 'gradient',
-                                  onTap: () => controller.login(
-                                    context,
-                                  ),
-                                  width: MediaQuery.of(context).size.width,
-                                ),
+                              : controller.isAddAccount
+                                  ? CustomButton(
+                                      text: '添加用户',
+                                      type: 'gradient',
+                                      onTap: () => controller.login(
+                                        context,
+                                      ),
+                                      width: MediaQuery.of(context).size.width,
+                                    )
+                                  : CustomButton(
+                                      text: '立即登录',
+                                      type: 'gradient',
+                                      onTap: () => controller.login(
+                                        context,
+                                      ),
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
                           const SizedBox(height: 5.0),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

@@ -51,6 +51,7 @@ class NavigationLogic extends Logic {
 
   Future<void> _initializeServices() async {
     await globalData.init();
+    _initThemeData();
     await NotificationUtil.initialize();
     await NotificationUtil.createNotificationChannel();
     await PermissionHandler.permissionRequest();

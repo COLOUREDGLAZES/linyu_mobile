@@ -41,19 +41,28 @@ class ChangeAccountLogic extends Logic {
   }
 
   void addAccount() async {
-    final result =
-        await Get.toNamed('/login', arguments: {'isAddAccount': true});
-    if (result != null) {
-      accounts.add(User(
-        id: result['userId'],
-        username: result['username'],
-        account: result['account'],
-        avatarUrl: result['portrait'],
-        isCurrent: true,
-      ));
-      for (var account in accounts)
-        if (account.id != result['userId']) account.isCurrent = false;
+    try {
+      final result =
+          await Get.toNamed('/login', arguments: {'isAddAccount': true});
+      if (result != null) {
+        accounts.add(User(
+          id: result['userId'],
+          username: result['username'],
+          account: result['account'],
+          avatarUrl: result['portrait'],
+          isCurrent: true,
+        ));
+        for (var account in accounts)
+          if (account.id != result['userId']) account.isCurrent = false;
+        if (kDebugMode)
+          print('add account currentSex is ${globalData.currentSex}');
+        theme.changeThemeMode(result['sex'] == "女" ? 'pink' : 'blue');
+      }
+    } on Exception catch (e) {
+      if (kDebugMode) print('add account error $e');
+    } finally {
       super.update([const Key('change_account')]);
+      wsManager.disconnect();
     }
   }
 
@@ -109,8 +118,8 @@ class ChangeAccountLogic extends Logic {
     sharedPreferences.remove('talkBackground_${selectedAccount.id}');
     sharedPreferences.remove('birthday_${selectedAccount.id}');
     sharedPreferences.remove('signature_${selectedAccount.id}');
-
     Get.back();
+    super.update([const Key('change_account')]);
     CustomFlutterToast.showSuccessToast('删除用户成功~');
   }
 
