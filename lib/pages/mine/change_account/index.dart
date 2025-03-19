@@ -2,6 +2,7 @@ import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 import 'logic.dart';
@@ -44,8 +45,7 @@ class ChangeAccountPage extends CustomView<ChangeAccountLogic> {
       onDismissed: (direction) => _deleteAccount(user),
       confirmDismiss: (direction) async {
         if (user.isCurrent) {
-          ScaffoldMessenger.of(Get.context!)
-              .showSnackBar(const SnackBar(content: Text('当前使用账号不能删除')));
+          CustomFlutterToast.showErrorToast('当前使用账号不能删除');
           return false;
         }
         return true;
