@@ -10,28 +10,6 @@ import 'logic.dart';
 class ChangeAccountPage extends CustomView<ChangeAccountLogic> {
   ChangeAccountPage({super.key});
 
-  void _deleteAccount(User user) async {
-    showDialog(
-      context: Get.context!,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('确认删除'),
-          content: Text('确定要删除账号 ${user.account} 吗？'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('取消'),
-            ),
-            TextButton(
-              onPressed: () => controller.deleteAccount(user),
-              child: const Text('删除', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Widget _buildAccountItem(User user) {
     return Dismissible(
       key: Key(user.id),
@@ -42,7 +20,7 @@ class ChangeAccountPage extends CustomView<ChangeAccountLogic> {
         padding: const EdgeInsets.only(right: 20),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
-      onDismissed: (direction) => _deleteAccount(user),
+      onDismissed: (direction) => controller.deleteAccount(user),
       confirmDismiss: (direction) async {
         if (user.isCurrent) {
           CustomFlutterToast.showErrorToast('当前使用账号不能删除');

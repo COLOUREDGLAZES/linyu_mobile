@@ -119,7 +119,6 @@ class ChangeAccountLogic extends Logic {
     sharedPreferences.remove('talkBackground_${selectedAccount.id}');
     sharedPreferences.remove('birthday_${selectedAccount.id}');
     sharedPreferences.remove('signature_${selectedAccount.id}');
-    Get.back();
     super.update([const Key('change_account')]);
     CustomFlutterToast.showSuccessToast('删除用户成功~');
   }
