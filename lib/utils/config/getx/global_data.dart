@@ -11,11 +11,14 @@ import 'package:shared_preferences/shared_preferences.dart'
 
 class GlobalData extends GetxController {
   final _userApi = UserApi();
+
   SharedPreferences get prefs => GetInstance().find<SharedPreferences>();
   var unread = <String, int>{}.obs;
 
   String _currentUserId = '';
+
   String get currentUserId => _currentUserId;
+
   set currentUserId(String value) {
     _currentUserId = value;
     if (value.isNotEmpty) prefs.setString('currentUserId', value);
@@ -24,7 +27,7 @@ class GlobalData extends GetxController {
   var currentAccount = '';
   late String? currentUserName;
   late String? currentPortrait =
-      'http://114.96.70.115:19000/linyu/default-portrait.jpg';
+      'https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813_98ee65a190ea43e097c6197c34714c7f.jpeg?from=2956013662';
   String? currentToken;
 
   /// 说说背景图片地址
@@ -107,12 +110,14 @@ class GlobalData extends GetxController {
     currentToken = userInfo['token'];
     currentUserName = userInfo['username'];
     currentAccount = userInfo['account'];
-    currentPortrait = userInfo['portrait'];
+    currentPortrait = userInfo['portrait'] ??
+        'https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813_98ee65a190ea43e097c6197c34714c7f.jpeg?from=2956013662';
     currentSex = userInfo['sex'];
     currentBirthday = userInfo['birthday'] ?? '';
     currentSignature = userInfo['signature'] ?? '';
     currentTalkBackground = userInfo['talkBackground'];
-    if (currentTalkBackground != null) updateTextColor(currentTalkBackground!);
+    if (currentTalkBackground != null && currentTalkBackground!.isNotEmpty)
+      updateTextColor(currentTalkBackground!);
     List<bool>? result;
     // 仅当用户 ID 不为空时才更新本地缓存
     if (currentUserId.isNotEmpty) {
@@ -133,22 +138,25 @@ class GlobalData extends GetxController {
 
   Future<void> init() async {
     try {
-      if (_currentUserId.isNotEmpty && currentToken != null) {
+      if (_currentUserId.isNotEmpty &&
+          currentToken != null &&
+          currentToken!.isNotEmpty) {
         await onGetUserUnreadInfo();
         return;
       }
       final userInfo = await _userApi.info();
-      _currentUserId = prefs.getString('currentUserId') ?? '';
+      if (_currentUserId.isEmpty)
+        _currentUserId = prefs.getString('currentUserId') ?? '';
       String? token = prefs.getString('x-token_$currentUserId');
       if (token == null) return;
       currentToken = token;
       currentAccount = prefs.getString('account_$currentUserId') ?? '';
       currentUserName = prefs.getString('username_$currentUserId');
       currentPortrait = prefs.getString('portrait_$currentUserId') ??
-          'http://114.96.70.115:19000/linyu/default-portrait.jpg';
-      currentTalkBackground =
-          prefs.getString('talkBackground_$currentUserId') ??
-              'http://114.96.70.115:19000/linyu/default-portrait.jpg';
+          'https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813_98ee65a190ea43e097c6197c34714c7f.jpeg?from=2956013662';
+      currentTalkBackground = prefs
+              .getString('talkBackground_$currentUserId') ??
+          'https://p3-pc-sign.douyinpic.com/obj/douyin-user-image-file/33464188d8a6756edc172ab0b48182d4?lk3s=93de098e&x-expires=1742580000&x-signature=JXhvWepluXb%2FqnNqKN%2BSDSVBSuw%3D&from=2480802190&quot';
       currentSex = prefs.getString('sex_$currentUserId');
       currentBirthday = prefs.getString('birthday_$currentUserId') ?? '';
       if (currentBirthday == null || currentBirthday!.isEmpty) {
@@ -168,8 +176,9 @@ class GlobalData extends GetxController {
     }
   }
 
-  void clearUserInfo() {
-    _currentUserId = '';
+  Future<bool> clearUserInfo() async {
+    userIds.remove(currentUserId);
+    if (kDebugMode) print('userIds is: $userIds');
     currentToken = null;
     currentUserName = null;
     currentAccount = '';
@@ -180,9 +189,20 @@ class GlobalData extends GetxController {
     currentTalkBackground = null;
     currentTalkBackgroundTextColor = null;
     unread.clear();
-    userIds.clear();
     AppBadger.setCount(0, 0);
-    prefs.clear();
+    final result = await Future.wait([
+      prefs.remove('account_$currentUserId'),
+      prefs.remove('username_$currentUserId'),
+      prefs.remove('portrait_$currentUserId'),
+      prefs.remove('sex_$currentUserId'),
+      prefs.remove('birthday_$currentUserId'),
+      prefs.remove('signature_$currentUserId'),
+      prefs.remove('talkBackground_$currentUserId'),
+      prefs.remove('x-token_$currentUserId'),
+      prefs.setStringList('userIds', userIds),
+    ]);
+    _currentUserId = '';
+    return result.every((element) => element);
   }
 
   @override

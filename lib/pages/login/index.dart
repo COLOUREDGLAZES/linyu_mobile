@@ -124,7 +124,7 @@ class LoginPage extends CustomWidget<LoginLogic> {
                                   .requestFocus(controller.passwordFocusNode),
                               iconData: const IconData(0xe60d,
                                   fontFamily: 'IconFont'),
-                              controller: controller.usernameController,
+                              controller: controller.accountController,
                               inputLimit: 30,
                               onChanged: controller.onAccountTextChanged,
                               suffix: Text(

@@ -9,7 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LoginLogic extends Logic {
   final _useApi = UserApi();
-  late final TextEditingController usernameController;
+  late final TextEditingController accountController;
   late final TextEditingController passwordController;
   final DeviceInfoPlugin _deviceInfoPlugin = new DeviceInfoPlugin();
 
@@ -31,6 +31,18 @@ class LoginLogic extends Logic {
   }
 
   bool isAddAccount = false;
+
+  String? otherUserId;
+
+  Map<String, String> otherAccounts = {};
+
+  bool _isLogOut = false;
+  bool get isLogOut => _isLogOut;
+  set isLogOut(bool value) {
+    if (value != null && value) otherUserId = Get.arguments['otherUserId'];
+    _isLogOut = value;
+    update([const Key('logout')]);
+  }
 
   //用户账号输入长度
   void onAccountTextChanged(String value) {
@@ -69,13 +81,27 @@ class LoginLogic extends Logic {
     final deviceInfo = await _deviceInfoPlugin.deviceInfo;
     if (kDebugMode) print('$deviceInfo');
     final deviceName = deviceInfo.data['product'];
-    String username = usernameController.text.trim(); // 去除前后空格
+    String username = accountController.text.trim(); // 去除前后空格
     String password = passwordController.text.trim(); // 去除前后空格
     if (username.isEmpty || password.isEmpty) {
       _dialog("用户名或密码不能为空~", context);
       isLoggingIn = false;
       return;
     }
+
+    //如果是从退出登录页面跳转过来的，直接登录把token以及其他信息设置到全局变量中
+    if (isLogOut && otherUserId != null)
+    //如果是用其他账号登录的直接登录
+    if (otherAccounts.containsKey(username)) {
+      globalData.currentUserId = otherAccounts[username]!;
+      await globalData.init();
+      if (globalData.currentTalkBackground != null &&
+          globalData.currentTalkBackground!.isNotEmpty)
+        await globalData.updateTextColor(globalData.currentTalkBackground!);
+      await Get.offAndToNamed('/');
+      return;
+    }
+
     Map<String, dynamic> userData = {};
     try {
       final encryptedPassword = await passwordEncrypt(password);
@@ -105,7 +131,7 @@ class LoginLogic extends Logic {
             sharedPreferences.setString(
                 'talkBackground_$currentUserId',
                 userData['talkBackground'] ??
-                    'http://114.96.70.115:19000/linyu/default-portrait.jpg'),
+                    'https://p3-pc-sign.douyinpic.com/obj/douyin-user-image-file/33464188d8a6756edc172ab0b48182d4?lk3s=93de098e&x-expires=1742580000&x-signature=JXhvWepluXb%2FqnNqKN%2BSDSVBSuw%3D&from=2480802190&quot'),
           ]);
           for (bool result in setSharedPreferencesResult)
             if (!result) {
@@ -168,26 +194,43 @@ class LoginLogic extends Logic {
   void init() async {
     try {
       isAddAccount = Get.arguments['isAddAccount'] ?? false;
+      isLogOut = Get.arguments['isLogout'] ?? false;
     } catch (e) {
       if (kDebugMode) print('init error: $e');
-    } finally {
-      usernameController = new TextEditingController();
-      passwordController = new TextEditingController();
-      accountFocusNode = new FocusNode();
-      passwordFocusNode = new FocusNode();
     }
   }
 
   @override
   void onInit() {
+    accountController = new TextEditingController();
+    passwordController = new TextEditingController();
+    accountFocusNode = new FocusNode();
+    passwordFocusNode = new FocusNode();
     init();
     super.onInit();
   }
 
   @override
+  void onReady() {
+    if (isLogOut) {
+      //是退出登录如果还有其他账号，直接用其他账号登录
+      accountController.text =
+          sharedPreferences.getString('account_$otherUserId') ?? '';
+      //随便写一个密码，防止空密码登录
+      passwordController.text = '123456';
+      globalData.userIds.forEach((userId) {
+        final String? account = sharedPreferences.getString('account_$userId');
+        if (account != null && account.isNotEmpty)
+          otherAccounts[account] = userId;
+      });
+    }
+    super.onReady();
+  }
+
+  @override
   void onClose() {
     try {
-      usernameController.dispose();
+      accountController.dispose();
       passwordController.dispose();
       accountFocusNode.dispose();
       passwordFocusNode.dispose();

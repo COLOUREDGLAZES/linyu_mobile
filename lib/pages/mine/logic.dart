@@ -17,13 +17,23 @@ class MineLogic extends Logic<MinePage> {
 
   void handlerLogout() async {
     try {
-      globalData.clearUserInfo();
-      wsManager.disconnect();
-      if (kDebugMode) print('logout success');
-      Get.back();
+      final result = await globalData.clearUserInfo();
+      if (result) {
+        wsManager.disconnect();
+        Get.back();
+        if (kDebugMode)
+          print('globalData.userIds length is: ${globalData.userIds.length}');
+        if (globalData.userIds.isNotEmpty)
+          Get.offAndToNamed('/login', arguments: {
+            'isLogout': true,
+            'otherUserId': globalData.userIds[0],
+          });
+        else
+          Get.offAndToNamed('/login');
+        if (kDebugMode) print('logout success');
+      }
     } catch (e) {
       if (kDebugMode) print('logout failed: $e');
-    } finally {
       Get.offAndToNamed('/login');
     }
   }

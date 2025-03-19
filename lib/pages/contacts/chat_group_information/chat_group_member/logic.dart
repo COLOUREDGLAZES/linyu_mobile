@@ -67,7 +67,7 @@ class ChatGroupMemberLogic extends Logic {
   void onInviteFriend() async {
     var result = await Get.toNamed('/user_select',
         arguments: {'onlyUsers': members.keys.toList()});
-    if (result != null || result.length > 0) {
+    if (result != null && result.length > 0) {
       List<dynamic> ids = result.map((item) => item['friendId']).toList();
       _chatGroupApi.inviteMember(chatGroupId, ids).then((res) {
         if (res['code'] == 0) {

@@ -77,13 +77,13 @@ class ChangeAccountPage extends CustomView<ChangeAccountLogic> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('账号切换'),
-          actions: [
-            const Text('编辑')
-                .textColor(Colors.black)
-                .fontSize(14)
-                .onTap(() {})
-                .paddingSymmetric(horizontal: 16),
-          ],
+          // actions: [
+          //   const Text('编辑')
+          //       .textColor(Colors.black)
+          //       .fontSize(14)
+          //       .onTap(() {})
+          //       .paddingSymmetric(horizontal: 16),
+          // ],
         ),
         body: Stack(
           children: [

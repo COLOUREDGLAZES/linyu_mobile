@@ -153,26 +153,25 @@ class VideoChatLogic extends GetxController {
 
   Future<void> initRTCPeerConnection() async {
     // 配置 ICE 服务器
-    // final Map<String, dynamic> iceServer = {
-    //   'iceServers': [
-    //     {'urls': 'stun:stun.l.google.com:19302'},
-    //     {
-    //       'urls': 'turn:numb.viagenie.ca',
-    //       'username': 'webrtc@live.com',
-    //       'credential': 'muazkh',
-    //     },
-    //   ],
-    // };
     final Map<String, dynamic> iceServer = {
       'iceServers': [
+        {'urls': 'stun:stun.l.google.com:19302'},
         {
-          'urls': ['turn:27.25.159.46:3478', 'turns:27.25.159.46:5349'],
-          'username': 'username',
-          'credential': 'password'
-        }
-      ]
+          'urls': 'turn:numb.viagenie.ca',
+          'username': 'webrtc@live.com',
+          'credential': 'muazkh',
+        },
+      ],
     };
-    ;
+    // final Map<String, dynamic> iceServer = {
+    //   'iceServers': [
+    //     {
+    //       'urls': ['turn:27.25.159.46:3478', 'turns:27.25.159.46:5349'],
+    //       'username': 'username',
+    //       'credential': 'password'
+    //     }
+    //   ]
+    // };
     // 创建 PeerConnection
     peerConnection = await webrtc.createPeerConnection(iceServer);
     // 设置 ICE 候选者事件处理

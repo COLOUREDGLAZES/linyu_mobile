@@ -2,9 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CustomPortrait extends StatelessWidget {
-  final double size;
+  final double? size;
   final String url;
-  final double radius;
+  final double? radius;
   final VoidCallback? onTap, onDoubleTap, onLongPress;
   final bool? isGreyColor;
 
@@ -28,7 +28,9 @@ class CustomPortrait extends StatelessWidget {
       child: Stack(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(radius),
+            borderRadius: radius == null || radius == 0
+                ? BorderRadius.zero
+                : BorderRadius.circular(radius!),
             child: CachedNetworkImage(
               imageUrl: url,
               width: size,
@@ -56,7 +58,9 @@ class CustomPortrait extends StatelessWidget {
           Opacity(
             opacity: !isGreyColor! ? 0 : 0.5,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(radius),
+              borderRadius: radius == null || radius == 0
+                  ? BorderRadius.zero
+                  : BorderRadius.circular(radius!),
               child: Container(
                 width: size,
                 height: size,

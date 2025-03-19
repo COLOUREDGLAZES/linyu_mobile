@@ -49,7 +49,8 @@ class ChangeAccountLogic extends Logic {
           id: result['userId'],
           username: result['username'],
           account: result['account'],
-          avatarUrl: result['portrait'],
+          avatarUrl: result['portrait'] ??
+              'https://p3-pc.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813_98ee65a190ea43e097c6197c34714c7f.jpeg?from=2956013662',
           isCurrent: true,
         ));
         for (var account in accounts)

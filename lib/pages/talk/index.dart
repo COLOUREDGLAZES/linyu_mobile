@@ -220,10 +220,14 @@ class TalkPage extends CustomWidget<TalkLogic> {
     double avatarBottom = 20 * (1 - animationProgress);
 
     // 头像组件
+    if (kDebugMode) print('currentPortrait is: ${globalData.currentPortrait}');
     final Widget avatarWidget = CachedNetworkImage(
       fit: BoxFit.cover,
-      imageUrl: globalData.currentPortrait ??
-          'https://avatars.githubusercontent.com/u/66918811?v=4',
+      imageUrl: globalData.currentPortrait ?? '',
+      errorWidget: (context, url, error) => Container(
+        color: Colors.grey[300],
+        child: Image.asset('assets/images/default-portrait.jpeg'),
+      ),
     ).onTap(
       () => Get.toNamed('/my_talk_page', arguments: {
         'isNotShowLeading': true,
@@ -257,11 +261,17 @@ class TalkPage extends CustomWidget<TalkLogic> {
     if (kDebugMode)
       print('currentTalkBackground: ${globalData.currentTalkBackground}');
     final Widget backgroundImageWidget = CachedNetworkImage(
-      key: ValueKey(globalData.currentTalkBackground ??
-          "http://114.96.70.115:19000/linyu/default-portrait.jpg"),
+      key: ValueKey(
+          '${globalData.currentUserId}_talk_background_${globalData.currentTalkBackground}'),
       fit: BoxFit.cover,
-      imageUrl: globalData.currentTalkBackground ??
-          "http://114.96.70.115:19000/linyu/default-portrait.jpg",
+      imageUrl: globalData.currentTalkBackground ?? '',
+      errorWidget: (context, url, error) => Container(
+        color: Colors.grey[300],
+        child: Image.asset(
+          'assets/images/default_talk_background.jfif',
+          fit: BoxFit.cover,
+        ),
+      ),
     ).onTap(
       () => !controller.isExpanded
           ? controller.scrollToTop()

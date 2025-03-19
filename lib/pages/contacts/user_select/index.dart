@@ -1,3 +1,4 @@
+import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
@@ -36,13 +37,11 @@ class UserSelectPage extends CustomWidget<UserSelectLogic> {
               onChanged: (value) => {controller.handlerSearchUser(value)},
             ),
             const SizedBox(height: 10),
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  ...controller.userList.map((user) => _buildUserItem(user)),
-                ],
-              ),
-            ),
+            controller.userList
+                .map((user) => _buildUserItem(user))
+                .toList()
+                .toListView()
+                .expanded(),
           ],
         ),
       ),
