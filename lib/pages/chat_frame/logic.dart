@@ -101,8 +101,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   set chatBackground(String value) {
     _chatBackground = value;
     update([const Key('chat_frame')]);
-    sharedPreferences.setString(
-        '${_targetId}_chat_background_${globalData.currentAccount}', value);
+    if (value.isNotEmpty)
+      sharedPreferences.setString(
+          '${_targetId}_chat_background_${globalData.currentAccount}', value);
   }
 
   // 分页相关
@@ -212,14 +213,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     if (isLoading) return; // 防止重复加载
     isLoading = true;
     try {
-      //先获取本地消息记录
-      // if (kDebugMode) print('sqfliteHelper: $sqfliteHelper');
-      // List<dynamic> localMsgList = await sqfliteHelper.queryMessageByCondition(
-      //     globalData.currentUserId, _targetId, index ?? _index, _num);
-      // msgList = localMsgList.copy();
-      // if (kDebugMode) print('msgList :${msgList.length}');
-      // if (msgList.isEmpty) {
-      // 本地消息记录为空，从服务器获取
       final res = await _msgApi.record(_targetId, index ?? _index, _num);
       if (res['code'] == 0 && res['data'] is List) {
         // 确认返回的数据类型
@@ -227,7 +220,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
         _index += msgList.length;
         hasMore = msgList.isNotEmpty; // 判断是否还有更多数据
       }
-      // }
     } catch (e) {
       if (kDebugMode) print('onGetMsgRecode error: $e');
     } finally {
@@ -804,7 +796,7 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
               '';
           // 若本地没有获取到则从网络获取聊天背景
           if (_chatBackground.isEmpty)
-            chatBackground = chatInfo['chatBackground'];
+            chatBackground = chatInfo['chatBackground'] ?? '';
           await _onGetMsgRecode(index: 0);
         }
       }
@@ -911,7 +903,8 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
             '${_targetId}_chat_background_${globalData.currentAccount}') ??
         '';
     // 若本地没有获取到则从网络获取聊天背景
-    if (_chatBackground.isEmpty) chatBackground = chatInfo['chatBackground'];
+    if (_chatBackground.isEmpty)
+      chatBackground = chatInfo['chatBackground'] ?? '';
   }
 
   @override
@@ -931,10 +924,10 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     if (chatInfo['type'] == 'user') _onCheckFriend(_targetId);
     try {
       _onGetMembers();
+      _onRead(null);
     } on Exception catch (e) {
       if (kDebugMode) print('onReady过程中发生错误: $e');
     } finally {
-      _onRead(null);
       super.onReady();
       // 添加滚动监听
       scrollController.addListener(() {

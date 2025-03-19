@@ -296,8 +296,8 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                   height: 34,
                 )
               : !controller.isOnBottom && controller.isUpSroll
-                  ? _buildIconButton1(Icons.keyboard_arrow_down,
-                      () => controller.scrollBottom())
+                  ? _buildIconButton1(
+                      Icons.keyboard_arrow_down, controller.scrollBottom)
                   : _buildIconButton1(
                       const IconData(0xe636, fontFamily: 'IconFont'), () {
                       WidgetsBinding.instance.addPostFrameCallback((_) =>
