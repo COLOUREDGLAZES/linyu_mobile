@@ -101,6 +101,8 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   set chatBackground(String value) {
     _chatBackground = value;
     update([const Key('chat_frame')]);
+    sharedPreferences.setString(
+        '${_targetId}_chat_background_${globalData.currentAccount}', value);
   }
 
   // 分页相关
@@ -797,16 +799,12 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
           chatInfo = result;
           _targetId = chatInfo['fromId'];
           // 聊天背景本地获取
-          chatBackground =
-              sharedPreferences.getString('${_targetId}_chat_background') ?? '';
+          _chatBackground = sharedPreferences.getString(
+                  '${_targetId}_chat_background_${globalData.currentAccount}') ??
+              '';
           // 若本地没有获取到则从网络获取聊天背景
-          if (chatBackground.isEmpty) {
-            chatBackground = chatInfo['chatBackground'] ?? '';
-            // 保存聊天背景到本地
-            if (chatBackground.isNotEmpty)
-              sharedPreferences.setString(
-                  '${_targetId}_chat_background', chatBackground);
-          }
+          if (_chatBackground.isEmpty)
+            chatBackground = chatInfo['chatBackground'];
           await _onGetMsgRecode(index: 0);
         }
       }
@@ -909,18 +907,11 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     _targetId = chatInfo['fromId'] ?? '';
     if (kDebugMode) print('chat_frame targetId: $chatInfo');
     // 聊天背景本地获取
-    chatBackground = sharedPreferences.getString(
-            '${_targetId}_chat_background_${globalData.currentUserId}') ??
+    _chatBackground = sharedPreferences.getString(
+            '${_targetId}_chat_background_${globalData.currentAccount}') ??
         '';
     // 若本地没有获取到则从网络获取聊天背景
-    if (chatBackground.isEmpty) {
-      chatBackground = chatInfo['chatBackground'] ?? '';
-      // 保存聊天背景到本地
-      if (chatBackground.isNotEmpty)
-        sharedPreferences.setString(
-            '${_targetId}_chat_background_${globalData.currentUserId}',
-            chatBackground);
-    }
+    if (_chatBackground.isEmpty) chatBackground = chatInfo['chatBackground'];
   }
 
   @override

@@ -17,8 +17,6 @@ class MineLogic extends Logic<MinePage> {
 
   void handlerLogout() async {
     try {
-      // await sharedPreferences.clear();
-      // globalData.currentToken = null;
       globalData.clearUserInfo();
       wsManager.disconnect();
       if (kDebugMode) print('logout success');

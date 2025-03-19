@@ -1,24 +1,23 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart' show MultipartFile, FormData;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart'
-    show Get, GetInstance, GetNavigation, GetxController;
+import 'package:get/get.dart' show Get, GetInstance, GetNavigation;
+import 'package:linyu_mobile/components/CustomDialog/index.dart';
+import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/contacts/logic.dart';
 import 'package:linyu_mobile/utils/api/chat_group_api.dart';
 import 'package:linyu_mobile/utils/api/chat_group_member.dart';
-import 'package:linyu_mobile/components/CustomDialog/index.dart';
-import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart';
+import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dio/dio.dart' show MultipartFile, FormData;
 
-class ChatGroupInformationLogic extends GetxController {
+class ChatGroupInformationLogic extends Logic {
   final ContactsLogic _contactsLogic = GetInstance().find<ContactsLogic>();
   final _chatGroupApi = ChatGroupApi();
   final _chatGroupMemberApi = ChatGroupMemberApi();
   final _chatListApi = new ChatListApi();
-  late String? _currentUserId = '';
   late bool isOwner = false;
   late dynamic chatGroupDetails = {
     'id': '',
@@ -50,17 +49,13 @@ class ChatGroupInformationLogic extends GetxController {
     update([const Key('chat_group_info')]);
   }
 
-  final arguments = Get.arguments;
-
   Future<void> _onGetGroupChatDetails() async {
     try {
       final res = await _chatGroupApi.details(_chatGroupId);
       if (res['code'] == 0) {
         if (kDebugMode) print("chatGroupDetails is: ${res['data'].toString()}");
         chatGroupDetails = res['data'];
-        final prefs = await SharedPreferences.getInstance();
-        _currentUserId = prefs.getString('currentUserId');
-        isOwner = _currentUserId == chatGroupDetails['ownerUserId'];
+        isOwner = globalData.currentUserId == chatGroupDetails['ownerUserId'];
         update([const Key('chat_group_info')]);
       } else {
         CustomFlutterToast.showErrorToast('获取群聊详情失败: ${res['msg']}');
@@ -77,7 +72,6 @@ class ChatGroupInformationLogic extends GetxController {
         chatGroupMembers = res['data'];
         final double calculatedWidth = chatGroupMembers.length * 40 + 10;
         groupMemberWidth = calculatedWidth.clamp(0, 190);
-        // update([const Key('chat_group_info')]);
       } else {
         CustomFlutterToast.showErrorToast('获取群聊成员失败: ${res['msg']}');
       }

@@ -7,7 +7,7 @@ import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/encrypt.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class LoginPageLogic extends Logic {
+class LoginLogic extends Logic {
   final _useApi = UserApi();
   late final TextEditingController usernameController;
   late final TextEditingController passwordController;

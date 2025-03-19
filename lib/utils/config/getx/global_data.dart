@@ -26,12 +26,17 @@ class GlobalData extends GetxController {
   late String? currentPortrait =
       'http://114.96.70.115:19000/linyu/default-portrait.jpg';
   String? currentToken;
+
+  /// 说说背景图片地址
   String? currentTalkBackground;
+
+  /// 说说背景文本颜色
   Color? currentTalkBackgroundTextColor;
   String? currentSex;
   String? currentBirthday;
   String? currentSignature;
 
+  /// 所有用户 ID 列表
   List<String> userIds = [];
 
   Future<bool> addUserId(String userId) async {
@@ -66,6 +71,11 @@ class GlobalData extends GetxController {
     }
 
     return currentTalkBackgroundTextColor!;
+  }
+
+  Future<bool> setTalkBackground(String imageUrl) async {
+    updateTextColor(imageUrl);
+    return await prefs.setString('talkBackground_$currentUserId', imageUrl);
   }
 
   Future<void> onGetUserUnreadInfo() async {
@@ -123,12 +133,12 @@ class GlobalData extends GetxController {
 
   Future<void> init() async {
     try {
-      if (currentUserId.isNotEmpty && currentToken != null) {
+      if (_currentUserId.isNotEmpty && currentToken != null) {
         await onGetUserUnreadInfo();
         return;
       }
       final userInfo = await _userApi.info();
-      currentUserId = prefs.getString('currentUserId') ?? '';
+      _currentUserId = prefs.getString('currentUserId') ?? '';
       String? token = prefs.getString('x-token_$currentUserId');
       if (token == null) return;
       currentToken = token;
@@ -159,7 +169,7 @@ class GlobalData extends GetxController {
   }
 
   void clearUserInfo() {
-    currentUserId = '';
+    _currentUserId = '';
     currentToken = null;
     currentUserName = null;
     currentAccount = '';

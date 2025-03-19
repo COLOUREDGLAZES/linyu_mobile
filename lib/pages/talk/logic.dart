@@ -47,10 +47,6 @@ class TalkLogic extends Logic<TalkPage> {
   RxDouble opacity = 0.0.obs;
 
   Future<void> init() async {
-    // currentUserInfo['name'] = globalData.currentUserName ?? '';
-    // currentUserInfo['portrait'] = globalData.currentPortrait ?? '';
-    // currentUserInfo['account'] = globalData.currentAccount;
-    // currentUserInfo['sex'] = globalData.currentSex;
     if (Get.arguments != null) {
       targetUserId = Get.arguments['userId'] ?? '';
       title = Get.arguments['title'] ?? '说说';
@@ -189,9 +185,8 @@ class TalkLogic extends Logic<TalkPage> {
       if (result['code'] == 0) {
         Get.back();
         final data = result['data'];
-        await sharedPreferences.setString(
-            'talkBackground', data['talkBackground']);
-        textColor = await globalData.updateTextColor(data['talkBackground']);
+        globalData.setTalkBackground(data['talkBackground']);
+        textColor = globalData.currentTalkBackgroundTextColor ?? Colors.black;
         CustomFlutterToast.showSuccessToast('说说背景上传成功');
       } else
         CustomFlutterToast.showErrorToast(result['msg']);

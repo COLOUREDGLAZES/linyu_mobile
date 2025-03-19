@@ -60,7 +60,7 @@ class ControllerBinding extends Bindings {
     Get.put<SqfliteHelper>(SqfliteHelper(), permanent: true);
     //页面业务逻辑依赖注入
     Get.lazyPut<NavigationLogic>(() => NavigationLogic(), fenix: true);
-    Get.lazyPut<LoginPageLogic>(() => LoginPageLogic(), fenix: true);
+    Get.lazyPut<LoginLogic>(() => LoginLogic(), fenix: true);
     Get.lazyPut<RegisterPageLogic>(() => RegisterPageLogic(), fenix: true);
     Get.lazyPut<RetrievePasswordLogic>(() => RetrievePasswordLogic(),
         fenix: true);
