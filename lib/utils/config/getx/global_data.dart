@@ -16,12 +16,12 @@ class GlobalData extends GetxController {
   var unread = <String, int>{}.obs;
 
   String _currentUserId = '';
-
   String get currentUserId => _currentUserId;
-
   set currentUserId(String value) {
-    _currentUserId = value;
-    if (value.isNotEmpty) prefs.setString('currentUserId', value);
+    if (value.isNotEmpty && _currentUserId != value) {
+      prefs.setString('currentUserId', value);
+      _currentUserId = value;
+    }
   }
 
   var currentAccount = '';
