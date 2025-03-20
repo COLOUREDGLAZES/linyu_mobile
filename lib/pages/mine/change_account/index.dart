@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
+import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 import 'logic.dart';
@@ -29,10 +30,7 @@ class ChangeAccountPage extends CustomView<ChangeAccountLogic> {
         return true;
       },
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: NetworkImage(user.avatarUrl),
-          radius: 20,
-        ),
+        leading: CustomPortrait(url: user.avatarUrl),
         title: Text(user.username),
         subtitle: Text(user.account),
         trailing: user.isCurrent
@@ -55,13 +53,6 @@ class ChangeAccountPage extends CustomView<ChangeAccountLogic> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('账号切换'),
-          // actions: [
-          //   const Text('编辑')
-          //       .textColor(Colors.black)
-          //       .fontSize(14)
-          //       .onTap(() {})
-          //       .paddingSymmetric(horizontal: 16),
-          // ],
         ),
         body: Stack(
           children: [
