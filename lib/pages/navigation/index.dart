@@ -1,3 +1,4 @@
+import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_tip/index.dart';
@@ -26,25 +27,22 @@ class NavigationPage extends CustomWidget<NavigationLogic> {
                 items: List.generate(
                     controller.unselectedIcons.length,
                     (index) => BottomNavigationBarItem(
-                          icon: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Image.asset(
-                                controller.currentIndex.value == index
-                                    ? 'assets/images/${controller.selectedIcons[index]}-${theme.themeMode.value}.png'
-                                    : controller.unselectedIcons[index],
-                                width: 26,
-                                height: 26,
-                              ),
-                              if (controller.selectedIcons[index] == 'chat' &&
-                                  globalData.getUnreadCount('chat') > 0)
-                                CustomTip(globalData.getUnreadCount('chat')),
-                              if (controller.selectedIcons[index] == 'user' &&
-                                  globalData.getUnreadCount('friendNotify') > 0)
-                                CustomTip(
-                                    globalData.getUnreadCount('friendNotify')),
-                            ],
-                          ),
+                          icon:[
+                            Image.asset(
+                              controller.currentIndex.value == index
+                                  ? 'assets/images/${controller.selectedIcons[index]}-${theme.themeMode.value}.png'
+                                  : controller.unselectedIcons[index],
+                              width: 26,
+                              height: 26,
+                            ),
+                            if (controller.selectedIcons[index] == 'chat' &&
+                                globalData.getUnreadCount('chat') > 0)
+                              CustomTip(globalData.getUnreadCount('chat')),
+                            if (controller.selectedIcons[index] == 'user' &&
+                                globalData.getUnreadCount('friendNotify') > 0)
+                              CustomTip(
+                                  globalData.getUnreadCount('friendNotify')),
+                          ].toStack(clipBehavior: Clip.none),
                           label: controller.name[index],
                         )),
               ),

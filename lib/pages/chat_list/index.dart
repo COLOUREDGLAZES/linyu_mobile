@@ -1,3 +1,4 @@
+import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
@@ -28,7 +29,6 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
             foregroundColor: Colors.white,
             icon: chat['isTop'] ? Icons.push_pin_outlined : Icons.push_pin,
             label: chat['isTop'] ? '取消置顶' : '置顶',
-            // flex: chat.isTop ? 3 : 2,
           ),
           SlidableAction(
             padding: const EdgeInsets.all(0),
@@ -41,112 +41,65 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
           ),
         ],
       ),
-      child: Material(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        child: InkWell(
-          onTap: () => controller.onTapToChat(chat),
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.0),
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.grey[100]!,
-                  width: 1,
-                ),
+      child: [
+        CustomPortrait(url: chat['portrait'] ?? ''),
+        const SizedBox(width: 12),
+        [
+          [
+            [
+              Text(StringUtil.isNotNullOrEmpty(chat['remark'])
+                      ? chat['remark']
+                      : chat['name'] ?? '')
+                  .fontSize(14)
+                  .fontWeight(FontWeight.w500),
+              const SizedBox(width: 5),
+              if (chat['type'] == 'group')
+                CustomBadge(text: '群', color: theme.primaryColor),
+            ].toRow(),
+            Text(DateUtil.formatTime(chat['updateTime']))
+                .fontSize(10)
+                .textColor(Colors.grey[500]),
+          ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
+          const SizedBox(height: 4),
+          [
+            Text(
+              chat['name'] == null && chat['type'] == 'group'
+                  ? '该群已解散'
+                  : LinyuMsgUtil.getMsgContent(chat['lastMsgContent']),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ).fontSize(12).textColor(Colors.grey[500]).expanded(),
+            if (chat['unreadNum'] > 0)
+              Text(chat['unreadNum'] < 99 ? chat['unreadNum'].toString() : '99')
+                  .fontSize(10)
+                  .textColor(Colors.white)
+                  .center()
+                  .width(16)
+                  .height(16)
+                  .paddingAll(0)
+                  .decorated(
+                      color: const Color(0xFFFF4C4C), shape: BoxShape.circle),
+          ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
+        ].toColumn(crossAxisAlignment: CrossAxisAlignment.start).expanded(),
+      ]
+          .toRow()
+          .paddingSymmetric(horizontal: 8.0)
+          .decorated(
+            borderRadius: BorderRadius.circular(12.0),
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey[100]!,
+                width: 1,
               ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                  CustomPortrait(url: chat['portrait'] ?? ''),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  StringUtil.isNotNullOrEmpty(chat['remark'])
-                                      ? chat['remark']
-                                      : chat['name'] ?? '',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(width: 5),
-                                if (chat['type'] == 'group')
-                                  CustomBadge(
-                                      text: '群', color: theme.primaryColor),
-                              ],
-                            ),
-                            Text(
-                              DateUtil.formatTime(chat['updateTime']),
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: Colors.grey[500],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                chat['name'] == null && chat['type'] == 'group'
-                                    ? '该群已解散'
-                                    : LinyuMsgUtil.getMsgContent(
-                                        chat['lastMsgContent']),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[500],
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            if (chat['unreadNum'] > 0)
-                              Container(
-                                width: 16,
-                                height: 16,
-                                padding: const EdgeInsets.all(0),
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFFF4C4C),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    chat['unreadNum'] < 99
-                                        ? chat['unreadNum'].toString()
-                                        : '99',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+          )
+          .paddingSymmetric(vertical: 10.0)
+          .inkWell(
+            onTap: () => controller.onTapToChat(chat),
+            borderRadius: 12,
+          )
+          .material(
+              color: Colors.white, borderRadius: BorderRadius.circular(12)),
     );
   }
 

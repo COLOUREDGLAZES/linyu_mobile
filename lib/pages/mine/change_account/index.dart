@@ -15,12 +15,10 @@ class ChangeAccountPage extends CustomView<ChangeAccountLogic> {
     return Dismissible(
       key: Key(user.id),
       direction: DismissDirection.endToStart,
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
+      background: const Icon(Icons.delete, color: Colors.white)
+          .paddingOnly(right: 20)
+          .alignment(Alignment.centerRight)
+          .backgroundColor(Colors.red),
       onDismissed: (direction) => controller.deleteAccount(user),
       confirmDismiss: (direction) async {
         if (user.isCurrent) {
@@ -43,51 +41,39 @@ class ChangeAccountPage extends CustomView<ChangeAccountLogic> {
   }
 
   @override
-  Widget buildView(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        Get.back(result: true);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('账号切换'),
-        ),
-        body: Stack(
-          children: [
-            Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: controller.accounts.length,
-                    itemBuilder: (context, index) {
-                      final account = controller.accounts[index];
-                      return _buildAccountItem(account);
-                    },
-                  ),
+  Widget buildView(BuildContext context) => PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
+          Get.back(result: true);
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('账号切换'),
+          ),
+          body: [
+            [
+              ListView.builder(
+                itemCount: controller.accounts.length,
+                itemBuilder: (context, index) {
+                  final account = controller.accounts[index];
+                  return _buildAccountItem(account);
+                },
+              ).expanded(),
+              OutlinedButton(
+                onPressed: controller.addAccount,
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 48),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: OutlinedButton(
-                    onPressed: controller.addAccount,
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 48),
-                    ),
-                    child: const Text('添加或注册账号',
-                        style: TextStyle(color: Colors.red)),
-                  ),
-                ),
-              ],
-            ),
+                child: const Text('添加或注册账号').textColor(Colors.red),
+              ).paddingAll(16.0),
+            ].toColumn(),
             if (controller.isChangingAccount)
               const CupertinoActivityIndicator(
                 radius: 16, // 半径
                 animating: true, // 是否动画
               ).center(),
-          ],
+          ].toStack(),
         ),
-      ),
-    );
-  }
+      );
 }

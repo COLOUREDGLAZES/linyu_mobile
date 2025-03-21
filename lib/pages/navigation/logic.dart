@@ -39,9 +39,7 @@ class NavigationLogic extends Logic {
   bool _isOpenDrawer = false;
   bool get isOpenDrawer => _isOpenDrawer;
   set isOpenDrawer(bool value) {
-    _isOpenDrawer = value;
-    update([const Key('main')]);
-    if (_userId != globalData.currentUserId && value == false) {
+    if (_userId != globalData.currentUserId && !value) {
       if (currentIndex.value == 0) {
         final ChatListLogic chatListLogic = Get.find<ChatListLogic>();
         chatListLogic.onGetChatList();
@@ -53,7 +51,10 @@ class NavigationLogic extends Logic {
         talkLogic.init();
       }
       _userId = globalData.currentUserId;
+      globalData.onGetUserUnreadInfo();
     }
+    _isOpenDrawer = value;
+    update([const Key('main')]);
   }
 
   String _userId = '';
@@ -114,19 +115,6 @@ class NavigationLogic extends Logic {
         return true;
       }
       Get.back(result: true);
-      if (_userId != globalData.currentUserId) {
-        if (currentIndex.value == 0) {
-          final ChatListLogic chatListLogic = Get.find<ChatListLogic>();
-          chatListLogic.onGetChatList();
-        } else if (currentIndex.value == 1) {
-          final ContactsLogic contactsLogic = Get.find<ContactsLogic>();
-          contactsLogic.init();
-        } else {
-          final TalkLogic talkLogic = Get.find<TalkLogic>();
-          talkLogic.init();
-        }
-        _userId = globalData.currentUserId;
-      }
       return false;
     } catch (e) {
       // 错误处理，例如记录日志
