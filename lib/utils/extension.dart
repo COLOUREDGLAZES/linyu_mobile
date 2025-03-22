@@ -59,6 +59,17 @@ extension ListExtension<E extends Map<String, dynamic>> on List {
     }
     return sourceList; // 返回处理后的列表
   }
+
+  Widget toGridView(
+      {key, shrinkWrap, int? crossAxisCount, double? mainAxisSpacing = 0.0}) {
+    return GridView.count(
+      key: key,
+      shrinkWrap: shrinkWrap,
+      crossAxisCount: crossAxisCount ?? 4,
+      mainAxisSpacing: mainAxisSpacing!,
+      children: this as List<Widget>,
+    );
+  }
 }
 
 extension WidgetExtension on Widget {

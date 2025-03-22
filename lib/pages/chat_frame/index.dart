@@ -1,15 +1,17 @@
-import 'dart:convert';
+import 'dart:convert' show jsonDecode;
+
 import 'package:chat_bottom_container/panel_container.dart'
     show ChatBottomPanelContainer, ChatBottomPanelContainerController;
-import 'package:chat_bottom_container/typedef.dart';
-import 'package:ducafe_ui_core/ducafe_ui_core.dart';
+import 'package:chat_bottom_container/typedef.dart'
+    show ChatBottomHandleFocus, ChatBottomPanelType;
+import 'package:ducafe_ui_core/ducafe_ui_core.dart'
+    show ListExtensions, ScreenUtilExtensions, TextExtensions, WidgetExtensions;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData, Color;
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart'
-    show ExtensionBottomSheet, Get, GetNavigation, WidgetPaddingX;
-import 'package:get/utils.dart';
+import 'package:fluttertoast/fluttertoast.dart' show Fluttertoast;
+import 'package:get/get.dart' show Get, GetNavigation, WidgetPaddingX;
+import 'package:get/utils.dart' show Get, WidgetMarginX, WidgetPaddingX;
 import 'package:image_picker/image_picker.dart' show ImageSource;
 import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
@@ -21,7 +23,8 @@ import 'package:linyu_mobile/pages/chat_frame/logic.dart';
 import 'package:linyu_mobile/utils/String.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart' show CustomView;
 import 'package:linyu_mobile/utils/emoji.dart';
-import 'package:linyu_mobile/utils/extension.dart';
+import 'package:linyu_mobile/utils/extension.dart'
+    show ListExtension, WidgetExtension;
 
 enum PanelType {
   none,
@@ -42,7 +45,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     final keyboardHeight = panelController.keyboardHeight;
     if (keyboardHeight != 0) height = keyboardHeight;
     return [
-      const SizedBox(height: 10),
+      10.horizontalSpace,
       [
         Emoji.emojis
             .map(
@@ -66,13 +69,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
               .positioned(bottom: 0, right: 0),
       ]
           .toStack()
-          .decorated(
-              border: Border(
-            top: BorderSide(
-              color: Colors.grey.withOpacity(0.1),
-              width: 1.0,
-            ),
-          ))
+          .border(top: 1.0, color: Colors.grey.withOpacity(0.1))
           .alignCenter()
           .paddingAll(10)
           .width(MediaQuery.of(Get.context!).size.width)
@@ -86,48 +83,38 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     final keyboardHeight = panelController.keyboardHeight;
     if (keyboardHeight != 0) height = keyboardHeight;
     return [
-      const SizedBox(height: 10),
-      GridView.count(
-        shrinkWrap: true,
-        crossAxisCount: 4,
-        mainAxisSpacing: 10,
-        children: [
+      10.horizontalSpace,
+      [
+        _buildIconButton2(
+          '图片',
+          const IconData(0xe9f4, fontFamily: 'IconFont'),
+          () => controller.cropChatPicture(null),
+        ),
+        _buildIconButton2(
+          '拍照',
+          const IconData(0xe9f3, fontFamily: 'IconFont'),
+          () => controller.cropChatPicture(ImageSource.camera),
+        ),
+        _buildIconButton2(
+          '文件',
+          const IconData(0xeac4, fontFamily: 'IconFont'),
+          () => controller.selectFile(),
+        ),
+        if (controller.chatInfo['type'] == 'user')
           _buildIconButton2(
-            '图片',
-            const IconData(0xe9f4, fontFamily: 'IconFont'),
-            () => controller.cropChatPicture(null),
+            '语音通话',
+            const IconData(0xe969, fontFamily: 'IconFont'),
+            () => controller.onInviteVideoChat(true),
           ),
+        if (controller.chatInfo['type'] == 'user')
           _buildIconButton2(
-            '拍照',
-            const IconData(0xe9f3, fontFamily: 'IconFont'),
-            () => controller.cropChatPicture(ImageSource.camera),
+            '视频通话',
+            const IconData(0xe9f5, fontFamily: 'IconFont'),
+            () => controller.onInviteVideoChat(false),
           ),
-          _buildIconButton2(
-            '文件',
-            const IconData(0xeac4, fontFamily: 'IconFont'),
-            () => controller.selectFile(),
-          ),
-          if (controller.chatInfo['type'] == 'user')
-            _buildIconButton2(
-              '语音通话',
-              const IconData(0xe969, fontFamily: 'IconFont'),
-              () => controller.onInviteVideoChat(true),
-            ),
-          if (controller.chatInfo['type'] == 'user')
-            _buildIconButton2(
-              '视频通话',
-              const IconData(0xe9f5, fontFamily: 'IconFont'),
-              () => controller.onInviteVideoChat(false),
-            ),
-        ],
-      )
-          .decorated(
-              border: Border(
-            top: BorderSide(
-              color: Colors.grey.withOpacity(0.1),
-              width: 1.0,
-            ),
-          ))
+      ]
+          .toGridView(shrinkWrap: true, mainAxisSpacing: 10)
+          .border(color: Colors.grey.withOpacity(0.1), top: 1.0)
           .paddingAll(10)
           .width(MediaQuery.of(Get.context!).size.width)
           .height(height)
@@ -250,7 +237,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                     controller.hidePanel(panelController);
                   },
                 ),
-          const SizedBox(width: 5),
+          5.verticalSpace,
           controller.isRecording
               ? CustomVoiceRecordButton(
                   onFinish: controller.onSendVoiceMsg,
@@ -275,7 +262,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                       controller.isSend = value.trim().isNotEmpty,
                   onSubmitted: (text) => controller.sendTextMsg(),
                 ).expanded(),
-          const SizedBox(width: 5),
+          5.verticalSpace,
           if (!controller.isRecording)
             _buildIconButton1(
               const IconData(0xe632, fontFamily: 'IconFont'),
@@ -299,12 +286,11 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                   ? _buildIconButton1(
                       Icons.keyboard_arrow_down, controller.scrollBottom)
                   : _buildIconButton1(
-                      const IconData(0xe636, fontFamily: 'IconFont'), () {
-                      WidgetsBinding.instance.addPostFrameCallback((_) =>
+                      const IconData(0xe636, fontFamily: 'IconFont'),
+                      () => WidgetsBinding.instance.addPostFrameCallback((_) =>
                           panelController.updatePanelType(
                               ChatBottomPanelType.other,
-                              data: PanelType.tool));
-                    }),
+                              data: PanelType.tool))),
         ].toRow(crossAxisAlignment: CrossAxisAlignment.center),
         _buildPanelContainer(),
       ]
@@ -314,30 +300,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
           .paddingSymmetric(horizontal: 10.0, vertical: 10)
           .backgroundColor(const Color(0xFFEDF2F9))
           .toRepaintBoundary();
-
-  void _buildBottomSheet() => Get.bottomSheet(
-        backgroundColor: Colors.white,
-        [
-          const Text('语音通话')
-              .textColor(theme.primaryColor)
-              .fontSize(18)
-              .onTap(() {
-                controller.onInviteVideoChat(true);
-                Get.back();
-              })
-              .center()
-              .marginOnly(top: 15.h),
-          const Text('视频通话')
-              .textColor(theme.primaryColor)
-              .fontSize(18)
-              .onTap(() {
-                controller.onInviteVideoChat(false);
-                Get.back();
-              })
-              .center()
-              .marginOnly(bottom: 15.h),
-        ].toWrap(spacing: 10, runSpacing: 10),
-      );
 
   void _showCupertinoSheet() => showCupertinoModalPopup(
         context: Get.context!,
@@ -376,18 +338,15 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
   @override
   Widget buildView(BuildContext context) {
     controller.hasBeenLoaded();
-
     // 聊天页面拨号图标按钮
     final Widget callImage =
         Image.asset('assets/images/call.png', height: 24, width: 24)
             .onTap(_showCupertinoSheet);
-
     final moreImage = Image.asset(
       'assets/images/more.png',
       height: 24,
       width: 24,
     ).onTap(controller.toChatSetting).marginOnly(left: 10.w, right: 10.w);
-
     // appBar 构建
     final PreferredSizeWidget appBar = AppBar(
       centerTitle: true,
@@ -402,7 +361,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         moreImage,
       ],
     );
-
     //加入黑名单按钮组件
     final Widget blockUser = [
       const Icon(Icons.block_flipped, size: 18),
@@ -411,7 +369,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         .toRow(mainAxisAlignment: MainAxisAlignment.center)
         .onTap(() => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"))
         .expanded();
-
     // 添加好友按钮组件
     final Widget addFriend = [
       const Icon(Icons.person_add_alt_1_outlined, size: 18),
@@ -420,7 +377,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         .toRow(mainAxisAlignment: MainAxisAlignment.center)
         .onTap(controller.onTapAddFriend)
         .expanded();
-
     // 不是好友时展示的组件构建
     final Widget notFriend = [
       blockUser,
@@ -430,7 +386,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         .toRow(mainAxisAlignment: MainAxisAlignment.center)
         .backgroundColor(Colors.white)
         .height(35);
-
     // 聊天背景构建
     final Decoration chatBackground = controller.chatBackground.isNotEmpty
         ? BoxDecoration(
@@ -442,7 +397,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         : const BoxDecoration(
             color: Color(0xFFF9FBFF),
           );
-
     // 聊天内容展示构建
     final Widget chatMsgContent = [
       ListView.builder(
@@ -458,7 +412,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
             ),
       if (!controller.isLoading && !controller.isFriend) notFriend,
     ].toStack().onTap(() => controller.hidePanel(panelController)).expanded();
-
     // 底部输入框构建
     final Widget bottomInput = controller.chatInfo['name'] == null &&
             controller.chatInfo['type'] == 'group'
@@ -466,7 +419,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         : !controller.isFriend
             ? _buildNotFriendMessage()
             : _buildTextFieldAndButtons();
-
     // 整体布局构建
     final Widget view = Scaffold(
       resizeToAvoidBottomInset: false,

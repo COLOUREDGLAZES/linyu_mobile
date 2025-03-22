@@ -356,13 +356,8 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                         ...controller.groupSearchList.map((group) =>
                             _buildSearchItem(group, group['id'],
                                 isGroup: true)),
-                        // ...controller.groupSearchList.map((group) =>
-                        //     _buildSearchItem(group, group['friendId'])),
                         ...controller.friendSearchList.map((friend) =>
                             _buildSearchItem(friend, friend['friendId'])),
-                        // ...controller.friendSearchList.map((friend) =>
-                        //     _buildSearchItem(friend, friend['id'],
-                        //         isGroup: true)),
                       ],
                       if (controller.topList.isNotEmpty) ...[
                         Padding(
