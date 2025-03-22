@@ -61,7 +61,7 @@ class ChangeAccountPage extends CustomView<ChangeAccountLogic> {
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 48),
                 ),
-                child: const Text('添加或注册账号').textColor(Colors.red),
+                child: const Text('添加或注册账号').textColor(theme.primaryColor),
               ).paddingAll(16.0),
             ].toColumn(),
             if (controller.isChangingAccount)
