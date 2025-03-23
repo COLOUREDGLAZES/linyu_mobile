@@ -1,14 +1,10 @@
-// ignore_for_file: curly_braces_in_flow_control_structures, unnecessary_new
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/notify_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 
-import 'index.dart';
-
-class FriendRequestLogic extends Logic<FriendRequestPage> {
+class FriendRequestLogic extends Logic {
   final _notifyApi = new NotifyApi();
 
   final TextEditingController applyFriendController =

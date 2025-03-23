@@ -21,17 +21,13 @@ void main() async {
       () async => await SharedPreferences.getInstance(),
       permanent: true);
   String? currentUserId = prefs.getString('currentUserId');
-  // String? token = prefs.getString('x-token');
   String? token = prefs.getString('x-token_$currentUserId');
-  // String? sex = prefs.getString('sex');
   String? sex = prefs.getString('sex_$currentUserId');
   http.baseUrl = prefs.getString("httpUrl");
   websocket.websocketUrl = prefs.getString("websocket_ip");
-  runApp(MyApp(
-      key: const Key('MyApp'),
-      // initialRoute: token != null ? '/?sex=$sex' : '/login'));
-      initialRoute:
-          currentUserId != null && token != null ? '/?sex=$sex' : '/login'));
+  final String initialRoute =
+      currentUserId != null && token != null ? '/?sex=$sex' : '/login';
+  runApp(MyApp(key: const Key('MyApp'), initialRoute: initialRoute));
 }
 
 class MyApp extends StatelessWidget {
@@ -45,7 +41,7 @@ class MyApp extends StatelessWidget {
 
   static const _iosPlatform = MethodChannel('com.example.app/ios_channel');
 
-  void initPlatformState() async {
+  void _initPlatformState() async {
     if (Platform.isAndroid) {
       final startService = await _androidPlatform.invokeMethod('startService');
       if (kDebugMode) print('the Service start result is: $startService');
@@ -64,13 +60,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // _initPlatformState();
     // 获取屏幕尺寸
     Size screenSize = MediaQuery.of(context).size;
     if (kDebugMode)
       print(
           'screenWidth: ${screenSize.width}, screenHeight: ${screenSize.height}');
     return ScreenUtilInit(
-      designSize: screenSize, // 直接使用screenSize
+      designSize: screenSize,
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) => GetMaterialApp(

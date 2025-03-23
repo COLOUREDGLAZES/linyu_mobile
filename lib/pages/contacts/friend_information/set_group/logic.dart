@@ -7,9 +7,7 @@ import 'package:linyu_mobile/utils/api/group_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 
-import 'index.dart';
-
-class SetGroupLogic extends Logic<SetGroupPage> {
+class SetGroupLogic extends Logic {
   final _groupApi = GroupApi();
   final _friendApi = FriendApi();
   late List<dynamic> groupList = [];
@@ -83,14 +81,21 @@ class SetGroupLogic extends Logic<SetGroupPage> {
     }
   }
 
-  void onUpdateGroupPress(BuildContext context, dynamic group) {
+  void onUpdateGroupPress(BuildContext context, dynamic group,
+      {void Function(
+        BuildContext context, {
+        dynamic group,
+        String? title,
+        String? label,
+        String? hintText,
+      })? showAddAndUpdateGroupDialog}) {
     if (group['value'] == '0') {
       Get.back();
       CustomFlutterToast.showSuccessToast("默认分组不能重命名~");
       return;
     }
     Get.back();
-    view?.showAddAndUpdateGroupDialog(
+    showAddAndUpdateGroupDialog?.call(
       context,
       group: group,
       title: '修改分组',

@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/pages/setting/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/config/network/http.dart';
 import 'package:linyu_mobile/utils/config/network/web_socket.dart' as websocket;
 
-class SettingLogic extends Logic<SettingPage> {
+class SettingLogic extends Logic {
   final Http http = new Http(url: baseUrl);
   final TextEditingController httpUrlController = new TextEditingController();
   final TextEditingController wsUrlController = new TextEditingController();
@@ -32,10 +31,18 @@ class SettingLogic extends Logic<SettingPage> {
     update([const Key("setting")]);
   }
 
-  @override
-  void onInit() {
-    super.onInit();
+  void _init() {
     httpUrlController.text = http.baseUrl;
     wsUrlController.text = wsManager.websocketIp;
+    if (httpUrlController.text == 'http://27.25.159.46:9200')
+      httpUrlController.text = '';
+    if (wsUrlController.text == 'ws://27.25.159.46:9100')
+      wsUrlController.text = '';
+  }
+
+  @override
+  void onInit() {
+    _init();
+    super.onInit();
   }
 }

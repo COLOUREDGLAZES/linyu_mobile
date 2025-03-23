@@ -13,10 +13,8 @@ import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
 
-import 'index.dart';
-
 //个人资料编辑页面逻辑
-class EditMineLogic extends Logic<EditMinePage> {
+class EditMineLogic extends Logic {
   //用户API
   final _userApi = UserApi();
 

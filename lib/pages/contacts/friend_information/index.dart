@@ -1,3 +1,4 @@
+import 'package:ducafe_ui_core/ducafe_ui_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,7 +31,7 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
     showCupertinoModalPopup(
       context: Get.context!,
       builder: (BuildContext context) => CupertinoActionSheet(
-        title: const Text('选择操作'),
+        title: const Text('选择操作').textColor(theme.primaryColor),
         message: const Text('请从以下选项中选择一项'),
         actions: [
           CupertinoActionSheetAction(
@@ -38,19 +39,19 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
               Navigator.pop(context); // 关闭弹窗
               controller.onVideoChat(isOnlyAudio: true);
             },
-            child: const Text('语音通话'),
+            child: const Text('语音通话').textColor(theme.primaryColor),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context);
               controller.onVideoChat();
             },
-            child: const Text('视频通话'),
+            child: const Text('视频通话').textColor(theme.primaryColor),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           onPressed: () => Navigator.pop(context),
-          child: const Text('取消'),
+          child: const Text('取消').textColor(theme.primaryColor),
         ),
       ),
     );

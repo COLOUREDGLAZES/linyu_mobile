@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart' show Key, debugPrint, kDebugMode;
+
+import 'package:flutter/foundation.dart' show Key, kDebugMode;
 import 'package:flutter/material.dart' show FocusNode, TextEditingController;
 import 'package:get/get.dart' show Get, GetNavigation;
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
@@ -7,12 +8,8 @@ import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/api/chat_list_api.dart' show ChatListApi;
 import 'package:linyu_mobile/utils/api/msg_api.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
-import 'package:shared_preferences/shared_preferences.dart'
-    show SharedPreferences;
 
-import 'index.dart';
-
-class ReForwardLogic extends Logic<ReForwardPage> {
+class ReForwardLogic extends Logic {
   final _chatListApi = new ChatListApi();
   final _msgApi = new MsgApi();
   final FocusNode focusNode = new FocusNode(skipTraversal: true);

@@ -1,12 +1,9 @@
-// ignore_for_file: unnecessary_new
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
-import 'index.dart';
 
-class AddFriendLogic extends Logic<AddFriendPage> {
+class AddFriendLogic extends Logic {
   final _userApi = new UserApi();
 
   late List<dynamic> searchList = [];

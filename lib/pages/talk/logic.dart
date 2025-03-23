@@ -10,13 +10,12 @@ import 'package:get/get.dart'
 import 'package:image_picker/image_picker.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/pages/talk/index.dart';
 import 'package:linyu_mobile/utils/api/talk_api.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:linyu_mobile/utils/crop_picture.dart';
 
-class TalkLogic extends Logic<TalkPage> {
+class TalkLogic extends Logic {
   final _talkApi = TalkApi();
   final _userApi = UserApi();
   String currentUserId = '';
@@ -200,8 +199,12 @@ class TalkLogic extends Logic<TalkPage> {
       cropPicture(type, _uploadPicture, isVariable: true);
 
   //更换说说背景
-  void changeTalkBackground(BuildContext context) =>
-      view?.bottomSheet(context, _cropChatPicture);
+  void changeTalkBackground(BuildContext context,
+          {void Function(BuildContext context,
+                  Function(ImageSource? type) cropChatPicture)?
+              bottomSheet}) =>
+      // view?.bottomSheet(context, _cropChatPicture);
+      bottomSheet?.call(context, _cropChatPicture);
 
   @override
   void onInit() {

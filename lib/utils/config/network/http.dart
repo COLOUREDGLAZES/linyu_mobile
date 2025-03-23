@@ -16,7 +16,7 @@ class Http {
     // String defaultPort = '19200';
     String defaultPort = '9200';
     _instance._baseUrl = url ?? 'http://$defaultIp:$defaultPort';
-    _instance.dio.options.baseUrl = url ?? 'http://$defaultIp:$defaultPort';
+    _instance.dio.options.baseUrl = _instance._baseUrl;
     return _instance;
   }
 

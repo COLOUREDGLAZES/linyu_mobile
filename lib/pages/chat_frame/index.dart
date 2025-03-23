@@ -204,7 +204,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
       onTapFavorite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
       onTapRepost: (data) => controller.onRepostMsg(msg),
       reEdit: () => controller.reEditMsg(msg),
-      onTapMsg: () => controller.onTapMsg(msg),
+      onTapMsg: () => controller.onTapMsg(msg, panelController),
       onTapVoiceToText: (data) => controller.onVoiceToTxt(msg),
       onTapVoiceHiddenText: (data) => controller.onHideText(msg),
       onTapCopy: (data) =>
@@ -304,7 +304,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
   void _showCupertinoSheet() => showCupertinoModalPopup(
         context: Get.context!,
         builder: (BuildContext context) => CupertinoActionSheet(
-          title: const Text('选择操作'),
+          title: const Text('选择操作').textColor(theme.primaryColor),
           message: const Text('请从以下选项中选择一项'),
           actions: [
             CupertinoActionSheetAction(
@@ -312,19 +312,19 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                 Navigator.pop(context); // 关闭弹窗
                 controller.onInviteVideoChat(true);
               },
-              child: const Text('语音通话'),
+              child: const Text('语音通话').textColor(theme.primaryColor),
             ),
             CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(context);
                 controller.onInviteVideoChat(false);
               },
-              child: const Text('视频通话'),
+              child: const Text('视频通话').textColor(theme.primaryColor),
             ),
           ],
           cancelButton: CupertinoActionSheetAction(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: const Text('取消').textColor(theme.primaryColor),
           ),
         ),
       );

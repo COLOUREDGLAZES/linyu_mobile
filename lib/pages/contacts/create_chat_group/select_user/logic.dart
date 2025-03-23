@@ -4,10 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:linyu_mobile/utils/api/friend_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
-import 'index.dart';
 import 'package:linyu_mobile/utils/extension.dart';
 
-class ChatGroupSelectUserLogic extends Logic<ChatGroupSelectUserPage> {
+class ChatGroupSelectUserLogic extends Logic {
   final _friendApi = FriendApi();
 
   final TextEditingController searchBoxController = new TextEditingController();

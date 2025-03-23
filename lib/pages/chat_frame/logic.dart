@@ -32,9 +32,7 @@ import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
 import 'package:linyu_mobile/utils/crop_picture.dart';
 import 'package:linyu_mobile/utils/extension.dart';
 
-import 'index.dart';
-
-class ChatFrameLogic extends Logic<ChatFramePage> {
+class ChatFrameLogic extends Logic {
   // 后端接口
   final _msgApi = MsgApi();
   final _chatListApi = ChatListApi();
@@ -482,8 +480,9 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
   }
 
   // 点击消息记录
-  void onTapMsg(dynamic msg) {
-    hidePanel(view?.panelController as ChatBottomPanelContainerController);
+  void onTapMsg(
+      dynamic msg, ChatBottomPanelContainerController panelController) {
+    hidePanel(panelController);
     final Map<String, dynamic> msgContent;
     if (msg['msgContent'] is String)
       msgContent = jsonDecode(msg['msgContent']);
@@ -632,7 +631,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
       } else
         _handleVoiceToTextError(msg, content, '语音转文字失败: 网络错误');
     } catch (e) {
-      // CustomFlutterToast.showErrorToast('语音转文字时发生错误: $e');
       if (kDebugMode) print('语音转文字时发生错误: $e');
       content['text'] = '识别失败!';
       _updateMessageList(
@@ -824,27 +822,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
     }
   }
 
-  // 保存消息到本地
-  void saveMsgToLocal() async {
-    List newMsgList = new List.generate(msgList.length, (index) {
-      if (msgList[index]['msgContent'] is Map) {
-        String msgContent = jsonEncode(msgList[index]['msgContent']);
-        if (kDebugMode) print('onClose msgContent: $msgContent');
-        msgList[index]['msgContent'] = msgContent;
-      }
-      if (msgList[index]['lastMsgContent'] is Map) {
-        String lastMsgContent = jsonEncode(msgList[index]['lastMsgContent']);
-        if (kDebugMode) print('onClose lastMsgContent: $lastMsgContent');
-        msgList[index]['lastMsgContent'] = lastMsgContent;
-      }
-      return msgList[index];
-    });
-    if (newMsgList.isNotEmpty) newMsgList.removeAt(0);
-    int? result = await sqfliteHelper.updateOrInsertAll(newMsgList);
-    if (result != null) if (kDebugMode)
-      print('onClose insertAll result: $result');
-  }
-
   //当加载完所有消息时
   void hasBeenLoaded() {
     if (!hasMore && msgList.isNotEmpty) {
@@ -893,7 +870,6 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   // 初始化数据
   void _initData() async {
-    if (kDebugMode) print('view type is: ${view.runtimeType}');
     chatInfo = Get.arguments?['chatInfo'] ?? {};
     if (kDebugMode) print('chat_frame chatInfo: $chatInfo');
     _targetId = chatInfo['fromId'] ?? '';
@@ -953,16 +929,10 @@ class ChatFrameLogic extends Logic<ChatFramePage> {
 
   @override
   void onClose() {
-    // try {
-    //   saveMsgToLocal();
-    // } catch (e) {
-    //   if (kDebugMode) print('onClose过程中发生错误: $e');
-    // } finally {
     msgContentController.dispose();
     scrollController.dispose();
     _subscription?.cancel();
     focusNode.dispose();
     super.onClose();
-    // }
   }
 }

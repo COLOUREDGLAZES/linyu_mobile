@@ -21,7 +21,7 @@ import 'logic.dart';
 class TalkPage extends CustomWidget<TalkLogic> {
   TalkPage({super.key});
 
-  void bottomSheet(
+  void _bottomSheet(
           BuildContext context, Function(ImageSource? type) cropChatPicture) =>
       showModalBottomSheet(
         context: context,
@@ -275,7 +275,7 @@ class TalkPage extends CustomWidget<TalkLogic> {
     ).onTap(
       () => !controller.isExpanded
           ? controller.scrollToTop()
-          : controller.changeTalkBackground(context),
+          : controller.changeTalkBackground(context, bottomSheet: _bottomSheet),
     );
 
     // 动画

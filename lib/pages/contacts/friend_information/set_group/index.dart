@@ -1,5 +1,3 @@
-// ignore_for_file: must_be_immutable
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -15,7 +13,7 @@ import 'logic.dart';
 class SetGroupPage extends CustomView<SetGroupLogic> {
   SetGroupPage({super.key});
 
-  void showAddAndUpdateGroupDialog(
+  void _showAddAndUpdateGroupDialog(
     BuildContext context, {
     dynamic group,
     String? title = "添加分组",
@@ -108,7 +106,9 @@ class SetGroupPage extends CustomView<SetGroupLogic> {
             SizedBox(
               width: double.infinity,
               child: CustomTextButton('重新命名',
-                  onTap: () => controller.onUpdateGroupPress(context, group),
+                  onTap: () => controller.onUpdateGroupPress(context, group,
+                      showAddAndUpdateGroupDialog:
+                          _showAddAndUpdateGroupDialog),
                   textColor: theme.primaryColor,
                   padding: const EdgeInsets.only(top: 20, bottom: 10),
                   fontSize: 16),
@@ -138,7 +138,7 @@ class SetGroupPage extends CustomView<SetGroupLogic> {
             systemOverlayStyle: SystemUiOverlayStyle.dark,
             actions: [
               CustomTextButton('添加',
-                  onTap: () => showAddAndUpdateGroupDialog(context),
+                  onTap: () => _showAddAndUpdateGroupDialog(context),
                   padding: const EdgeInsets.symmetric(
                       horizontal: 20.0, vertical: 5.0),
                   fontSize: 14),

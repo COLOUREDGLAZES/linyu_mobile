@@ -2,12 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
-import 'package:linyu_mobile/pages/mine/my_talk/index.dart';
 import 'package:linyu_mobile/utils/api/talk_api.dart';
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 
-class MyTalkLogic extends Logic<MyTalkPage> {
+class MyTalkLogic extends Logic {
   final _talkApi = TalkApi();
   final _userApi = UserApi();
   String targetUserId = '';

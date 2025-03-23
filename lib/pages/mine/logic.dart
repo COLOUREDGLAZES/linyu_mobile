@@ -3,9 +3,7 @@ import 'package:flutter/foundation.dart' show Key, kDebugMode;
 import 'package:get/get.dart' show Get, GetNavigation;
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 
-import 'index.dart';
-
-class MineLogic extends Logic<MinePage> {
+class MineLogic extends Logic {
   late dynamic currentUserInfo = {};
   Future<void> init() async {
     currentUserInfo['name'] = globalData.currentUserName;

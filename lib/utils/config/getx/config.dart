@@ -1,12 +1,6 @@
 import 'package:flutter/cupertino.dart'
-    show
-        BuildContext,
-        Key,
-        StatelessElement,
-        StatelessWidget,
-        Widget,
-        debugPrint;
-import 'package:flutter/foundation.dart' show Key, debugPrint, kDebugMode;
+    show BuildContext, Key, StatelessElement, StatelessWidget, Widget;
+import 'package:flutter/foundation.dart' show Key, kDebugMode;
 import 'package:get/get.dart'
     show
         Get,
@@ -23,8 +17,8 @@ import 'package:linyu_mobile/utils/config/getx/global_data.dart'
 import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart'
     show GlobalThemeConfig;
 import 'package:linyu_mobile/utils/config/getx/route.dart' show AppRoutes;
-import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:linyu_mobile/utils/config/getx/sqflite_helper.dart';
+import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //路由配置
@@ -105,13 +99,7 @@ abstract class CustomWidget<T extends GetxController> extends StatelessWidget {
 }
 
 /// 视图业务逻辑基类
-abstract class Logic<V extends Widget> extends GetxController {
-  /// 当前与controller绑定的view
-  /// 当不传入泛型时，view为null 不能在controller的onInit中使用view
-  /// 若需要在onInit中使用view，则需要传入泛型
-  /// like: class HomeLogic extends Logic<HomeView>{}
-  V? view = widgetMap[V];
-
+abstract class Logic extends GetxController {
   //路由参数
   dynamic get arguments => Get.arguments;
 
@@ -161,9 +149,6 @@ abstract class CustomView<T extends Logic> extends StatelessWidget {
   /// 初始化
   void init(BuildContext context) {
     if (kDebugMode) print("init>$runtimeType");
-    if (!controller.initialized || controller.view != null)
-      return; // 提前返回，减少不必要的计算
-    if (controller.view == null) controller.view = this;
   }
 
   /// 依赖发生变化
