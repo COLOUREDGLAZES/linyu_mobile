@@ -34,7 +34,10 @@ class ChangeAccountPage extends CustomView<ChangeAccountLogic> {
               ? const Icon(Icons.check_circle, color: Colors.white)
               : null,
           onTap: () => controller.switchAccount(user),
-        ).card(color: user.isCurrent ? theme.primaryColor : Colors.white),
+        ).card(
+          color: user.isCurrent ? theme.primaryColor : Colors.white,
+          elevation: 0.1,
+        ),
       );
 
   @override
