@@ -67,12 +67,13 @@ dependencies:
   palette_generator: 0.3.3+6
   video_player: 2.9.3
   ducafe_ui_core: 1.0.6
+  just_audio: 0.9.42
 
   image_gallery_saver:
     git:
       url: https://github.com/COLOUREDGLAZES/image_gallery_saver.git
       ref: master
-  just_audio: 0.9.42
+
   open_filex:
     git:
       url: https://github.com/mufassalhussain/open_filex.git

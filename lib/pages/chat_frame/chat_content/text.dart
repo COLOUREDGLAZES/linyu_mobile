@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_string_detector/index.dart'
-    show PhoneNumberDetector, StringDetector;
+    show StringDetector;
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:url_launcher/url_launcher.dart' show canLaunchUrl, launchUrl;
 

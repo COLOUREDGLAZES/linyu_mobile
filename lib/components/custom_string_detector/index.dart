@@ -121,15 +121,14 @@ class StringDetector extends StatelessWidget {
       final end = match.end;
 
       // 添加普通文本
-      if (start > lastEnd) {
+      if (start > lastEnd)
         textSpans.add(TextSpan(text: text.substring(lastEnd, start)));
-      }
 
       // 判断匹配类型
       final phone = match.group(1);
       final url = match.group(2);
 
-      if (phone != null) {
+      if (phone != null)
         // 处理电话号码
         textSpans.add(
           _buildClickableSpan(
@@ -139,7 +138,7 @@ class StringDetector extends StatelessWidget {
             onTap: () => _launchPhone(phone, context),
           ),
         );
-      } else if (url != null) {
+      else if (url != null)
         // 处理网址
         textSpans.add(
           _buildClickableSpan(
@@ -149,15 +148,13 @@ class StringDetector extends StatelessWidget {
             onTap: () => _launchUrl(url, context),
           ),
         );
-      }
 
       lastEnd = end;
     }
 
     // 添加剩余文本
-    if (lastEnd < text.length) {
+    if (lastEnd < text.length)
       textSpans.add(TextSpan(text: text.substring(lastEnd)));
-    }
 
     return RichText(
       text: TextSpan(
@@ -178,9 +175,7 @@ class StringDetector extends StatelessWidget {
     final String cleaned =
         !isUrl ? text.replaceAll(RegExp(r'[^0-9+]'), '') : '';
     final bool isValid = cleaned.length >= 10 && cleaned.length <= 15;
-
     final bool isPhone = isUrl ? false : isValid;
-
     return TextSpan(
       text: text,
       style: TextStyle(
