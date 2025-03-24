@@ -9,7 +9,8 @@ import 'package:flutter/cupertino.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:get/get.dart';
-import 'package:linyu_mobile/components/custom_phone_number_detector/index.dart';
+import 'package:linyu_mobile/components/custom_string_detector/index.dart'
+    show PhoneNumberDetector, StringDetector;
 import 'package:linyu_mobile/utils/config/getx/config.dart';
 import 'package:url_launcher/url_launcher.dart' show canLaunchUrl, launchUrl;
 
@@ -87,14 +88,17 @@ class TextMessage extends StatelessThemeWidget {
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(Get.context!).size.width * 0.7,
       ),
-      child: PhoneNumberDetector(
+      child: StringDetector(
         text: msgContent['content'],
+        linkColor: isRight && globalData.currentSex == '男'
+            ? Colors.white
+            : Colors.blue,
+        phoneColor: isRight && globalData.currentSex == '男'
+            ? Colors.white
+            : Colors.blue,
         style: TextStyle(
             color: isRight ? Colors.white : Colors.black, fontSize: 14),
         onTap: (number) async => _showCupertinoSheet(number!),
-        numberColor: isRight && globalData.currentSex == '男'
-            ? Colors.white
-            : Colors.blue,
       ),
     );
   }
