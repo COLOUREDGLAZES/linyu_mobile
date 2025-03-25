@@ -10,42 +10,37 @@ class NavigationPage extends CustomWidget<NavigationLogic> {
 
   @override
   Widget buildWidget(BuildContext context) => PopScope(
-        canPop: false,
-        onPopInvokedWithResult: controller.onPopPage,
-        child: Obx(() => Scaffold(
-              drawer: controller.pages[3].page(),
-              onDrawerChanged: (isOpen) => controller.isOpenDrawer = isOpen,
-              body: controller.pages[controller.currentIndex.value].page(),
-              bottomNavigationBar: BottomNavigationBar(
-                currentIndex: controller.currentIndex.value,
-                onTap: controller.onSwitchPage,
-                selectedItemColor: theme.primaryColor,
-                showUnselectedLabels: true,
-                backgroundColor: const Color(0xFFEDF2F9),
-                unselectedItemColor: Colors.grey,
-                type: BottomNavigationBarType.fixed,
-                items: List.generate(
-                    controller.unselectedIcons.length,
-                    (index) => BottomNavigationBarItem(
-                          icon:[
-                            Image.asset(
-                              controller.currentIndex.value == index
-                                  ? 'assets/images/${controller.selectedIcons[index]}-${theme.themeMode.value}.png'
-                                  : controller.unselectedIcons[index],
-                              width: 26,
-                              height: 26,
-                            ),
-                            if (controller.selectedIcons[index] == 'chat' &&
-                                globalData.getUnreadCount('chat') > 0)
-                              CustomTip(globalData.getUnreadCount('chat')),
-                            if (controller.selectedIcons[index] == 'user' &&
-                                globalData.getUnreadCount('friendNotify') > 0)
-                              CustomTip(
-                                  globalData.getUnreadCount('friendNotify')),
-                          ].toStack(clipBehavior: Clip.none),
-                          label: controller.name[index],
-                        )),
-              ),
-            )),
-      );
+      canPop: false,
+      onPopInvokedWithResult: controller.onPopPage,
+      child: Obx(() => Scaffold(
+          drawer: controller.pages[3].page(),
+          onDrawerChanged: (isOpen) => controller.isOpenDrawer = isOpen,
+          body: controller.pages[controller.currentIndex.value].page(),
+          bottomNavigationBar: BottomNavigationBar(
+              currentIndex: controller.currentIndex.value,
+              onTap: controller.onSwitchPage,
+              selectedItemColor: theme.primaryColor,
+              showUnselectedLabels: true,
+              backgroundColor: const Color(0xFFEDF2F9),
+              unselectedItemColor: Colors.grey,
+              type: BottomNavigationBarType.fixed,
+              items: List.generate(
+                  controller.unselectedIcons.length,
+                  (index) => BottomNavigationBarItem(
+                      icon: [
+                        Image.asset(
+                          controller.currentIndex.value == index
+                              ? 'assets/images/${controller.selectedIcons[index]}-${theme.themeMode.value}.png'
+                              : controller.unselectedIcons[index],
+                          width: 26,
+                          height: 26,
+                        ),
+                        if (controller.selectedIcons[index] == 'chat' &&
+                            globalData.getUnreadCount('chat') > 0)
+                          CustomTip(globalData.getUnreadCount('chat')),
+                        if (controller.selectedIcons[index] == 'user' &&
+                            globalData.getUnreadCount('friendNotify') > 0)
+                          CustomTip(globalData.getUnreadCount('friendNotify')),
+                      ].toStack(clipBehavior: Clip.none),
+                      label: controller.name[index]))))));
 }

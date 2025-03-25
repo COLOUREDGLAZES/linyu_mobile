@@ -13,6 +13,7 @@ import 'package:web_socket_channel/web_socket_channel.dart'
 late String? websocketUrl;
 
 class WebSocketUtil extends GetxController {
+  static WebSocketUtil? _instance;
   factory WebSocketUtil() {
     _instance ??= WebSocketUtil._internal();
     return _instance!;
@@ -32,7 +33,6 @@ class WebSocketUtil extends GetxController {
 
   final SharedPreferences _preferences =
       GetInstance().find<SharedPreferences>();
-  static WebSocketUtil? _instance;
   WebSocketChannel? _channel;
   Timer? _heartbeatTimer;
   Timer? _reconnectTimer;

@@ -48,17 +48,12 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
       10.horizontalSpace,
       [
         Emoji.emojis
-            .map(
-              (emoji) => Text(emoji)
-                  .fontSize(24)
-                  .onTap(() => controller.onEmojiTap(emoji)),
-            )
+            .map((emoji) => Text(emoji)
+                .fontSize(24)
+                .onTap(() => controller.onEmojiTap(emoji)))
             .toList()
             .toWrap(
-              alignment: WrapAlignment.center,
-              spacing: 10,
-              runSpacing: 10,
-            )
+                alignment: WrapAlignment.center, spacing: 10, runSpacing: 10)
             .toSingleChildScrollView(),
         if (controller.msgContentController.text.isNotEmpty)
           const Icon(Icons.backspace)
@@ -85,33 +80,22 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     return [
       10.horizontalSpace,
       [
-        _buildIconButton2(
-          '图片',
-          const IconData(0xe9f4, fontFamily: 'IconFont'),
-          () => controller.cropChatPicture(null),
-        ),
-        _buildIconButton2(
-          '拍照',
-          const IconData(0xe9f3, fontFamily: 'IconFont'),
-          () => controller.cropChatPicture(ImageSource.camera),
-        ),
-        _buildIconButton2(
-          '文件',
-          const IconData(0xeac4, fontFamily: 'IconFont'),
-          () => controller.selectFile(),
-        ),
+        _buildIconButton2('图片', const IconData(0xe9f4, fontFamily: 'IconFont'),
+            () => controller.cropChatPicture(null)),
+        _buildIconButton2('拍照', const IconData(0xe9f3, fontFamily: 'IconFont'),
+            () => controller.cropChatPicture(ImageSource.camera)),
+        _buildIconButton2('文件', const IconData(0xeac4, fontFamily: 'IconFont'),
+            () => controller.selectFile()),
         if (controller.chatInfo['type'] == 'user')
           _buildIconButton2(
-            '语音通话',
-            const IconData(0xe969, fontFamily: 'IconFont'),
-            () => controller.onInviteVideoChat(true),
-          ),
+              '语音通话',
+              const IconData(0xe969, fontFamily: 'IconFont'),
+              () => controller.onInviteVideoChat(true)),
         if (controller.chatInfo['type'] == 'user')
           _buildIconButton2(
-            '视频通话',
-            const IconData(0xe9f5, fontFamily: 'IconFont'),
-            () => controller.onInviteVideoChat(false),
-          ),
+              '视频通话',
+              const IconData(0xe9f5, fontFamily: 'IconFont'),
+              () => controller.onInviteVideoChat(false)),
       ]
           .toGridView(shrinkWrap: true, mainAxisSpacing: 10)
           .border(color: Colors.grey.withOpacity(0.1), top: 1.0)
@@ -168,9 +152,8 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
             Icons.keyboard_arrow_down, () => controller.scrollBottom()),
       ]
           .toRow(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-          )
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center)
           .paddingSymmetric(horizontal: 10.0, vertical: 10)
           .backgroundColor(const Color(0xFFEDF2F9));
 
@@ -223,25 +206,20 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         [
           controller.isRecording
               ? _buildIconButton1(
-                  const IconData(0xe661, fontFamily: 'IconFont'),
-                  () {
-                    controller.isRecording = false;
-                    WidgetsBinding.instance.addPostFrameCallback(
-                        (_) => controller.focusNode.requestFocus());
-                  },
-                )
+                  const IconData(0xe661, fontFamily: 'IconFont'), () {
+                  controller.isRecording = false;
+                  WidgetsBinding.instance.addPostFrameCallback(
+                      (_) => controller.focusNode.requestFocus());
+                })
               : _buildIconButton1(
-                  const IconData(0xe7e2, fontFamily: 'IconFont'),
-                  () {
-                    controller.isRecording = true;
-                    controller.hidePanel(panelController);
-                  },
-                ),
+                  const IconData(0xe7e2, fontFamily: 'IconFont'), () {
+                  controller.isRecording = true;
+                  controller.hidePanel(panelController);
+                }),
           5.verticalSpace,
           controller.isRecording
-              ? CustomVoiceRecordButton(
-                  onFinish: controller.onSendVoiceMsg,
-                ).expanded()
+              ? CustomVoiceRecordButton(onFinish: controller.onSendVoiceMsg)
+                  .expanded()
               : CustomTextField(
                   controller: controller.msgContentController,
                   maxLines: 3,
@@ -260,28 +238,24 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                   },
                   onChanged: (value) =>
                       controller.isSend = value.trim().isNotEmpty,
-                  onSubmitted: (text) => controller.sendTextMsg(),
-                ).expanded(),
+                  onSubmitted: (text) => controller.sendTextMsg()).expanded(),
           5.verticalSpace,
           if (!controller.isRecording)
-            _buildIconButton1(
-              const IconData(0xe632, fontFamily: 'IconFont'),
-              () {
-                controller.isReadOnly = true;
-                WidgetsBinding.instance.addPostFrameCallback((_) =>
-                    panelController.updatePanelType(ChatBottomPanelType.other,
-                        data: PanelType.emoji,
-                        forceHandleFocus: ChatBottomHandleFocus.requestFocus));
-              },
-            ),
+            _buildIconButton1(const IconData(0xe632, fontFamily: 'IconFont'),
+                () {
+              controller.isReadOnly = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) =>
+                  panelController.updatePanelType(ChatBottomPanelType.other,
+                      data: PanelType.emoji,
+                      forceHandleFocus: ChatBottomHandleFocus.requestFocus));
+            }),
           controller.isSend
               ? CustomButton(
                   text: '发送',
                   onTap: controller.sendTextMsg,
                   width: 60,
                   textSize: 14,
-                  height: 34,
-                )
+                  height: 34)
               : !controller.isOnBottom && controller.isUpSroll
                   ? _buildIconButton1(
                       Icons.keyboard_arrow_down, controller.scrollBottom)
@@ -290,20 +264,18 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                       () => WidgetsBinding.instance.addPostFrameCallback((_) =>
                           panelController.updatePanelType(
                               ChatBottomPanelType.other,
-                              data: PanelType.tool))),
+                              data: PanelType.tool)))
         ].toRow(crossAxisAlignment: CrossAxisAlignment.center),
         _buildPanelContainer(),
       ]
-          .toColumn(
-            mainAxisSize: MainAxisSize.min,
-          )
+          .toColumn(mainAxisSize: MainAxisSize.min)
           .paddingSymmetric(horizontal: 10.0, vertical: 10)
           .backgroundColor(const Color(0xFFEDF2F9))
           .toRepaintBoundary();
 
   void _showCupertinoSheet() => showCupertinoModalPopup(
-        context: Get.context!,
-        builder: (BuildContext context) => CupertinoActionSheet(
+      context: Get.context!,
+      builder: (BuildContext context) => CupertinoActionSheet(
           title: const Text('选择操作').textColor(theme.primaryColor),
           message: const Text('请从以下选项中选择一项'),
           actions: [
@@ -325,9 +297,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
           cancelButton: CupertinoActionSheetAction(
             onPressed: () => Navigator.pop(context),
             child: const Text('取消').textColor(theme.primaryColor),
-          ),
-        ),
-      );
+          )));
 
   @override
   void init(BuildContext context) {
@@ -394,9 +364,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
               image: NetworkImage(controller.chatBackground),
             ),
           )
-        : const BoxDecoration(
-            color: Color(0xFFF9FBFF),
-          );
+        : const BoxDecoration(color: Color(0xFFF9FBFF));
     // 聊天内容展示构建
     final Widget chatMsgContent = [
       ListView.builder(
@@ -421,17 +389,16 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
             : _buildTextFieldAndButtons();
     // 整体布局构建
     final Widget view = Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: const Color(0xFFF9FBFF),
-      appBar: appBar,
-      body: Container(
-        decoration: chatBackground,
-        child: [
-          chatMsgContent,
-          bottomInput,
-        ].toColumn(),
-      ),
-    ).onTap(() => controller.panelType.value = 'none');
+            resizeToAvoidBottomInset: false,
+            backgroundColor: const Color(0xFFF9FBFF),
+            appBar: appBar,
+            body: Container(
+                decoration: chatBackground,
+                child: [
+                  chatMsgContent,
+                  bottomInput,
+                ].toColumn()))
+        .onTap(() => controller.panelType.value = 'none');
     return view;
   }
 

@@ -81,7 +81,7 @@ extension WidgetExtension on Widget {
     key,
     scrollDirection = Axis.vertical,
     reverse = false,
-    padding,
+    double? padding,
     primary,
     physics,
     controller,
@@ -95,7 +95,9 @@ extension WidgetExtension on Widget {
         key: key,
         scrollDirection: scrollDirection,
         reverse: reverse,
-        padding: padding,
+        padding: padding == null
+            ? null
+            : EdgeInsets.symmetric(horizontal: padding, vertical: padding),
         primary: primary,
         physics: physics,
         controller: controller,

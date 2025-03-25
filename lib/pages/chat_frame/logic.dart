@@ -362,14 +362,10 @@ class ChatFrameLogic extends Logic {
         if (kDebugMode) print('onClose lastMsgContent: $lastMsgContent');
         msg['lastMsgContent'] = lastMsgContent;
       }
-      // final int? insertMsg = await sqfliteHelper.insert(msg);
-      // if (insertMsg != null) {
       msgList.add(msg);
       _index = msgList.length;
       update([const Key('chat_frame')]);
       scrollBottom();
-      // } else
-      //   CustomFlutterToast.showErrorToast('消息保存失败');
     } catch (e) {
       if (kDebugMode) print('添加消息时发生错误: $e');
     } finally {
@@ -392,31 +388,39 @@ class ChatFrameLogic extends Logic {
   Future<void> _onSendImgOrFileMsg(File file, type) async {
     if (StringUtil.isNullOrEmpty(file.path)) return;
     String fileName = file.path.split('/').last;
-    final fileData =
-        await MultipartFile.fromFile(file.path, filename: fileName);
-    dynamic msg = {
-      'toUserId': _targetId,
-      'source': chatInfo['type'],
-      'msgContent': {
-        'type': type,
-        'content': jsonEncode({
-          'name': fileName,
-          'size': fileData.length,
-        })
-      }
-    };
-    _msgApi.send(msg).then((res) {
-      if (res['code'] == 0 && StringUtil.isNotNullOrEmpty(res['data']?['id'])) {
-        Map<String, dynamic> map = {};
-        map["file"] = fileData;
-        map['msgId'] = res['data']['id'];
-        FormData formData = FormData.fromMap(map);
-        _msgApi.sendMedia(formData).then((v) {
-          _msgListAddMsg(res['data']);
-          _onRead(null);
-        });
-      }
-    });
+    try {
+      final fileData =
+          await MultipartFile.fromFile(file.path, filename: fileName);
+      dynamic msg = {
+        'toUserId': _targetId,
+        'source': chatInfo['type'],
+        'msgContent': {
+          'type': type,
+          'content': jsonEncode({
+            'name': fileName,
+            'size': fileData.length,
+          })
+        }
+      };
+      _msgApi.send(msg).then((res) {
+        if (res['code'] == 0 &&
+            StringUtil.isNotNullOrEmpty(res['data']?['id'])) {
+          Map<String, dynamic> map = {};
+          map["file"] = fileData;
+          map['msgId'] = res['data']['id'];
+          FormData formData = FormData.fromMap(map);
+          _msgApi.sendMedia(formData).then((v) {
+            _msgListAddMsg(res['data']);
+            _onRead(null);
+          });
+        }
+      });
+    } on Exception catch (e) {
+      if (kDebugMode) print('发送图片或文件消息时发生错误: $e');
+    } finally {
+      //判断websocket是否连接
+      if (!wsManager.isConnected) wsManager.connect();
+    }
   }
 
   // 选择文件
@@ -483,11 +487,9 @@ class ChatFrameLogic extends Logic {
   void onTapMsg(
       dynamic msg, ChatBottomPanelContainerController panelController) {
     hidePanel(panelController);
-    final Map<String, dynamic> msgContent;
-    if (msg['msgContent'] is String)
-      msgContent = jsonDecode(msg['msgContent']);
-    else
-      msgContent = msg['msgContent'] as Map<String, dynamic>;
+    final Map<String, dynamic> msgContent = msg['msgContent'] is String
+        ? jsonDecode(msg['msgContent'])
+        : msg['msgContent'] as Map<String, dynamic>;
     // 检查消息类型是否为非文本类型
     if (msgContent['type'] != 'text')
       try {
@@ -509,7 +511,6 @@ class ChatFrameLogic extends Logic {
       final result = await _msgApi.retract(msg['id'], _targetId);
       if (result['code'] == 0) {
         msgList = msgList.replace(oldValue: msg, newValue: result['data']);
-        update([const Key('chat_frame')]);
         CustomFlutterToast.showSuccessToast('撤回成功');
       } else
         CustomFlutterToast.showErrorToast(
@@ -641,7 +642,7 @@ class ChatFrameLogic extends Logic {
     }
   }
 
-  // 隐藏文字
+  // 语音转文字时点击隐藏文字
   void onHideText(dynamic msg) {
     try {
       Map<String, dynamic> newMsg = Map<String, dynamic>.from(msg);
@@ -663,7 +664,6 @@ class ChatFrameLogic extends Logic {
       }
     } catch (e) {
       if (kDebugMode) print('隐藏文字时发生错误: $e');
-      // CustomFlutterToast.showErrorToast('隐藏文字时发生错误: $e');
     } finally {
       //判断websocket是否连接
       if (!wsManager.isConnected) wsManager.connect();

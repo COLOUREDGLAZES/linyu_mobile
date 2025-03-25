@@ -63,9 +63,6 @@ class MyApp extends StatelessWidget {
     // _initPlatformState();
     // 获取屏幕尺寸
     Size screenSize = MediaQuery.of(context).size;
-    if (kDebugMode)
-      print(
-          'screenWidth: ${screenSize.width}, screenHeight: ${screenSize.height}');
     return ScreenUtilInit(
       designSize: screenSize,
       minTextAdapt: true,
