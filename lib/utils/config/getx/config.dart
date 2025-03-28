@@ -22,8 +22,7 @@ import 'package:linyu_mobile/utils/config/network/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //路由配置
-List<GetPage> get pageRoute => AppRoutes.routeConfig[1];
-Map get widgetMap => AppRoutes.routeConfig[0];
+List<GetPage> get pageRoute => AppRoutes.routeConfig;
 
 //路由监听
 void routingCallback(router) {

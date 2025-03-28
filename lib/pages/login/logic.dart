@@ -2,6 +2,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
 import 'package:linyu_mobile/utils/api/user_api.dart';
 import 'package:linyu_mobile/utils/encrypt.dart';
@@ -81,9 +82,9 @@ class LoginLogic extends Logic {
     final deviceInfo = await _deviceInfoPlugin.deviceInfo;
     if (kDebugMode) print('$deviceInfo');
     final deviceName = deviceInfo.data['product'];
-    String username = accountController.text.trim(); // 去除前后空格
+    String account = accountController.text.trim(); // 去除前后空格
     String password = passwordController.text.trim(); // 去除前后空格
-    if (username.isEmpty || password.isEmpty) {
+    if (account.isEmpty || password.isEmpty) {
       _dialog("用户名或密码不能为空~", context);
       isLoggingIn = false;
       return;
@@ -92,8 +93,8 @@ class LoginLogic extends Logic {
     //如果是从退出登录页面跳转过来的，直接登录把token以及其他信息设置到全局变量中
     if (isLogOut && otherUserId != null)
     //如果是用其他账号登录的直接登录
-    if (otherAccounts.containsKey(username)) {
-      globalData.currentUserId = otherAccounts[username]!;
+    if (otherAccounts.containsKey(account)) {
+      globalData.currentUserId = otherAccounts[account]!;
       await globalData.init();
       if (globalData.currentTalkBackground != null &&
           globalData.currentTalkBackground!.isNotEmpty)
@@ -102,12 +103,19 @@ class LoginLogic extends Logic {
       return;
     }
 
+    //如果是添加账号，判断账号是否已存在
+    if (isAddAccount && otherAccounts.containsKey(account)) {
+      CustomFlutterToast.showErrorToast('该账号已存在');
+      isLoggingIn = false;
+      return;
+    }
+
     Map<String, dynamic> userData = {};
     try {
       final encryptedPassword = await passwordEncrypt(password);
       if (encryptedPassword.isNotEmpty) {
         final loginResult =
-            await _useApi.login(username, encryptedPassword, deviceName ?? '');
+            await _useApi.login(account, encryptedPassword, deviceName ?? '');
         if (kDebugMode) print('userData: $loginResult');
         if (loginResult['code'] == 0) {
           // 使用循环减少冗余代码
@@ -121,7 +129,7 @@ class LoginLogic extends Logic {
             sharedPreferences.setString(
                 'x-token_$currentUserId', userData['token']),
             sharedPreferences.setString(
-                'username_$currentUserId', userData['username']),
+                'username_$currentUserId', userData['account']),
             sharedPreferences.setString(
                 'account_$currentUserId', userData['account']),
             sharedPreferences.setString(
@@ -218,12 +226,20 @@ class LoginLogic extends Logic {
           sharedPreferences.getString('account_$otherUserId') ?? '';
       //随便写一个密码，防止空密码登录
       passwordController.text = '123456';
+      // globalData.userIds.forEach((userId) {
+      //   final String? account = sharedPreferences.getString('account_$userId');
+      //   if (account != null && account.isNotEmpty)
+      //     otherAccounts[account] = userId;
+      // });
+    }
+
+    if (isAddAccount || isLogOut)
       globalData.userIds.forEach((userId) {
         final String? account = sharedPreferences.getString('account_$userId');
         if (account != null && account.isNotEmpty)
           otherAccounts[account] = userId;
       });
-    }
+
     super.onReady();
   }
 

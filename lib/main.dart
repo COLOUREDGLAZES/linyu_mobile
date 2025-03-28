@@ -1,17 +1,39 @@
 import 'dart:io' show Platform;
 
-import 'package:ducafe_ui_core/ducafe_ui_core.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:ducafe_ui_core/ducafe_ui_core.dart' show ScreenUtilInit;
+import 'package:flutter/foundation.dart' show Key, UniqueKey, kDebugMode;
+import 'package:flutter/material.dart'
+    show
+        BuildContext,
+        Color,
+        ColorScheme,
+        Colors,
+        Key,
+        Locale,
+        MediaQuery,
+        Size,
+        StatelessWidget,
+        ThemeData,
+        UniqueKey,
+        Widget,
+        WidgetsFlutterBinding,
+        runApp;
 import 'package:flutter/services.dart' show MethodChannel;
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'
+    show
+        GlobalCupertinoLocalizations,
+        GlobalMaterialLocalizations,
+        GlobalWidgetsLocalizations;
 import 'package:get/get.dart'
     show Get, GetMaterialApp, GetNavigation, Inst, SmartManagement, Transition;
+import 'package:linyu_mobile/utils/config/getx/config.dart'
+    show pageRoute, routingCallback;
 import 'package:linyu_mobile/utils/config/getx/controller_binding.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
-import 'package:permission_handler/permission_handler.dart'
+import 'package:linyu_mobile/utils/config/getx/route.dart' show AppRoutes;
+import "package:permission_handler/permission_handler.dart"
     show FuturePermissionStatusGetters, Permission, PermissionActions;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart'
+    show SharedPreferences;
 import 'package:linyu_mobile/utils/config/network/http.dart' as http;
 import 'package:linyu_mobile/utils/config/network/web_socket.dart' as websocket;
 
