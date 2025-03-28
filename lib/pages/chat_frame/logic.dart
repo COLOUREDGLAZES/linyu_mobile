@@ -19,7 +19,7 @@ import 'package:flutter/cupertino.dart'
         WidgetsBinding;
 import 'package:flutter/foundation.dart' show Key, kDebugMode;
 import 'package:get/get.dart'
-    show Get, GetNavigation, Inst, RxString, StringExtension;
+    show Get, GetNavigation, GetNumUtils, Inst, RxString, StringExtension;
 import 'package:image_picker/image_picker.dart' show ImageSource;
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/utils/String.dart';
@@ -251,7 +251,7 @@ class ChatFrameLogic extends Logic {
                 10;
             scrollController.animateTo(
               newOffset,
-              duration: const Duration(milliseconds: 500),
+              duration: 500.milliseconds,
               curve: Curves.fastOutSlowIn,
             );
           });

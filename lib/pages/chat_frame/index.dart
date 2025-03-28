@@ -1,11 +1,17 @@
 import 'dart:convert' show jsonDecode;
+import 'dart:io' show Platform;
 
 import 'package:chat_bottom_container/panel_container.dart'
     show ChatBottomPanelContainer, ChatBottomPanelContainerController;
 import 'package:chat_bottom_container/typedef.dart'
     show ChatBottomHandleFocus, ChatBottomPanelType;
 import 'package:ducafe_ui_core/ducafe_ui_core.dart'
-    show ListExtensions, ScreenUtilExtensions, TextExtensions, WidgetExtensions;
+    show
+        DurationExtensions,
+        ListExtensions,
+        ScreenUtilExtensions,
+        TextExtensions,
+        WidgetExtensions;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData, Color;
@@ -148,8 +154,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
   // 群聊解散底部提示构建
   Widget _buildGroupDissolvedMessage() => [
         const Text('该群已解散').fontSize(14).textColor(Colors.grey),
-        _buildIconButton1(
-            Icons.keyboard_arrow_down, () => controller.scrollBottom()),
+        _buildIconButton1(Icons.keyboard_arrow_down, controller.scrollBottom),
       ]
           .toRow(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -161,8 +166,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
   Widget _buildNotFriendMessage() => [
         const Text('Ta已不是好友').fontSize(14).textColor(Colors.grey),
         if (!controller.isOnBottom && controller.isUpSroll)
-          _buildIconButton1(
-              Icons.keyboard_arrow_down, () => controller.scrollBottom()),
+          _buildIconButton1(Icons.keyboard_arrow_down, controller.scrollBottom),
       ]
           .toRow(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -400,6 +404,23 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                 ].toColumn()))
         .onTap(() => controller.panelType.value = 'none');
     return view;
+  }
+
+  @override
+  void didChangeMetrics() {
+    final keyboardHeight = MediaQuery.of(Get.context!).viewInsets.bottom;
+    if (keyboardHeight > 0 && Platform.isAndroid)
+      Future.delayed(
+          300.milliseconds,
+          () => WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (controller.scrollController.hasClients)
+                  controller.scrollController.animateTo(
+                    controller.scrollController.position.maxScrollExtent + 500,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.fastOutSlowIn,
+                  );
+              }));
+    super.didChangeMetrics();
   }
 
   @override
