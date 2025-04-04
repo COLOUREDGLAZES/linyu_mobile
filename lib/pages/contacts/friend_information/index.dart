@@ -31,8 +31,6 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
     showCupertinoModalPopup(
       context: Get.context!,
       builder: (BuildContext context) => CupertinoActionSheet(
-        title: const Text('选择操作').textColor(theme.primaryColor),
-        message: const Text('请从以下选项中选择一项'),
         actions: [
           CupertinoActionSheetAction(
             onPressed: () {

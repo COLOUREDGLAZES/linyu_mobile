@@ -144,8 +144,8 @@ class ChatFrameLogic extends Logic {
   // 心灵鸡汤
   Map<String, dynamic> lifeStr = {
     'data': {
-      'content': '死生契阔，与子成说~',
-      // 'content': '输入文字~',
+      // 'content': '死生契阔，与子成说~',
+      'content': '输入文字~',
     }
   };
 
@@ -191,6 +191,7 @@ class ChatFrameLogic extends Logic {
         }
       }, onError: (error) {
         CustomFlutterToast.showErrorToast('WebSocket发生错误: $error');
+        if (kDebugMode) print('WebSocket error: $error');
         if (!wsManager.isConnected) wsManager.connect();
       });
 

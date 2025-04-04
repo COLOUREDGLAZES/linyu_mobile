@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/gestures.dart' show TapGestureRecognizer;
 import 'package:flutter/material.dart'
     show
@@ -6,15 +7,13 @@ import 'package:flutter/material.dart'
         Colors,
         DefaultTextStyle,
         RichText,
-        ScaffoldMessenger,
-        SnackBar,
         StatelessWidget,
-        Text,
         TextDecoration,
         TextSpan,
         TextStyle,
         VoidCallback,
         Widget;
+import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:url_launcher/url_launcher.dart'
     show LaunchMode, canLaunchUrl, launchUrl;
 
@@ -200,23 +199,24 @@ class StringDetector extends StatelessWidget {
 
   // 打开网址
   Future<void> _launchUrl(String rawUrl, BuildContext context) async {
-    String formattedUrl = rawUrl;
-    // 自动补全协议
-    if (!formattedUrl.startsWith(RegExp(r'https?://'))) {
-      formattedUrl = 'https://$formattedUrl';
-    }
-    final uri = Uri.parse(formattedUrl);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      _showError('无法打开链接：$formattedUrl', context);
-    }
-  }
+    try {
+      String formattedUrl =
+          rawUrl.startsWith(RegExp(r'https?://')) ? rawUrl : 'https://$rawUrl';
 
-  // 错误提示
-  void _showError(String msg, BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg)),
-    );
+      final uri = Uri.parse(formattedUrl);
+
+      if (!await canLaunchUrl(uri)) {
+        final urlString = rawUrl.startsWith('www.') ? 'http://$rawUrl' : null;
+        if (urlString != null && await canLaunchUrl(Uri.parse(urlString)))
+          await launchUrl(Uri.parse(urlString),
+              mode: LaunchMode.externalApplication);
+        else
+          CustomFlutterToast.showErrorToast('无法打开链接：$rawUrl');
+      } else
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      CustomFlutterToast.showErrorToast('处理链接时出错：$rawUrl');
+      if (kDebugMode) print('处理链接时出错：$rawUrl');
+    }
   }
 }

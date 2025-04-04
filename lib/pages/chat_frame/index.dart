@@ -280,28 +280,26 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
   void _showCupertinoSheet() => showCupertinoModalPopup(
       context: Get.context!,
       builder: (BuildContext context) => CupertinoActionSheet(
-          title: const Text('选择操作').textColor(theme.primaryColor),
-          message: const Text('请从以下选项中选择一项'),
-          actions: [
-            CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(context); // 关闭弹窗
-                controller.onInviteVideoChat(true);
-              },
-              child: const Text('语音通话').textColor(theme.primaryColor),
-            ),
-            CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.pop(context);
-                controller.onInviteVideoChat(false);
-              },
-              child: const Text('视频通话').textColor(theme.primaryColor),
-            ),
-          ],
-          cancelButton: CupertinoActionSheetAction(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消').textColor(theme.primaryColor),
-          )));
+              actions: [
+                CupertinoActionSheetAction(
+                  onPressed: () {
+                    Navigator.pop(context); // 关闭弹窗
+                    controller.onInviteVideoChat(true);
+                  },
+                  child: const Text('语音通话').textColor(theme.primaryColor),
+                ),
+                CupertinoActionSheetAction(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    controller.onInviteVideoChat(false);
+                  },
+                  child: const Text('视频通话').textColor(theme.primaryColor),
+                ),
+              ],
+              cancelButton: CupertinoActionSheetAction(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('取消').textColor(theme.primaryColor),
+              )));
 
   @override
   void init(BuildContext context) {
@@ -404,23 +402,6 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                 ].toColumn()))
         .onTap(() => controller.panelType.value = 'none');
     return view;
-  }
-
-  @override
-  void didChangeMetrics() {
-    final keyboardHeight = MediaQuery.of(Get.context!).viewInsets.bottom;
-    if (keyboardHeight > 0 && Platform.isAndroid)
-      Future.delayed(
-          300.milliseconds,
-          () => WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (controller.scrollController.hasClients)
-                  controller.scrollController.animateTo(
-                    controller.scrollController.position.maxScrollExtent + 500,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.fastOutSlowIn,
-                  );
-              }));
-    super.didChangeMetrics();
   }
 
   @override
