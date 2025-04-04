@@ -12,13 +12,12 @@ import 'package:get/get.dart'
         GetView,
         GetxController,
         Obx;
-import 'package:linyu_mobile/utils/config/getx/global_data.dart'
-    show GlobalData;
-import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart'
+import 'package:linyu_mobile/config/getx/global_data.dart' show GlobalData;
+import 'package:linyu_mobile/config/getx/global_theme_config.dart'
     show GlobalThemeConfig;
-import 'package:linyu_mobile/utils/config/getx/route.dart' show AppRoutes;
-import 'package:linyu_mobile/utils/config/getx/sqflite_helper.dart';
-import 'package:linyu_mobile/utils/config/network/web_socket.dart';
+import 'package:linyu_mobile/config/getx/route.dart' show AppRoutes;
+import 'package:linyu_mobile/config/getx/sqflite_helper.dart';
+import 'package:linyu_mobile/config/network/web_socket.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //路由配置

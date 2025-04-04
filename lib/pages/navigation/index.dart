@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_tip/index.dart';
 import 'package:linyu_mobile/pages/navigation/logic.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 class NavigationPage extends CustomWidget<NavigationLogic> {
   NavigationPage({required super.key});

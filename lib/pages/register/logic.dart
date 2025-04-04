@@ -8,9 +8,9 @@ import 'package:flutter_pickers/time_picker/model/pduration.dart';
 import 'package:get/get.dart' show Get, GetNavigation, GetNumUtils;
 import 'package:intl/intl.dart';
 
-import 'package:linyu_mobile/utils/api/user_api.dart';
+import 'package:linyu_mobile/api/user_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 import 'package:linyu_mobile/utils/encrypt.dart';
 
 class RegisterPageLogic extends Logic {

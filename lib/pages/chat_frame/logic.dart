@@ -22,13 +22,13 @@ import 'package:get/get.dart'
     show Get, GetNavigation, GetNumUtils, Inst, RxString, StringExtension;
 import 'package:image_picker/image_picker.dart' show ImageSource;
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/String.dart';
-import 'package:linyu_mobile/utils/api/chat_group_member.dart';
-import 'package:linyu_mobile/utils/api/chat_list_api.dart';
-import 'package:linyu_mobile/utils/api/friend_api.dart';
-import 'package:linyu_mobile/utils/api/msg_api.dart';
-import 'package:linyu_mobile/utils/api/video_api.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
+import 'package:linyu_mobile/utils/string_util.dart';
+import 'package:linyu_mobile/api/chat_group_member.dart';
+import 'package:linyu_mobile/api/chat_list_api.dart';
+import 'package:linyu_mobile/api/friend_api.dart';
+import 'package:linyu_mobile/api/msg_api.dart';
+import 'package:linyu_mobile/api/video_api.dart';
+import 'package:linyu_mobile/config/getx/config.dart' show Logic;
 import 'package:linyu_mobile/utils/crop_picture.dart';
 import 'package:linyu_mobile/utils/extension.dart';
 
@@ -57,32 +57,22 @@ class ChatFrameLogic extends Logic {
   late dynamic chatInfo = {_targetId: ''};
 
   bool _isSend = false;
-
   bool get isSend => _isSend;
-
   set isSend(bool value) {
     _isSend = value;
     update([const Key('chat_frame')]);
   }
 
   // 录制状态
-  // late RxBool isRecording = false.obs;
-
   bool _isRecording = false;
-
   bool get isRecording => _isRecording;
-
   set isRecording(bool value) {
     _isRecording = value;
     update([const Key('chat_frame')]);
   }
 
-  // late RxBool isReadOnly = false.obs;
-
   bool _isReadOnly = false;
-
   bool get isReadOnly => _isReadOnly;
-
   set isReadOnly(bool value) {
     _isReadOnly = value;
     update([const Key('chat_frame')]);
@@ -93,9 +83,7 @@ class ChatFrameLogic extends Logic {
 
   // 聊天背景
   String _chatBackground = '';
-
   String get chatBackground => _chatBackground;
-
   set chatBackground(String value) {
     _chatBackground = value;
     update([const Key('chat_frame')]);
@@ -112,9 +100,7 @@ class ChatFrameLogic extends Logic {
 
   // 是否为好友
   bool _isFriend = true;
-
   bool get isFriend => _isFriend;
-
   set isFriend(bool value) {
     _isFriend = value;
     update([const Key('chat_frame')]);
@@ -122,9 +108,7 @@ class ChatFrameLogic extends Logic {
 
   // 是否在底部
   bool _isOnBottom = false;
-
   bool get isOnBottom => _isOnBottom;
-
   set isOnBottom(bool value) {
     _isOnBottom = value;
     update([const Key('chat_frame')]);
@@ -133,9 +117,7 @@ class ChatFrameLogic extends Logic {
   double _previousOffset = 0.0;
 
   bool _isUpSroll = false;
-
   bool get isUpSroll => _isUpSroll;
-
   set isUpSroll(bool value) {
     _isUpSroll = value;
     update([const Key('chat_frame')]);

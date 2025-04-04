@@ -1,7 +1,8 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:ducafe_ui_core/ducafe_ui_core.dart';
+import 'package:ducafe_ui_core/ducafe_ui_core.dart'
+    show DurationExtensions, ScreenUtilExtensions, WidgetExtensions;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,9 +13,9 @@ import 'package:linyu_mobile/components/custom_image_group/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_shadow_text/index.dart';
 import 'package:linyu_mobile/components/custom_text_button/index.dart';
-import 'package:linyu_mobile/utils/String.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
+import 'package:linyu_mobile/utils/string_util.dart';
 import 'package:linyu_mobile/utils/date.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
 
 import 'logic.dart';
 
@@ -220,7 +221,6 @@ class TalkPage extends CustomWidget<TalkLogic> {
     double avatarBottom = 20 * (1 - animationProgress);
 
     // 头像组件
-    if (kDebugMode) print('currentPortrait is: ${globalData.currentPortrait}');
     final Widget avatarWidget = CachedNetworkImage(
       fit: BoxFit.cover,
       imageUrl: globalData.currentPortrait ?? '',
@@ -258,8 +258,6 @@ class TalkPage extends CustomWidget<TalkLogic> {
     );
 
     // 背景图片组件
-    if (kDebugMode)
-      print('currentTalkBackground: ${globalData.currentTalkBackground}');
     final Widget backgroundImageWidget = CachedNetworkImage(
       key: ValueKey(
           '${globalData.currentUserId}_talk_background_${globalData.currentTalkBackground}'),

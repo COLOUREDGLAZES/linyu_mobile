@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:linyu_mobile/utils/api/user_api.dart';
+import 'package:linyu_mobile/api/user_api.dart';
 
 final _userApi = UserApi();
 

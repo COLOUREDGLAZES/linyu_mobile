@@ -8,8 +8,8 @@ import 'package:linyu_mobile/components/custom_animated_dots_text/index.dart';
 import 'package:linyu_mobile/components/custom_icon_button/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/pages/video_chat/logic.dart';
-import 'package:linyu_mobile/utils/String.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/utils/string_util.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 import 'package:linyu_mobile/utils/date.dart';
 
 class VideoChatPage extends CustomWidget<VideoChatLogic> {

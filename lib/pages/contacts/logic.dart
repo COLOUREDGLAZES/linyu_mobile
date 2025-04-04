@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/api/chat_group_api.dart';
-import 'package:linyu_mobile/utils/api/chat_list_api.dart';
-import 'package:linyu_mobile/utils/api/friend_api.dart';
-import 'package:linyu_mobile/utils/api/notify_api.dart';
+import 'package:linyu_mobile/api/chat_group_api.dart';
+import 'package:linyu_mobile/api/chat_list_api.dart';
+import 'package:linyu_mobile/api/friend_api.dart';
+import 'package:linyu_mobile/api/notify_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 class ContactsLogic extends Logic with GetSingleTickerProviderStateMixin {
   final _friendApi = new FriendApi();

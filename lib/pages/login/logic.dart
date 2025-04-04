@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
-import 'package:linyu_mobile/utils/api/user_api.dart';
+import 'package:linyu_mobile/config/getx/config.dart' show Logic;
+import 'package:linyu_mobile/api/user_api.dart';
 import 'package:linyu_mobile/utils/encrypt.dart';
 import 'package:url_launcher/url_launcher.dart';
 

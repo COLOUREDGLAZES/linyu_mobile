@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 class SearchInfoLogic extends Logic {
   //搜索结果

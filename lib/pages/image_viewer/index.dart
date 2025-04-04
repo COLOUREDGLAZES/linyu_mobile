@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import './logic.dart';
@@ -20,7 +20,7 @@ class ImageViewerPage extends CustomWidget<ImageViewerLogic> {
           children: [
             GestureDetector(
               onLongPress: () => _showSaveDialog(context),
-              onTap: ()=>Get.back(),
+              onTap: () => Get.back(),
               child: PhotoViewGallery.builder(
                 scrollPhysics: const BouncingScrollPhysics(),
                 builder: (BuildContext context, int index) {

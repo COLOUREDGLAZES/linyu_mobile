@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:linyu_mobile/utils/api/qr_api.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
+import 'package:linyu_mobile/api/qr_api.dart';
+import 'package:linyu_mobile/config/getx/config.dart' show Logic;
 
 // class MineQRCodeLogic extends GetxController {
 class MineQRCodeLogic extends Logic {

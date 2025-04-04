@@ -5,9 +5,9 @@ import 'package:flutter/material.dart' show FocusNode, TextEditingController;
 import 'package:get/get.dart' show Get, GetNavigation;
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/api/chat_list_api.dart' show ChatListApi;
-import 'package:linyu_mobile/utils/api/msg_api.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
+import 'package:linyu_mobile/api/chat_list_api.dart' show ChatListApi;
+import 'package:linyu_mobile/api/msg_api.dart';
+import 'package:linyu_mobile/config/getx/config.dart' show Logic;
 
 class ReForwardLogic extends Logic {
   final _chatListApi = new ChatListApi();

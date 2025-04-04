@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' show GetInstance, GetxController, MapExtension;
-import 'package:linyu_mobile/utils/api/user_api.dart';
+import 'package:linyu_mobile/api/user_api.dart';
 import 'package:linyu_mobile/utils/app_badger.dart';
 import 'package:palette_generator/palette_generator.dart' show PaletteGenerator;
 import 'package:shared_preferences/shared_preferences.dart'

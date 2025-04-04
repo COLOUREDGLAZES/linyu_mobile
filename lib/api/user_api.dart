@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
-import 'package:linyu_mobile/utils/config/network/http.dart';
+import 'package:linyu_mobile/config/network/http.dart';
 
 class UserApi {
   final Dio _dio = Http(url: baseUrl).dio;

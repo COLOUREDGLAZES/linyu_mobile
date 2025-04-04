@@ -44,10 +44,10 @@ import 'package:linyu_mobile/pages/talk/logic.dart';
 import 'package:linyu_mobile/pages/talk/talk_create/logic.dart';
 import 'package:linyu_mobile/pages/talk/talk_details/logic.dart';
 import 'package:linyu_mobile/pages/video_chat/logic.dart';
-import 'package:linyu_mobile/utils/config/getx/global_data.dart';
-import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
-import 'package:linyu_mobile/utils/config/network/web_socket.dart';
-import 'package:linyu_mobile/utils/config/getx/sqflite_helper.dart';
+import 'package:linyu_mobile/config/getx/global_data.dart';
+import 'package:linyu_mobile/config/getx/global_theme_config.dart';
+import 'package:linyu_mobile/config/network/web_socket.dart';
+import 'package:linyu_mobile/config/getx/sqflite_helper.dart';
 
 //依赖注入
 class ControllerBinding extends Bindings {

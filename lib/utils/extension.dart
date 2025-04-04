@@ -61,21 +61,21 @@ extension ListExtension<E extends Map<String, dynamic>> on List {
   }
 
   Widget toGridView(
-      {key, shrinkWrap, int? crossAxisCount, double? mainAxisSpacing = 0.0}) {
-    return GridView.count(
-      key: key,
-      shrinkWrap: shrinkWrap,
-      crossAxisCount: crossAxisCount ?? 4,
-      mainAxisSpacing: mainAxisSpacing!,
-      children: this as List<Widget>,
-    );
-  }
+          {key,
+          shrinkWrap,
+          int? crossAxisCount,
+          double? mainAxisSpacing = 0.0}) =>
+      GridView.count(
+        key: key,
+        shrinkWrap: shrinkWrap,
+        crossAxisCount: crossAxisCount ?? 4,
+        mainAxisSpacing: mainAxisSpacing!,
+        children: this as List<Widget>,
+      );
 }
 
 extension WidgetExtension on Widget {
-  Widget toRepaintBoundary({key}) {
-    return RepaintBoundary(key: key, child: this);
-  }
+  Widget toRepaintBoundary({key}) => RepaintBoundary(key: key, child: this);
 
   Widget toSingleChildScrollView({
     key,
@@ -90,22 +90,21 @@ extension WidgetExtension on Widget {
     hitTestBehavior = HitTestBehavior.opaque,
     restorationId,
     keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-  }) {
-    return SingleChildScrollView(
-        key: key,
-        scrollDirection: scrollDirection,
-        reverse: reverse,
-        padding: padding == null
-            ? null
-            : EdgeInsets.symmetric(horizontal: padding, vertical: padding),
-        primary: primary,
-        physics: physics,
-        controller: controller,
-        dragStartBehavior: dragStartBehavior,
-        clipBehavior: clipBehavior,
-        hitTestBehavior: hitTestBehavior,
-        restorationId: restorationId,
-        keyboardDismissBehavior: keyboardDismissBehavior,
-        child: this);
-  }
+  }) =>
+      SingleChildScrollView(
+          key: key,
+          scrollDirection: scrollDirection,
+          reverse: reverse,
+          padding: padding == null
+              ? null
+              : EdgeInsets.symmetric(horizontal: padding, vertical: padding),
+          primary: primary,
+          physics: physics,
+          controller: controller,
+          dragStartBehavior: dragStartBehavior,
+          clipBehavior: clipBehavior,
+          hitTestBehavior: hitTestBehavior,
+          restorationId: restorationId,
+          keyboardDismissBehavior: keyboardDismissBehavior,
+          child: this);
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/pages/file_details/logic.dart';
-import 'package:linyu_mobile/utils/String.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/utils/string_util.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 class FileDetailsPage extends CustomWidget<FileDetailsLogic> {
   FileDetailsPage({super.key});

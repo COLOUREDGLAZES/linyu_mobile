@@ -2,7 +2,7 @@ import 'dart:async' show Future, Stream, StreamController, Timer;
 import 'dart:convert' show jsonDecode;
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:get/get.dart' show GetInstance, GetxController;
-import 'package:linyu_mobile/utils/config/getx/global_data.dart';
+import 'package:linyu_mobile/config/getx/global_data.dart';
 import 'package:linyu_mobile/utils/linyu_msg.dart';
 import 'package:linyu_mobile/utils/notification.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -26,16 +26,15 @@ import 'package:flutter_localizations/flutter_localizations.dart'
         GlobalWidgetsLocalizations;
 import 'package:get/get.dart'
     show Get, GetMaterialApp, GetNavigation, Inst, SmartManagement, Transition;
-import 'package:linyu_mobile/utils/config/getx/config.dart'
+import 'package:linyu_mobile/config/getx/config.dart'
     show pageRoute, routingCallback;
-import 'package:linyu_mobile/utils/config/getx/controller_binding.dart';
-import 'package:linyu_mobile/utils/config/getx/route.dart' show AppRoutes;
+import 'package:linyu_mobile/config/getx/controller_binding.dart';
 import "package:permission_handler/permission_handler.dart"
     show FuturePermissionStatusGetters, Permission, PermissionActions;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
-import 'package:linyu_mobile/utils/config/network/http.dart' as http;
-import 'package:linyu_mobile/utils/config/network/web_socket.dart' as websocket;
+import 'package:linyu_mobile/config/network/http.dart' as http;
+import 'package:linyu_mobile/config/network/web_socket.dart' as websocket;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

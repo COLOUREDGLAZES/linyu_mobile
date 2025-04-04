@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart' show Key, kDebugMode;
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart' show Logic;
+import 'package:linyu_mobile/config/getx/config.dart' show Logic;
 
 class User {
   final String id;

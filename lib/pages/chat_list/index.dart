@@ -5,9 +5,9 @@ import 'package:linyu_mobile/components/app_bar_title/index.dart';
 import 'package:linyu_mobile/components/custom_badge/index.dart';
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
 import 'package:linyu_mobile/components/custom_search_box/index.dart';
-import 'package:linyu_mobile/utils/String.dart';
+import 'package:linyu_mobile/utils/string_util.dart';
 import 'package:linyu_mobile/utils/date.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 import 'package:linyu_mobile/utils/linyu_msg.dart';
 
 import 'logic.dart';
@@ -106,7 +106,7 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                                 chat['name'] == null && chat['type'] == 'group'
                                     ? '该群已解散'
                                     : LinyuMsgUtil.getMsgContent(
-                                    chat['lastMsgContent']),
+                                        chat['lastMsgContent']),
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[500],
@@ -163,7 +163,7 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
   }
 
   Widget _buildSearchItem(dynamic chatObject, String id,
-      {bool isGroup = false}) =>
+          {bool isGroup = false}) =>
       Material(
         borderRadius: BorderRadius.circular(12),
         color: Colors.white,
@@ -203,11 +203,11 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
                               ),
                             ),
                             if (chatObject[
-                            !isGroup ? 'remark' : 'groupRemark'] !=
-                                null &&
+                                        !isGroup ? 'remark' : 'groupRemark'] !=
+                                    null &&
                                 chatObject[!isGroup ? 'remark' : 'groupRemark']
-                                    ?.toString()
-                                    .trim() !=
+                                        ?.toString()
+                                        .trim() !=
                                     '')
                               Text(
                                 '(${chatObject[!isGroup ? 'remark' : 'groupRemark']})',
@@ -235,199 +235,199 @@ class ChatListPage extends CustomWidget<ChatListLogic> {
 
   @override
   Widget buildWidget(BuildContext context) => GestureDetector(
-    onTap: () => controller.focusNode.unfocus(),
-    child: Scaffold(
-      backgroundColor: const Color(0xFFF9FBFF),
-      appBar: AppBar(
-        leading: Container(
-          margin: const EdgeInsets.only(left: 13.2, top: 10.8),
-          child: CustomPortrait(
-            url: globalData.currentPortrait ?? '',
-            size: 40,
-            radius: 20,
-            onTap: () => Scaffold.of(context).openDrawer(),
-            onLongPress: controller.onLongPressPortrait,
-          ),
-        ),
-        centerTitle: true,
-        title: const AppBarTitle('聊天列表'),
-        backgroundColor: const Color(0xFFF9FBFF),
-        actions: [
-          PopupMenuButton(
-            icon: const Icon(Icons.add, size: 32),
-            offset: const Offset(0, 50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
+        onTap: () => controller.focusNode.unfocus(),
+        child: Scaffold(
+          backgroundColor: const Color(0xFFF9FBFF),
+          appBar: AppBar(
+            leading: Container(
+              margin: const EdgeInsets.only(left: 13.2, top: 10.8),
+              child: CustomPortrait(
+                url: globalData.currentPortrait ?? '',
+                size: 40,
+                radius: 20,
+                onTap: () => Scaffold.of(context).openDrawer(),
+                onLongPress: controller.onLongPressPortrait,
+              ),
             ),
-            color: const Color(0xFFFFFFFF),
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-              PopupMenuItem(
-                value: 1,
-                height: 40,
-                onTap: () => Get.toNamed('/qr_code_scan'),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(IconData(0xe61e, fontFamily: 'IconFont'),
-                        size: 20),
-                    SizedBox(width: 12),
-                    Text('扫一扫', style: TextStyle(fontSize: 14)),
-                  ],
+            centerTitle: true,
+            title: const AppBarTitle('聊天列表'),
+            backgroundColor: const Color(0xFFF9FBFF),
+            actions: [
+              PopupMenuButton(
+                icon: const Icon(Icons.add, size: 32),
+                offset: const Offset(0, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
                 ),
-              ),
-              _buildPopupDivider(),
-              PopupMenuItem(
-                value: 1,
-                height: 40,
-                onTap: () => Get.toNamed('/add_friend'),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.person_add, size: 20),
-                    SizedBox(width: 12),
-                    Text('添加好友', style: TextStyle(fontSize: 14)),
-                  ],
-                ),
-              ),
-              _buildPopupDivider(),
-              PopupMenuItem(
-                value: 2,
-                height: 40,
-                onTap: () => Get.toNamed('/create_chat_group'),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.group_add, size: 20),
-                    SizedBox(width: 12),
-                    Text('创建群聊', style: TextStyle(fontSize: 14)),
-                  ],
-                ),
+                color: const Color(0xFFFFFFFF),
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+                  PopupMenuItem(
+                    value: 1,
+                    height: 40,
+                    onTap: () => Get.toNamed('/qr_code_scan'),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(IconData(0xe61e, fontFamily: 'IconFont'),
+                            size: 20),
+                        SizedBox(width: 12),
+                        Text('扫一扫', style: TextStyle(fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                  _buildPopupDivider(),
+                  PopupMenuItem(
+                    value: 1,
+                    height: 40,
+                    onTap: () => Get.toNamed('/add_friend'),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.person_add, size: 20),
+                        SizedBox(width: 12),
+                        Text('添加好友', style: TextStyle(fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                  _buildPopupDivider(),
+                  PopupMenuItem(
+                    value: 2,
+                    height: 40,
+                    onTap: () => Get.toNamed('/create_chat_group'),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.group_add, size: 20),
+                        SizedBox(width: 12),
+                        Text('创建群聊', style: TextStyle(fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
-      body: Padding(
-        padding:
-        const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16.0),
-        child: Column(
-          children: [
-            CustomSearchBox(
-              focusNode: controller.focusNode,
-              textEditingController: controller.searchBoxController,
-              isCentered: false,
-              onChanged: (value) => controller.onSearch(value),
+          body: Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16.0),
+            child: Column(
+              children: [
+                CustomSearchBox(
+                  focusNode: controller.focusNode,
+                  textEditingController: controller.searchBoxController,
+                  isCentered: false,
+                  onChanged: (value) => controller.onSearch(value),
+                ),
+                if (controller.groupSearchList.isNotEmpty ||
+                    controller.friendSearchList.isNotEmpty ||
+                    controller.otherList.isNotEmpty ||
+                    controller.topList.isNotEmpty)
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        controller.onGetChatList();
+                        return Future.delayed(
+                            const Duration(milliseconds: 700));
+                      },
+                      color: theme.primaryColor,
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(
+                          // parent: BouncingScrollPhysics(),
+                          parent: NeverScrollableScrollPhysics(),
+                        ),
+                        children: [
+                          if ((controller.groupSearchList.isNotEmpty ||
+                                  controller.friendSearchList.isNotEmpty) &&
+                              controller.searchBoxController.text
+                                  .trim()
+                                  .isNotEmpty) ...[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                "搜索结果",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.primaryColor,
+                                ),
+                              ),
+                            ),
+                            ...controller.groupSearchList.map((group) =>
+                                _buildSearchItem(group, group['id'],
+                                    isGroup: true)),
+                            ...controller.friendSearchList.map((friend) =>
+                                _buildSearchItem(friend, friend['friendId'])),
+                          ],
+                          if (controller.topList.isNotEmpty) ...[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                "置顶",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.primaryColor,
+                                ),
+                              ),
+                            ),
+                            ...controller.topList.map(
+                                (chat) => _buildChatItem(chat, chat['id'])),
+                          ],
+                          if (controller.otherList.isNotEmpty) ...[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                "全部",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.primaryColor,
+                                ),
+                              ),
+                            ),
+                            ...controller.otherList.map(
+                                (chat) => _buildChatItem(chat, chat['id'])),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                if (controller.friendSearchList.isEmpty &&
+                    controller.groupSearchList.isEmpty &&
+                    controller.otherList.isEmpty &&
+                    controller.topList.isEmpty)
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        controller.onGetChatList();
+                        return Future.delayed(
+                            const Duration(milliseconds: 700));
+                      },
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/empty-bg.png',
+                              width: 100,
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              '暂无聊天记录~',
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            if (controller.groupSearchList.isNotEmpty ||
-                controller.friendSearchList.isNotEmpty ||
-                controller.otherList.isNotEmpty ||
-                controller.topList.isNotEmpty)
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    controller.onGetChatList();
-                    return Future.delayed(
-                        const Duration(milliseconds: 700));
-                  },
-                  color: theme.primaryColor,
-                  child: ListView(
-                    physics: const AlwaysScrollableScrollPhysics(
-                      // parent: BouncingScrollPhysics(),
-                      parent: NeverScrollableScrollPhysics(),
-                    ),
-                    children: [
-                      if ((controller.groupSearchList.isNotEmpty ||
-                          controller.friendSearchList.isNotEmpty) &&
-                          controller.searchBoxController.text
-                              .trim()
-                              .isNotEmpty) ...[
-                        Padding(
-                          padding:
-                          const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                            "搜索结果",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: theme.primaryColor,
-                            ),
-                          ),
-                        ),
-                        ...controller.groupSearchList.map((group) =>
-                            _buildSearchItem(group, group['id'],
-                                isGroup: true)),
-                        ...controller.friendSearchList.map((friend) =>
-                            _buildSearchItem(friend, friend['friendId'])),
-                      ],
-                      if (controller.topList.isNotEmpty) ...[
-                        Padding(
-                          padding:
-                          const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                            "置顶",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: theme.primaryColor,
-                            ),
-                          ),
-                        ),
-                        ...controller.topList.map(
-                                (chat) => _buildChatItem(chat, chat['id'])),
-                      ],
-                      if (controller.otherList.isNotEmpty) ...[
-                        Padding(
-                          padding:
-                          const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                            "全部",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: theme.primaryColor,
-                            ),
-                          ),
-                        ),
-                        ...controller.otherList.map(
-                                (chat) => _buildChatItem(chat, chat['id'])),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            if (controller.friendSearchList.isEmpty &&
-                controller.groupSearchList.isEmpty &&
-                controller.otherList.isEmpty &&
-                controller.topList.isEmpty)
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    controller.onGetChatList();
-                    return Future.delayed(
-                        const Duration(milliseconds: 700));
-                  },
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/images/empty-bg.png',
-                          width: 100,
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          '暂无聊天记录~',
-                          style: TextStyle(
-                              color: Colors.grey[600], fontSize: 14),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-          ],
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }

@@ -1,17 +1,11 @@
 import 'dart:convert' show jsonDecode;
-import 'dart:io' show Platform;
 
 import 'package:chat_bottom_container/panel_container.dart'
     show ChatBottomPanelContainer, ChatBottomPanelContainerController;
 import 'package:chat_bottom_container/typedef.dart'
     show ChatBottomHandleFocus, ChatBottomPanelType;
 import 'package:ducafe_ui_core/ducafe_ui_core.dart'
-    show
-        DurationExtensions,
-        ListExtensions,
-        ScreenUtilExtensions,
-        TextExtensions,
-        WidgetExtensions;
+    show ListExtensions, ScreenUtilExtensions, TextExtensions, WidgetExtensions;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData, Color;
@@ -26,8 +20,8 @@ import 'package:linyu_mobile/components/custom_text_field/index.dart';
 import 'package:linyu_mobile/components/custom_voice_record_button/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/msg.dart';
 import 'package:linyu_mobile/pages/chat_frame/logic.dart';
-import 'package:linyu_mobile/utils/String.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart' show CustomView;
+import 'package:linyu_mobile/utils/string_util.dart';
+import 'package:linyu_mobile/config/getx/config.dart' show CustomView;
 import 'package:linyu_mobile/utils/emoji.dart';
 import 'package:linyu_mobile/utils/extension.dart'
     show ListExtension, WidgetExtension;
@@ -67,14 +61,14 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
               .height(34)
               .width(60)
               .onTap(controller.removeChar)
-              .positioned(bottom: 0, right: 0),
+              .positioned(bottom: 0, right: 0)
       ]
           .toStack()
-          .border(top: 1.0, color: Colors.grey.withOpacity(0.1))
+          .border(top: 1.0, color: Colors.grey.withValues(alpha: 0.1))
           .alignCenter()
           .paddingAll(10)
           .width(MediaQuery.of(Get.context!).size.width)
-          .expanded(),
+          .expanded()
     ].toColumn().height(height);
   }
 
@@ -101,60 +95,57 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
           _buildIconButton2(
               '视频通话',
               const IconData(0xe9f5, fontFamily: 'IconFont'),
-              () => controller.onInviteVideoChat(false)),
+              () => controller.onInviteVideoChat(false))
       ]
           .toGridView(shrinkWrap: true, mainAxisSpacing: 10)
-          .border(color: Colors.grey.withOpacity(0.1), top: 1.0)
+          .border(color: Colors.grey.withValues(alpha: 0.1), top: 1.0)
           .paddingAll(10)
           .width(MediaQuery.of(Get.context!).size.width)
           .height(height)
-          .expanded(),
+          .expanded()
     ].toColumn().height(height);
   }
 
   Widget _buildPanelContainer() => ChatBottomPanelContainer<PanelType>(
-        controller: panelController,
-        inputFocusNode: controller.focusNode,
-        otherPanelWidget: (type) {
-          if (type == null) return const SizedBox.shrink();
-          final panelBuilder = {
-            PanelType.emoji: _buildEmoji,
-            PanelType.tool: _buildMoreOperation,
-          };
-          return panelBuilder[type]?.call() ?? const SizedBox.shrink();
-        },
-        panelBgColor: Colors.transparent,
-        changeKeyboardPanelHeight: (height) => height,
-      );
+      controller: panelController,
+      inputFocusNode: controller.focusNode,
+      otherPanelWidget: (type) {
+        if (type == null) return const SizedBox.shrink();
+        final panelBuilder = {
+          PanelType.emoji: _buildEmoji,
+          PanelType.tool: _buildMoreOperation
+        };
+        return panelBuilder[type]?.call() ?? const SizedBox.shrink();
+      },
+      panelBgColor: Colors.transparent,
+      changeKeyboardPanelHeight: (height) => height);
 
   // 按钮第一种格式
   Widget _buildIconButton1(iconData, onTap) => CustomIconButton(
-        onTap: onTap,
-        icon: iconData,
-        width: 36,
-        height: 36,
-        iconSize: 26,
-        iconColor: Colors.black,
-        color: Colors.transparent,
-      );
+      onTap: onTap,
+      icon: iconData,
+      width: 36,
+      height: 36,
+      iconSize: 26,
+      iconColor: Colors.black,
+      color: Colors.transparent);
 
   // 按钮第二种格式
   Widget _buildIconButton2(text, iconData, onTap) => CustomIconButton(
-        onTap: onTap,
-        icon: iconData,
-        width: 50,
-        height: 50,
-        radius: 15,
-        iconSize: 26,
-        text: text,
-        color: Colors.white.withOpacity(0.9),
-        iconColor: const Color(0xFF1F1F1F),
-      );
+      onTap: onTap,
+      icon: iconData,
+      width: 50,
+      height: 50,
+      radius: 15,
+      iconSize: 26,
+      text: text,
+      color: Colors.white.withValues(alpha: 0.9),
+      iconColor: const Color(0xFF1F1F1F));
 
   // 群聊解散底部提示构建
   Widget _buildGroupDissolvedMessage() => [
         const Text('该群已解散').fontSize(14).textColor(Colors.grey),
-        _buildIconButton1(Icons.keyboard_arrow_down, controller.scrollBottom),
+        _buildIconButton1(Icons.keyboard_arrow_down, controller.scrollBottom)
       ]
           .toRow(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -166,12 +157,11 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
   Widget _buildNotFriendMessage() => [
         const Text('Ta已不是好友').fontSize(14).textColor(Colors.grey),
         if (!controller.isOnBottom && controller.isUpSroll)
-          _buildIconButton1(Icons.keyboard_arrow_down, controller.scrollBottom),
+          _buildIconButton1(Icons.keyboard_arrow_down, controller.scrollBottom)
       ]
           .toRow(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-          )
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center)
           .paddingSymmetric(horizontal: 10.0, vertical: 10)
           .backgroundColor(const Color(0xFFEDF2F9));
 
@@ -181,27 +171,27 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
         ? jsonDecode(controller.msgList[index])
         : controller.msgList[index];
     final Widget widget = ChatMessage(
-      key: ValueKey(msg['id']),
-      onTapChatPortrait: controller.onTapChatPortrait,
-      onTapDelete: (data) => controller.deleteMsg(data, msg, index),
-      onTapMultipleChoice: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
-      onTapCite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
-      onTapRemind: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
-      onTapSearch: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
-      onTapFavorite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
-      onTapRepost: (data) => controller.onRepostMsg(msg),
-      reEdit: () => controller.reEditMsg(msg),
-      onTapMsg: () => controller.onTapMsg(msg, panelController),
-      onTapVoiceToText: (data) => controller.onVoiceToTxt(msg),
-      onTapVoiceHiddenText: (data) => controller.onHideText(msg),
-      onTapCopy: (data) =>
-          Clipboard.setData(ClipboardData(text: msg['msgContent']['content'])),
-      onTapRetract: (data) => controller.retractMsg(msg),
-      msg: msg,
-      chatPortrait: controller.chatInfo['portrait'],
-      chatInfo: controller.chatInfo,
-      member: controller.members[msg['fromId']],
-    );
+        key: ValueKey(msg['id']),
+        onTapChatPortrait: controller.onTapChatPortrait,
+        onTapDelete: (data) => controller.deleteMsg(data, msg, index),
+        onTapMultipleChoice: (data) =>
+            Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
+        onTapCite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
+        onTapRemind: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
+        onTapSearch: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
+        onTapFavorite: (data) => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"),
+        onTapRepost: (data) => controller.onRepostMsg(msg),
+        reEdit: () => controller.reEditMsg(msg),
+        onTapMsg: () => controller.onTapMsg(msg, panelController),
+        onTapVoiceToText: (data) => controller.onVoiceToTxt(msg),
+        onTapVoiceHiddenText: (data) => controller.onHideText(msg),
+        onTapCopy: (data) => Clipboard.setData(
+            ClipboardData(text: msg['msgContent']['content'])),
+        onTapRetract: (data) => controller.retractMsg(msg),
+        msg: msg,
+        chatPortrait: controller.chatInfo['portrait'],
+        chatInfo: controller.chatInfo,
+        member: controller.members[msg['fromId']]);
     return widget;
   }
 
@@ -233,7 +223,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                   hintText: controller.lifeStr['data']['content'],
                   vertical: 8,
                   focusNode: controller.focusNode,
-                  fillColor: Colors.white.withOpacity(0.9),
+                  fillColor: Colors.white.withValues(alpha: 0.9),
                   onTap: () {
                     controller.isReadOnly = false;
                     WidgetsBinding.instance.addPostFrameCallback((_) =>
@@ -270,7 +260,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
                               ChatBottomPanelType.other,
                               data: PanelType.tool)))
         ].toRow(crossAxisAlignment: CrossAxisAlignment.center),
-        _buildPanelContainer(),
+        _buildPanelContainer()
       ]
           .toColumn(mainAxisSize: MainAxisSize.min)
           .paddingSymmetric(horizontal: 10.0, vertical: 10)
@@ -282,24 +272,21 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
       builder: (BuildContext context) => CupertinoActionSheet(
               actions: [
                 CupertinoActionSheetAction(
-                  onPressed: () {
-                    Navigator.pop(context); // 关闭弹窗
-                    controller.onInviteVideoChat(true);
-                  },
-                  child: const Text('语音通话').textColor(theme.primaryColor),
-                ),
+                    onPressed: () {
+                      Navigator.pop(context); // 关闭弹窗
+                      controller.onInviteVideoChat(true);
+                    },
+                    child: const Text('语音通话').textColor(theme.primaryColor)),
                 CupertinoActionSheetAction(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    controller.onInviteVideoChat(false);
-                  },
-                  child: const Text('视频通话').textColor(theme.primaryColor),
-                ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      controller.onInviteVideoChat(false);
+                    },
+                    child: const Text('视频通话').textColor(theme.primaryColor))
               ],
               cancelButton: CupertinoActionSheetAction(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('取消').textColor(theme.primaryColor),
-              )));
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('取消').textColor(theme.primaryColor))));
 
   @override
   void init(BuildContext context) {
@@ -314,29 +301,26 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     final Widget callImage =
         Image.asset('assets/images/call.png', height: 24, width: 24)
             .onTap(_showCupertinoSheet);
-    final moreImage = Image.asset(
-      'assets/images/more.png',
-      height: 24,
-      width: 24,
-    ).onTap(controller.toChatSetting).marginOnly(left: 10.w, right: 10.w);
+    final moreImage =
+        Image.asset('assets/images/more.png', height: 24, width: 24)
+            .onTap(controller.toChatSetting)
+            .marginOnly(left: 10.w, right: 10.w);
     // appBar 构建
     final PreferredSizeWidget appBar = AppBar(
-      centerTitle: true,
-      title: AppBarTitle(
-        StringUtil.isNotNullOrEmpty(controller.chatInfo['remark'])
-            ? controller.chatInfo['remark']
-            : controller.chatInfo['name'] ?? '',
-      ),
-      backgroundColor: const Color(0xFFF9FBFF),
-      actions: [
-        if (controller.chatInfo['type'] != 'group') callImage,
-        moreImage,
-      ],
-    );
+        centerTitle: true,
+        title: AppBarTitle(
+            StringUtil.isNotNullOrEmpty(controller.chatInfo['remark'])
+                ? controller.chatInfo['remark']
+                : controller.chatInfo['name'] ?? ''),
+        backgroundColor: const Color(0xFFF9FBFF),
+        actions: [
+          if (controller.chatInfo['type'] != 'group') callImage,
+          moreImage
+        ]);
     //加入黑名单按钮组件
     final Widget blockUser = [
       const Icon(Icons.block_flipped, size: 18),
-      const Text('加入黑名单'),
+      const Text('加入黑名单')
     ]
         .toRow(mainAxisAlignment: MainAxisAlignment.center)
         .onTap(() => Fluttertoast.showToast(msg: "功能建设中，敬请期待！"))
@@ -344,7 +328,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     // 添加好友按钮组件
     final Widget addFriend = [
       const Icon(Icons.person_add_alt_1_outlined, size: 18),
-      const Text('添加为好友'),
+      const Text('添加为好友')
     ]
         .toRow(mainAxisAlignment: MainAxisAlignment.center)
         .onTap(controller.onTapAddFriend)
@@ -353,7 +337,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     final Widget notFriend = [
       blockUser,
       const VerticalDivider(width: 1, color: Colors.grey),
-      addFriend,
+      addFriend
     ]
         .toRow(mainAxisAlignment: MainAxisAlignment.center)
         .backgroundColor(Colors.white)
@@ -362,24 +346,21 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
     final Decoration chatBackground = controller.chatBackground.isNotEmpty
         ? BoxDecoration(
             image: DecorationImage(
-              fit: BoxFit.cover,
-              image: NetworkImage(controller.chatBackground),
-            ),
-          )
+                fit: BoxFit.cover,
+                image: NetworkImage(controller.chatBackground)))
         : const BoxDecoration(color: Color(0xFFF9FBFF));
     // 聊天内容展示构建
     final Widget chatMsgContent = [
       ListView.builder(
-        itemCount: controller.msgList.length,
-        controller: controller.scrollController,
-        itemBuilder: _buildMsgRecord,
-      ).paddingHorizontal(16),
+              itemCount: controller.msgList.length,
+              controller: controller.scrollController,
+              itemBuilder: _buildMsgRecord)
+          .paddingHorizontal(16),
       if (controller.isLoading)
-        const CupertinoActivityIndicator().paddingAll(8.0).center().positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-            ),
+        const CupertinoActivityIndicator()
+            .paddingAll(8.0)
+            .center()
+            .positioned(top: 0, left: 0, right: 0),
       if (!controller.isLoading && !controller.isFriend) notFriend,
     ].toStack().onTap(() => controller.hidePanel(panelController)).expanded();
     // 底部输入框构建
@@ -396,10 +377,7 @@ class ChatFramePage extends CustomView<ChatFrameLogic>
             appBar: appBar,
             body: Container(
                 decoration: chatBackground,
-                child: [
-                  chatMsgContent,
-                  bottomInput,
-                ].toColumn()))
+                child: [chatMsgContent, bottomInput].toColumn()))
         .onTap(() => controller.panelType.value = 'none');
     return view;
   }

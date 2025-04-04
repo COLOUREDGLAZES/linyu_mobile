@@ -1,6 +1,6 @@
 // lib/services/user_service.dart
 import 'package:dio/dio.dart';
-import 'package:linyu_mobile/utils/config/network/http.dart';
+import 'package:linyu_mobile/config/network/http.dart';
 
 class FriendApi {
   final Dio _dio = Http(url: baseUrl).dio;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/api/notify_api.dart';
+import 'package:linyu_mobile/api/notify_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 class FriendRequestLogic extends Logic {
   final _notifyApi = new NotifyApi();

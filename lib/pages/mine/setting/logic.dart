@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
-import 'package:linyu_mobile/utils/config/network/http.dart';
-import 'package:linyu_mobile/utils/config/network/web_socket.dart' as websocket;
+import 'package:linyu_mobile/config/getx/config.dart';
+import 'package:linyu_mobile/config/network/http.dart';
+import 'package:linyu_mobile/config/network/web_socket.dart' as websocket;
 
 class SettingLogic extends Logic {
   final Http http = new Http(url: baseUrl);

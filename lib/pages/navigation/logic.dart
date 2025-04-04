@@ -8,7 +8,7 @@ import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/chat_list/logic.dart';
 import 'package:linyu_mobile/pages/contacts/logic.dart';
 import 'package:linyu_mobile/pages/talk/logic.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 import 'package:linyu_mobile/utils/notification.dart';
 import 'package:linyu_mobile/utils/permission_handler.dart';
 

@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/pages/contacts/friend_information/logic.dart';
-import 'package:linyu_mobile/utils/api/friend_api.dart';
-import 'package:linyu_mobile/utils/api/group_api.dart';
+import 'package:linyu_mobile/api/friend_api.dart';
+import 'package:linyu_mobile/api/group_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 class SetGroupLogic extends Logic {
   final _groupApi = GroupApi();

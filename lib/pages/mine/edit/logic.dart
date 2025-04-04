@@ -8,9 +8,9 @@ import 'package:flutter_pickers/time_picker/model/pduration.dart';
 import 'package:get/get.dart' as getx;
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
-import 'package:linyu_mobile/utils/api/user_api.dart';
+import 'package:linyu_mobile/api/user_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 import 'package:dio/dio.dart' show MultipartFile, FormData;
 
 //个人资料编辑页面逻辑

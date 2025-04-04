@@ -6,7 +6,7 @@ import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_material_button/index.dart';
 import 'package:linyu_mobile/components/custom_text_button/index.dart';
 import 'package:linyu_mobile/components/custom_text_field/index.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 import 'logic.dart';
 

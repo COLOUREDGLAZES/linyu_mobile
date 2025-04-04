@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigation;
 import 'package:linyu_mobile/components/custom_portrait/index.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart' show CustomWidget;
+import 'package:linyu_mobile/config/getx/config.dart' show CustomWidget;
 import 'package:qr_flutter/qr_flutter.dart'
     show QrEmbeddedImageStyle, QrEyeStyle, QrImageView, QrVersions;
 

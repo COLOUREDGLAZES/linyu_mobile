@@ -15,7 +15,7 @@ import 'package:linyu_mobile/pages/chat_frame/chat_content/system.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/time.dart';
 import 'package:linyu_mobile/pages/chat_frame/chat_content/voice.dart';
 import 'package:linyu_mobile/utils/date.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 import 'no_more.dart';
 import 'text.dart';

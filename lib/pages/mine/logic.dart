@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart' show BuildContext;
 import 'package:flutter/foundation.dart' show Key, kDebugMode;
 import 'package:get/get.dart' show Get, GetNavigation;
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 class MineLogic extends Logic {
   late dynamic currentUserInfo = {};

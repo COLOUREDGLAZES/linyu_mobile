@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigation, Inst;
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/api/chat_list_api.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
-import 'package:linyu_mobile/utils/config/network/web_socket.dart';
+import 'package:linyu_mobile/api/chat_list_api.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
+import 'package:linyu_mobile/config/network/web_socket.dart';
 
 class ChatListLogic extends Logic {
   final _chatListApi = ChatListApi();

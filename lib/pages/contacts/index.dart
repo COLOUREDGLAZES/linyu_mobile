@@ -9,7 +9,7 @@ import 'package:linyu_mobile/components/custom_search_box/index.dart';
 import 'package:linyu_mobile/components/custom_text_button/index.dart';
 import 'package:linyu_mobile/components/custom_tip/index.dart';
 import 'package:linyu_mobile/pages/contacts/logic.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 class ContactsPage extends CustomWidget<ContactsLogic> {
   ContactsPage({super.key});

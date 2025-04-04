@@ -28,9 +28,9 @@ import 'package:flutter_test/flutter_test.dart'
     show WidgetTester, expect, find, findsNothing, findsOneWidget, testWidgets;
 import 'package:get/get.dart'
     show Get, GetMaterialApp, GetNavigation, SmartManagement, Transition;
-import 'package:linyu_mobile/utils/config/getx/config.dart'
+import 'package:linyu_mobile/config/getx/config.dart'
     show pageRoute, routingCallback;
-import 'package:linyu_mobile/utils/config/getx/controller_binding.dart'
+import 'package:linyu_mobile/config/getx/controller_binding.dart'
     show ControllerBinding;
 
 void main() {

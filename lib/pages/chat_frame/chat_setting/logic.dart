@@ -7,10 +7,10 @@ import 'package:get/get.dart' show Get, GetNavigation, Inst;
 import 'package:image_picker/image_picker.dart' show ImageSource;
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/pages/chat_frame/logic.dart';
-import 'package:linyu_mobile/utils/api/chat_group_member.dart';
-import 'package:linyu_mobile/utils/api/chat_list_api.dart';
-import 'package:linyu_mobile/utils/api/friend_api.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/api/chat_group_member.dart';
+import 'package:linyu_mobile/api/chat_list_api.dart';
+import 'package:linyu_mobile/api/friend_api.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 import 'package:linyu_mobile/utils/crop_picture.dart';
 
 class ChatSettingLogic extends Logic {

@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/pages/contacts/logic.dart';
-import 'package:linyu_mobile/utils/api/chat_list_api.dart';
-import 'package:linyu_mobile/utils/api/friend_api.dart';
-import 'package:linyu_mobile/utils/api/talk_api.dart';
-import 'package:linyu_mobile/utils/api/user_api.dart';
-import 'package:linyu_mobile/utils/api/video_api.dart';
+import 'package:linyu_mobile/api/chat_list_api.dart';
+import 'package:linyu_mobile/api/friend_api.dart';
+import 'package:linyu_mobile/api/talk_api.dart';
+import 'package:linyu_mobile/api/user_api.dart';
+import 'package:linyu_mobile/api/video_api.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 class FriendInformationLogic extends Logic {
   //联系人逻辑

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
 import 'package:linyu_mobile/components/custom_sound_icon/index.dart';
-import 'package:linyu_mobile/utils/config/getx/global_theme_config.dart';
+import 'package:linyu_mobile/config/getx/global_theme_config.dart';
 
 class CustomAudio extends StatefulWidget {
   final String audioUrl;

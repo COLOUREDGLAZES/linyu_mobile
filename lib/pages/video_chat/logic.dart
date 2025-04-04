@@ -4,12 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/api/chat_list_api.dart';
-import 'package:linyu_mobile/utils/api/msg_api.dart';
-import 'package:linyu_mobile/utils/api/video_api.dart';
+import 'package:linyu_mobile/api/chat_list_api.dart';
+import 'package:linyu_mobile/api/msg_api.dart';
+import 'package:linyu_mobile/api/video_api.dart';
 import 'package:linyu_mobile/components/CustomDialog/index.dart';
 import 'package:linyu_mobile/components/custom_flutter_toast/index.dart';
-import 'package:linyu_mobile/utils/config/network/web_socket.dart';
+import 'package:linyu_mobile/config/network/web_socket.dart';
 
 class VideoChatLogic extends GetxController {
   final _chatListApi = ChatListApi();

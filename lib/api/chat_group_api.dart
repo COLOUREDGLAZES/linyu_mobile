@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:linyu_mobile/utils/config/network/http.dart';
+import 'package:linyu_mobile/config/network/http.dart';
 
 class ChatGroupApi {
   final Dio _dio = Http(url: baseUrl).dio;

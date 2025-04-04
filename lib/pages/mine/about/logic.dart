@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart' show Key;
 import 'package:flutter/foundation.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-import 'package:linyu_mobile/utils/api/msg_api.dart';
+import 'package:linyu_mobile/api/msg_api.dart';
 
 class AboutLogic extends GetxController {
   final _msgApi = new MsgApi();

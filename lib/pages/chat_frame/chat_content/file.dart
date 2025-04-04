@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:linyu_mobile/utils/api/msg_api.dart';
-import 'package:linyu_mobile/utils/String.dart';
-import 'package:linyu_mobile/utils/config/getx/config.dart';
+import 'package:linyu_mobile/api/msg_api.dart';
+import 'package:linyu_mobile/utils/string_util.dart';
+import 'package:linyu_mobile/config/getx/config.dart';
 
 class FileMessage extends StatelessThemeWidget {
   final _msgApi = MsgApi();
