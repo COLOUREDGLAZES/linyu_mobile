@@ -330,30 +330,23 @@ class FriendInformationPage extends CustomWidget<FriendInformationLogic> {
             ),
           ),
           bottomNavigationBar: globalData.currentUserId != controller.friendId
-              ? Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: CustomButton(
-                          text: '发消息',
-                          onTap: controller.onToSendMsg,
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: CustomButton(
-                          text: '音视通话',
-                          onTap: () => _showCupertinoSheet(),
-                          type: 'minor',
-                        ),
-                      ),
-                    ],
-                  ),
-                )
+              ? [
+                  CustomButton(
+                    text: '发消息',
+                    onTap: controller.onToSendMsg,
+                  ).expanded(),
+                  const SizedBox(width: 20),
+                  CustomButton(
+                    text: '音视通话',
+                    onTap: () => _showCupertinoSheet(),
+                    type: 'minor',
+                  ).expanded(),
+                ]
+                  .toRow(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center)
+                  .marginOnly(bottom: 10)
+                  .paddingSymmetric(horizontal: 20, vertical: 10)
               : null,
         ),
       );

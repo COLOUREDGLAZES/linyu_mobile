@@ -1,8 +1,11 @@
+import 'package:ducafe_ui_core/ducafe_ui_core.dart'
+    show ListExtensions, WidgetExtensions;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linyu_mobile/components/custom_button/index.dart';
 import 'package:linyu_mobile/components/custom_text_field/index.dart';
 import 'package:linyu_mobile/config/getx/config.dart';
+
 import 'logic.dart';
 
 class SettingPage extends CustomView<SettingLogic> {
@@ -75,27 +78,21 @@ class SettingPage extends CustomView<SettingLogic> {
             ],
           ),
         ),
-        bottomNavigationBar: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Row(
-            children: [
-              Expanded(
-                child: CustomButton(
-                  text: '确定',
-                  onTap: controller.setUrl,
-                ),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: CustomButton(
-                  text: '取消',
-                  onTap: () => Get.back(),
-                  type: 'minor',
-                ),
-              ),
-            ],
-          ),
-        ),
+        bottomNavigationBar: [
+          CustomButton(
+            text: '确定',
+            onTap: controller.setUrl,
+          ).expanded(),
+          const SizedBox(width: 20),
+          CustomButton(
+            text: '取消',
+            onTap: () => Get.back(),
+            type: 'minor',
+          ).expanded(),
+        ]
+            .toRow()
+            .marginOnly(bottom: 10, top: 10)
+            .paddingSymmetric(horizontal: 20, vertical: 10),
       ),
     );
   }
