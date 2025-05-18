@@ -18,7 +18,8 @@ import 'package:flutter/material.dart'
         Widget,
         WidgetsFlutterBinding,
         runApp;
-import 'package:flutter/services.dart' show MethodChannel;
+import 'package:flutter/services.dart'
+    show DeviceOrientation, MethodChannel, SystemChrome;
 import 'package:flutter_localizations/flutter_localizations.dart'
     show
         GlobalCupertinoLocalizations,
@@ -29,12 +30,12 @@ import 'package:get/get.dart'
 import 'package:linyu_mobile/config/getx/config.dart'
     show pageRoute, routingCallback;
 import 'package:linyu_mobile/config/getx/controller_binding.dart';
+import 'package:linyu_mobile/config/network/http.dart' as http;
+import 'package:linyu_mobile/config/network/web_socket.dart' as websocket;
 import "package:permission_handler/permission_handler.dart"
     show FuturePermissionStatusGetters, Permission, PermissionActions;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
-import 'package:linyu_mobile/config/network/http.dart' as http;
-import 'package:linyu_mobile/config/network/web_socket.dart' as websocket;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +49,13 @@ void main() async {
   websocket.websocketUrl = prefs.getString("websocket_ip");
   final String initialRoute =
       currentUserId != null && token != null ? '/?sex=$sex' : '/login';
-  runApp(MyApp(key: const Key('MyApp'), initialRoute: initialRoute));
+  // 锁定竖屏
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp, // 正竖屏
+    // DeviceOrientation.portraitDown, // 倒竖屏（可选）
+  ]).then((_) =>
+      runApp(MyApp(key: const Key('MyApp'), initialRoute: initialRoute)));
+  // runApp(MyApp(key: const Key('MyApp'), initialRoute: initialRoute));
 }
 
 class MyApp extends StatelessWidget {
@@ -84,6 +91,7 @@ class MyApp extends StatelessWidget {
     // _initPlatformState();
     // 获取屏幕尺寸
     Size screenSize = MediaQuery.of(context).size;
+    if (kDebugMode) print('the screen size is: $screenSize');
     return ScreenUtilInit(
       designSize: screenSize,
       minTextAdapt: true,

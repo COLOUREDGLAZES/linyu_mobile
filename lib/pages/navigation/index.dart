@@ -14,6 +14,7 @@ class NavigationPage extends CustomWidget<NavigationLogic> {
       onPopInvokedWithResult: controller.onPopPage,
       child: Obx(() => Scaffold(
           drawer: controller.pages[3].page(),
+          drawerEnableOpenDragGesture: true,
           onDrawerChanged: (isOpen) => controller.isOpenDrawer = isOpen,
           body: controller.pages[controller.currentIndex.value].page(),
           bottomNavigationBar: BottomNavigationBar(
