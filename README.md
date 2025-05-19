@@ -31,8 +31,68 @@
 
 ## flutter环境安装
 
-    Flutter (Channel stable, 3.29.3, on Microsoft Windows [版本 10.0.19045.5854], locale zh-CN) [1,203ms]
-    • Flutter version 3.29.3 on channel stable at C:\SDK\FLUTTER\versions\3.29.3
+    Flutter (Channel stable, 3.29.2, on Microsoft Windows [版本 10.0.19045.5555], locale zh-CN) [1,154ms]
+    • Flutter version 3.29.2 on channel stable at C:\SDK\FLUTTER\flutter_windows_3.29.2-stable\flutter
+    • Engine revision 18b71d647a
+    • Dart version 3.7.2
+    • DevTools version 2.42.3
+    • Pub download mirror https://pub.flutter-io.cn
+    • Flutter download mirror https://storage.flutter-io.cn
+    • If those were intentional, you can disregard the above warnings; however it is recommended to use "git" directly to perform update checks and upgrades.
+    
+    [√] Windows Version (10 专业版 64 位, 22H2, 2009) [5.3s]
+    
+    [!] Android toolchain - develop for Android devices (Android SDK version 35.0.0) [1,143ms]
+    • Android SDK at C:\SDK\ANDROID\android-sdk
+    X cmdline-tools component is missing
+    Run `path/to/sdkmanager --install "cmdline-tools;latest"`
+    See https://developer.android.com/studio/command-line for more details.
+    X Android license status unknown.
+    Run `flutter doctor --android-licenses` to accept the SDK licenses.
+    See https://flutter.dev/to/windows-android-setup for more details.
+    
+    [X] Chrome - develop for the web (Cannot find Chrome executable at .\Google\Chrome\Application\chrome.exe) [841ms]
+    ! Cannot find Chrome. Try setting CHROME_EXECUTABLE to a Chrome executable.
+    
+    [√] Visual Studio - develop Windows apps (Visual Studio 生成工具 2019 16.11.41) [839ms]
+    • Visual Studio at C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools
+    • Visual Studio 生成工具 2019 version 16.11.35325.158
+    • Windows 10 SDK version 10.0.19041.0
+    
+    [√] Android Studio (version 2022.3) [191ms]
+    • Android Studio at C:\Program Files\Android\Android Studio2
+    • Flutter plugin can be installed from:
+    https://plugins.jetbrains.com/plugin/9212-flutter
+    • Dart plugin can be installed from:
+    https://plugins.jetbrains.com/plugin/6351-dart
+    • Java version OpenJDK Runtime Environment (build 17.0.6+0-b2043.56-10027231)
+    
+    [!] Android Studio (version 2024.1) [189ms]
+    • Android Studio at C:\Program Files\Android\Android Studio
+    • Flutter plugin can be installed from:
+    https://plugins.jetbrains.com/plugin/9212-flutter
+    • Dart plugin can be installed from:
+    https://plugins.jetbrains.com/plugin/6351-dart
+    X Unable to find bundled Java version.
+    • Try updating or re-installing Android Studio.
+    
+    [!] Android Studio (version 2024.2) [188ms]
+    • Android Studio at C:\Program Files\Android\Android Studio1
+    • Flutter plugin can be installed from:
+    https://plugins.jetbrains.com/plugin/9212-flutter
+    • Dart plugin can be installed from:
+    https://plugins.jetbrains.com/plugin/6351-dart
+    X Unable to determine bundled Java version.
+    • Try updating or re-installing Android Studio.
+    
+    [√] IntelliJ IDEA Ultimate Edition (version 2024.1) [188ms]
+    • IntelliJ at C:\Program Files\JetBrains\IntelliJ IDEA 2024.1.7
+    • Flutter plugin version 83.0.2
+    • Dart plugin version 241.19416.15
+    
+    [√] VS Code (version 1.97.2) [17ms]
+    • VS Code at C:\Users\50603\AppData\Local\Programs\Microsoft VS Code
+    • Flutter extension version 3.104.0
 
 # 移动端截图
 
