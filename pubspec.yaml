@@ -74,10 +74,10 @@ dependencies:
       url: https://github.com/COLOUREDGLAZES/image_gallery_saver.git
       ref: master
 
-  open_filex:
-    git:
-      url: https://github.com/mufassalhussain/open_filex.git
-      ref: master
+  open_filex: 4.7.0
+#    git:
+#      url: https://github.com/mufassalhussain/open_filex.git
+#      ref: master
 
 dev_dependencies:
   flutter_test:
